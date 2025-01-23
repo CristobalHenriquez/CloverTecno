@@ -8,7 +8,7 @@
         <div class="container">
           <div class="row d-flex justify-content-center text-center">
             <div class="col-lg-8">
-              <h1>Nosotros</h1>
+              <h1>Somos</h1>
               <p class="mb-0">Odio et unde deleniti. Deserunt numquam exercitationem. Officiis quo odio sint voluptas consequatur ut a odio voluptatem. Sit dolorum debitis veritatis natus dolores. Quasi ratione sint. Sit quaerat ipsum dolorem.</p>
               <a href="contact.php" class="cta-btn">Contáctanos<br></a>
             </div>
@@ -66,8 +66,8 @@
 
     <!-- Section Title -->
     <div class="container section-title" data-aos="fade-up">
-      <h2>Testimonials</h2>
-      <p>What they are saying</p>
+      <h2>Opiniones</h2>
+      <p>de nuestros clientes</p>
     </div><!-- End Section Title -->
 
     <div class="container" data-aos="fade-up" data-aos-delay="100">
