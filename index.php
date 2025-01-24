@@ -3,11 +3,11 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ?>
 <?php include_once 'includes/inc.head.php'; ?>
-<?php include 'includes/db_connection.php'; ?>
+
   <main class="main">
 
     <!-- Hero Section -->
-    <section id="hero" class="hero section">
+    <!--<section id="hero" class="hero section">
 
       <div class="container">
         <div class="row justify-content-center">
@@ -19,7 +19,7 @@ ini_set('display_errors', 1);
         </div>
       </div>
 
-    </section>
+    </section>-->
     <section id="hero" class="hero section">
       <div class="container">
         <div class="row align-items-center justify-content-center">
@@ -38,7 +38,7 @@ ini_set('display_errors', 1);
             <p>
               Desde fundas protectoras hasta cargadores de alta velocidad, contamos con una amplia gama de productos diseñados para mejorar tu experiencia digital.
             </p>
-            <a href="Contacto" class="btn-get-started">Contacto</a>
+            <!--<a href="Contacto" class="btn-get-started">Contacto</a>-->
           </div>
           
           <!-- Columna Derecha: Imagen de AirPods -->
@@ -49,51 +49,9 @@ ini_set('display_errors', 1);
         </div>
       </div>
     </section>
-    
-
+    <?php include_once 'includes/gallery.php'; ?>
+    <?php include_once 'includes/testimonials.php'; ?>
     <!-- Gallery Section -->
-    <section id="gallery" class="gallery section">
-        <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
-
-            <?php
-            // Consulta para obtener las categorías únicas
-            $sqlCategorias = "SELECT DISTINCT categoria FROM galerias";
-            $resultCategorias = $conn->query($sqlCategorias);
-
-            if ($resultCategorias->num_rows > 0):
-                while ($categoria = $resultCategorias->fetch_assoc()):
-                    $categoriaNombre = $categoria['categoria'];
-            ?>
-            <div class="gallery-category">
-                <h2 class="text-center"><?php echo ucfirst($categoriaNombre); ?></h2>
-                <div class="row gy-4 justify-content-center">
-                    <?php
-                    // Consulta para obtener las imágenes de la categoría
-                    $sqlImagenes = "SELECT * FROM galerias WHERE categoria = '$categoriaNombre'";
-                    $resultImagenes = $conn->query($sqlImagenes);
-                
-                    if ($resultImagenes->num_rows > 0):
-                        while ($imagen = $resultImagenes->fetch_assoc()):
-                    ?>
-                    <div class="col-xl-3 col-lg-4 col-md-6">
-                        <div class="gallery-item h-100">
-                            <img src="<?php echo $imagen['ruta_imagen']; ?>" class="img-fluid" alt="<?php echo $imagen['descripcion']; ?>">
-                            <div class="gallery-links d-flex align-items-center justify-content-center">
-                                <a href="<?php echo $imagen['ruta_imagen']; ?>" title="<?php echo $imagen['descripcion']; ?>" class="glightbox preview-link">
-                                    <i class="bi bi-arrows-angle-expand"></i>
-                                </a>
-                                <span class="price-tag">$<?php echo number_format($imagen['precio'], 2); ?></span>
-                            </div>
-                        </div>
-                    </div><!-- End Gallery Item -->
-                    <?php endwhile; endif; ?>
-                </div>
-            </div>
-            <?php endwhile; endif; ?>
-                        
-        </div>
-    </section><!-- /Gallery Section -->
-
-  <?php $conn->close(); // Cierra la conexión a la base de datos ?>
+    
     <!-- Botón flotante de WhatsApp -->
   <?php include_once 'includes/inc.footer.php'; ?>

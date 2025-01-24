@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -47,7 +48,7 @@
         <ul>
           <li><a href="/clovertecno/" class="active">Inicio<br></a></li>
           <li><a href="Nosotros">Nosotros</a></li>
-          <li class="dropdown"><a href="gallery.html"><span>Galeria</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+          <!--<li class="dropdown"><a href="gallery.html"><span>Galeria</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
               <li><a href="gallery.html">Nature</a></li>
               <li><a href="gallery.html">People</a></li>
@@ -65,7 +66,7 @@
                 </ul>
               </li>
             </ul>
-          </li>
+          </li>-->
           <li><a href="Servicios">Servicios</a></li>
           <li><a href="Contacto">Contacto</a></li>
         </ul>
