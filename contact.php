@@ -36,14 +36,6 @@
       </div>
     </div>
 
-    <nav class="breadcrumbs">
-      <div class="container">
-        <ol>
-          <li><a href="/clovertecno/">Inicio</a></li>
-          <li class="current">Contacto</li>
-        </ol>
-      </div>
-    </nav>
     <!--<form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="300">
       <div class="row gy-4">
 
