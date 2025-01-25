@@ -6,7 +6,7 @@
         <div class="container">
           <div class="row d-flex justify-content-center text-center">
             <div class="col-lg-8">
-              <h1><span class="underlight">Nuestros Productos</span></h1>
+              <h3><span class="underlight">Nuestros Productos</span></h3>
               <p class="mb-0">Odio et unde deleniti. Deserunt numquam exercitationem. Officiis quo odio sint voluptas consequatur ut a odio voluptatem. Sit dolorum debitis veritatis natus dolores. Quasi ratione sint. Sit quaerat ipsum dolorem.</p>
               <a href="contact.html" class="cta-btn">Available for Hire<br></a>
             </div>
