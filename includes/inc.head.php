@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -6,7 +5,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Clover Tecno</title>
-  
+
   <meta name="description" content="">
   <meta name="keywords" content="">
 
@@ -39,36 +38,20 @@
 
       <a href="/clovertecno/" class="logo d-flex align-items-center me-auto me-xl-0">
         <!-- Uncomment the line below if you also wish to use an image logo -->
-        <img src="assets/img/logo.png" alt=""> 
+        <img src="assets/img/logo.png" alt="">
         <!--<i class="bi bi-camera"></i>-->
         <!--<h1 class="sitename">PhotoFolio</h1>-->
       </a>
 
       <nav id="navmenu" class="navmenu">
+        <?php
+        $current_page = basename($_SERVER['REQUEST_URI'], ".php");
+        ?>
         <ul>
-          <li><a href="/clovertecno/" class="active">Inicio<br></a></li>
-          <li><a href="Nosotros">Nosotros</a></li>
-          <!--<li class="dropdown"><a href="gallery.html"><span>Galeria</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="gallery.html">Nature</a></li>
-              <li><a href="gallery.html">People</a></li>
-              <li><a href="gallery.html">Architecture</a></li>
-              <li><a href="gallery.html">Animals</a></li>
-              <li><a href="gallery.html">Sports</a></li>
-              <li><a href="gallery.html">Travel</a></li>
-              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                <ul>
-                  <li><a href="#">Deep Dropdown 1</a></li>
-                  <li><a href="#">Deep Dropdown 2</a></li>
-                  <li><a href="#">Deep Dropdown 3</a></li>
-                  <li><a href="#">Deep Dropdown 4</a></li>
-                  <li><a href="#">Deep Dropdown 5</a></li>
-                </ul>
-              </li>
-            </ul>
-          </li>-->
-          <li><a href="Servicios">Servicios</a></li>
-          <li><a href="Contacto">Contacto</a></li>
+          <li><a href="Inicio" class="<?= ($current_page == 'Inicio' || $current_page == '') ? 'active' : '' ?>">Inicio<br></a></li>
+          <li><a href="Nosotros" class="<?= ($current_page == 'Nosotros') ? 'active' : '' ?>">Nosotros</a></li>
+          <li><a href="Servicios" class="<?= ($current_page == 'Servicios') ? 'active' : '' ?>">Servicios</a></li>
+          <li><a href="Contacto" class="<?= ($current_page == 'Contacto') ? 'active' : '' ?>">Contacto</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
