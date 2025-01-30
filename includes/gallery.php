@@ -41,7 +41,7 @@ function obtenerImagenAleatoria($db, $id_categoria) {
 
     <!-- Gallery Section -->
     <section id="gallery" class="gallery section">
-        <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
+        <div class="container-fluid col-10" data-aos="fade-up" data-aos-delay="100">
             <div class="row gy-4 justify-content-center">
                 <?php foreach ($categorias as $categoria): ?>
                     <?php $imagen = obtenerImagenAleatoria($db, $categoria['id_categoria']); ?>
