@@ -5,30 +5,31 @@ $result_categorias = $db->query($sql_categorias);
 
 $categorias = [];
 if ($result_categorias->num_rows > 0) {
-    while($row = $result_categorias->fetch_assoc()) {
+    while ($row = $result_categorias->fetch_assoc()) {
         $categorias[] = $row;
     }
 }
 
 // Función para obtener una imagen aleatoria de un producto por categoría
-function obtenerImagenAleatoria($db, $id_categoria) {
+function obtenerImagenAleatoria($db, $id_categoria)
+{
     $sql = "SELECT ip.imagen_path 
             FROM imagenes_productos ip
             JOIN productos p ON ip.id_producto = p.id_producto
             WHERE p.id_categoria = ?
             ORDER BY RAND()
             LIMIT 1";
-    
+
     $stmt = $db->prepare($sql);
     $stmt->bind_param("i", $id_categoria);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
         return $row['imagen_path'];
     }
-    
+
     return "assets/img/placeholder.jpg"; // Imagen por defecto si no se encuentra ninguna
 }
 ?>
@@ -49,8 +50,9 @@ function obtenerImagenAleatoria($db, $id_categoria) {
                         <div class="gallery-item h-100">
                             <img src="<?php echo htmlspecialchars($imagen); ?>" class="img-fluid" alt="<?php echo htmlspecialchars($categoria['nombre_categoria']); ?>">
                             <div class="gallery-links d-flex align-items-center justify-content-center">
-                                <a href="<?php echo htmlspecialchars($imagen); ?>" title="<?php echo htmlspecialchars($categoria['nombre_categoria']); ?>" class="glightbox preview-link"><i class="bi bi-arrows-angle-expand"></i></a>
-                                <a href="gallery-single.html?categoria=<?php echo $categoria['id_categoria']; ?>" class="details-link"><i class="bi bi-link-45deg"></i></a>
+                                <a href="categorias.php?id=<?php echo $categoria['id_categoria']; ?>" class="details-link">
+                                    <i class="bi bi-link-45deg"></i>
+                                </a>
                             </div>
                             <div class="category-name">
                                 <?php echo htmlspecialchars($categoria['nombre_categoria']); ?>
@@ -64,24 +66,24 @@ function obtenerImagenAleatoria($db, $id_categoria) {
 </main>
 
 <style>
-.gallery-item {
-    position: relative;
-    overflow: hidden;
-}
+    .gallery-item {
+        position: relative;
+        overflow: hidden;
+    }
 
-.category-name {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: rgba(0, 0, 0, 0.7);
-    color: white;
-    text-align: center;
-    padding: 10px;
-    transition: opacity 0.3s ease;
-}
+    .category-name {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        text-align: center;
+        padding: 10px;
+        transition: opacity 0.3s ease;
+    }
 
-.gallery-item:hover .category-name {
-    opacity: 0;
-}
+    .gallery-item:hover .category-name {
+        opacity: 0;
+    }
 </style>
