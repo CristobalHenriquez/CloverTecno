@@ -19,12 +19,12 @@ if (!$result) {
     <table id="productTable" class="table table-striped table-hover">
         <thead>
             <tr>
-                <th>Imagen</th>
+                <th class="text-center">Imagen</th>
                 <th>Nombre</th>
                 <th>Descripción</th>
                 <th>Categoría</th>
-                <th>Precio</th>
-                <th>Acciones</th>
+                <th class="text-end">Precio</th>
+                <th class="text-center">Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -33,7 +33,7 @@ if (!$result) {
                 while ($row = $result->fetch_assoc()): 
             ?>
                 <tr>
-                    <td>
+                    <td class="text-center">
                         <img src="<?php echo htmlspecialchars($row['imagen_path']); ?>" 
                              alt="<?php echo htmlspecialchars($row['nombre_producto']); ?>"
                              style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
@@ -41,17 +41,18 @@ if (!$result) {
                     <td><?php echo htmlspecialchars($row['nombre_producto']); ?></td>
                     <td><?php echo htmlspecialchars(substr($row['descripcion_producto'], 0, 100)) . '...'; ?></td>
                     <td><?php echo htmlspecialchars($row['nombre_categoria']); ?></td>
-                    <td>$<?php echo number_format($row['valor_producto'], 2); ?></td>
-                    <td>
-                        <a href="editar_producto.php?id=<?php echo $row['id_producto']; ?>" 
-                           class="btn btn-sm btn-primary">
+                    <td class="text-end">$<?php echo number_format($row['valor_producto'], 2); ?></td>
+                    <td class="text-center">
+                        <button type="button" 
+                                class="btn btn-sm btn-primary editar-producto" 
+                                data-id="<?php echo $row['id_producto']; ?>">
                             <i class="bi bi-pencil"></i> Editar
-                        </a>
-                        <a href="eliminar_producto.php?id=<?php echo $row['id_producto']; ?>" 
-                           class="btn btn-sm btn-danger" 
-                           onclick="return confirm('¿Está seguro de que desea eliminar este producto?');">
+                        </button>
+                        <button type="button"
+                                class="btn btn-sm btn-danger eliminar-producto"
+                                data-id="<?php echo $row['id_producto']; ?>">
                             <i class="bi bi-trash"></i> Eliminar
-                        </a>
+                        </button>
                     </td>
                 </tr>
             <?php 

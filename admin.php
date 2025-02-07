@@ -18,12 +18,24 @@ include_once 'includes/inc.head.php';
     .dataTables_wrapper {
         margin-top: 20px;
     }
+    table.dataTable {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100% !important;
+    }
     table.dataTable thead th {
-        background-color: #104D43;
-        color: white;
+        background-color: #104D43 !important;
+        color: white !important;
+        border: none;
+        padding: 12px 10px;
+        font-weight: 600;
+    }
+    table.dataTable tbody td {
+        padding: 12px 10px;
+        vertical-align: middle;
     }
     table.dataTable tbody tr:nth-of-type(odd) {
-        background-color: #f1f3f5;
+        background-color: #f8f9fa;
     }
     table.dataTable tbody tr:hover {
         background-color: #e9ecef;
@@ -39,11 +51,14 @@ include_once 'includes/inc.head.php';
         background-color: #0d3c34;
         border-color: #0d3c34;
     }
-    #productTable {
-        width: 100% !important;
-    }
     #productTable_wrapper {
-        overflow-x: auto;
+        margin: 0 auto;
+    }
+    .dataTables_filter {
+        margin-bottom: 1rem;
+    }
+    .dataTables_length {
+        margin-bottom: 1rem;
     }
 </style>
 
@@ -66,8 +81,11 @@ include_once 'includes/inc.head.php';
     </div>
 </main>
 
-<?php include_once 'templates/agregar_producto_modal.php'; ?>
-<?php include_once 'includes/inc.footer.php'; ?>
+<?php 
+include_once 'templates/agregar_producto_modal.php';
+include_once 'templates/editar_producto_modal.php';
+include_once 'includes/inc.footer.php'; 
+?>
 
 <!-- DataTables CSS -->
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
@@ -88,27 +106,25 @@ include_once 'includes/inc.head.php';
 
 <script>
 $(document).ready(function() {
+    // Inicializar DataTable
     $('#productTable').DataTable({
         "responsive": true,
-        "scrollX": true,
+        "autoWidth": false,
         "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json",
-            "lengthMenu": "Mostrar _MENU_ productos por página",
-            "info": "Mostrando _START_ a _END_ de _TOTAL_ productos",
-            "infoEmpty": "Mostrando 0 a 0 de 0 productos",
-            "infoFiltered": "(filtrado de _MAX_ productos totales)",
-            "search": "Buscar:",
-            "paginate": {
-                "first": "Primero",
-                "last": "Último",
-                "next": "Siguiente",
-                "previous": "Anterior"
-            }
+            "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
         },
+        "order": [[1, 'asc']],
+        "pageLength": 10,
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
         "columnDefs": [
-            { "orderable": false, "targets": [0, 5] }
-        ],
-        "order": [[1, 'asc']]
+            { "orderable": false, "targets": [0, 5] },
+            { "width": "80px", "targets": 0 },
+            { "width": "200px", "targets": 1 },
+            { "width": "300px", "targets": 2 },
+            { "width": "150px", "targets": 3 },
+            { "width": "100px", "targets": 4 },
+            { "width": "180px", "targets": 5 }
+        ]
     });
 
     // Manejar el envío del formulario de agregar producto
@@ -140,6 +156,89 @@ $(document).ready(function() {
                     });
                 }
                 $('#agregarProductoModal').modal('hide');
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    });
+
+    // Manejar clic en botón editar
+    $('.editar-producto').on('click', function() {
+        var id_producto = $(this).data('id');
+        
+        // Obtener datos del producto
+        $.get('controllers/obtener_producto.php', { id: id_producto }, function(response) {
+            var data = JSON.parse(response);
+            if (data.success) {
+                var producto = data.producto;
+                
+                // Llenar el formulario
+                $('#edit_id_producto').val(producto.id_producto);
+                $('#edit_nombre').val(producto.nombre_producto);
+                $('#edit_descripcion').val(producto.descripcion_producto);
+                $('#edit_categoria').val(producto.id_categoria);
+                $('#edit_precio').val(producto.valor_producto);
+
+                // Mostrar imágenes actuales
+                var imagenes = producto.imagenes ? producto.imagenes.split(',') : [];
+                var imagenesHtml = '';
+                imagenes.forEach(function(imagen, index) {
+                    imagenesHtml += `
+                        <div class="position-relative">
+                            <img src="${imagen}" alt="Imagen ${index + 1}" style="width: 100px; height: 100px; object-fit: cover;">
+                            <div class="form-check position-absolute top-0 start-0">
+                                <input class="form-check-input" type="checkbox" name="eliminar_imagen[]" value="${imagen}" id="eliminar_${index}">
+                                <label class="form-check-label" for="eliminar_${index}">
+                                    Eliminar
+                                </label>
+                            </div>
+                        </div>
+                    `;
+                });
+                $('#imagenes_actuales').html(imagenesHtml);
+
+                // Mostrar el modal
+                $('#editarProductoModal').modal('show');
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message
+                });
+            }
+        });
+    });
+
+    // Manejar el envío del formulario de editar producto
+    $('#editarProductoForm').on('submit', function(e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: 'controllers/procesar_editar_producto.php',
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+                var result = JSON.parse(response);
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: result.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: result.message
+                    });
+                }
+                $('#editarProductoModal').modal('hide');
             },
             cache: false,
             contentType: false,
