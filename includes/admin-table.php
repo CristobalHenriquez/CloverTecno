@@ -19,12 +19,12 @@ if (!$result) {
     <table id="productTable" class="table table-striped table-hover">
         <thead>
             <tr>
-                <th class="text-center">Imagen</th>
+                <th>Imagen</th>
                 <th>Nombre</th>
                 <th>Descripción</th>
                 <th>Categoría</th>
-                <th class="text-end">Precio</th>
-                <th class="text-center">Acciones</th>
+                <th>Precio</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -33,7 +33,7 @@ if (!$result) {
                 while ($row = $result->fetch_assoc()): 
             ?>
                 <tr>
-                    <td class="text-center">
+                    <td>
                         <img src="<?php echo htmlspecialchars($row['imagen_path']); ?>" 
                              alt="<?php echo htmlspecialchars($row['nombre_producto']); ?>"
                              style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
@@ -41,16 +41,17 @@ if (!$result) {
                     <td><?php echo htmlspecialchars($row['nombre_producto']); ?></td>
                     <td><?php echo htmlspecialchars(substr($row['descripcion_producto'], 0, 100)) . '...'; ?></td>
                     <td><?php echo htmlspecialchars($row['nombre_categoria']); ?></td>
-                    <td class="text-end">$<?php echo number_format($row['valor_producto'], 2); ?></td>
-                    <td class="text-center">
+                    <td>$<?php echo number_format($row['valor_producto'], 2); ?></td>
+                    <td>
                         <button type="button" 
                                 class="btn btn-sm btn-primary editar-producto" 
                                 data-id="<?php echo $row['id_producto']; ?>">
                             <i class="bi bi-pencil"></i> Editar
                         </button>
-                        <button type="button"
-                                class="btn btn-sm btn-danger eliminar-producto"
-                                data-id="<?php echo $row['id_producto']; ?>">
+                        <button type="button" 
+                                class="btn btn-sm btn-danger eliminar-producto" 
+                                data-id="<?php echo $row['id_producto']; ?>"
+                                data-nombre="<?php echo htmlspecialchars($row['nombre_producto']); ?>">
                             <i class="bi bi-trash"></i> Eliminar
                         </button>
                     </td>
@@ -68,4 +69,75 @@ if (!$result) {
         </tbody>
     </table>
 </div>
+
+<script>
+$(document).ready(function() {
+    // Manejador para el botón de eliminar
+    $(document).on('click', '.eliminar-producto', function() {
+        const id = $(this).data('id');
+        const nombre = $(this).data('nombre');
+        
+        Swal.fire({
+            title: '¿Está seguro?',
+            text: `¿Desea eliminar el producto "${nombre}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Segunda confirmación
+                Swal.fire({
+                    title: 'Confirmación adicional',
+                    text: `Esta acción no se puede deshacer. ¿Realmente desea eliminar el producto "${nombre}"?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar definitivamente',
+                    cancelButtonText: 'Cancelar'
+                }).then((secondResult) => {
+                    if (secondResult.isConfirmed) {
+                        // Proceder con la eliminación
+                        $.ajax({
+                            url: 'controllers/eliminar_producto.php',
+                            type: 'POST',
+                            data: { id: id },
+                            dataType: 'json',
+                            success: function(response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: '¡Éxito!',
+                                        text: response.message,
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: response.message
+                                    });
+                                }
+                            },
+                            error: function() {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Ocurrió un error al procesar la solicitud'
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
 
