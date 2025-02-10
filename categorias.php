@@ -4,20 +4,29 @@ ini_set('display_errors', 1);
 
 require_once 'includes/db_connection.php';
 
-// Verificar si se recibió un ID de categoría
-if (!isset($_GET['id'])) {
-    header('Location: index.php');
+// Verificar si se recibió un nombre de categoría
+if (!isset($_GET['nombre'])) {
+    header('Location: Inicio');
     exit;
 }
 
-$id_categoria = $_GET['id'];
+$nombre_categoria = str_replace('_', ' ', $_GET['nombre']);
 
 // Obtener información de la categoría
-$sql_categoria = "SELECT nombre_categoria FROM categorias WHERE id_categoria = ?";
+$sql_categoria = "SELECT id_categoria, nombre_categoria FROM categorias WHERE nombre_categoria = ?";
 $stmt = $db->prepare($sql_categoria);
-$stmt->bind_param("i", $id_categoria);
+$stmt->bind_param("s", $nombre_categoria);
 $stmt->execute();
 $categoria = $stmt->get_result()->fetch_assoc();
+
+if (!$categoria) {
+    // Manejar el caso cuando la categoría no se encuentra
+    header("HTTP/1.0 404 Not Found");
+    echo "Categoría no encontrada";
+    exit;
+}
+
+$id_categoria = $categoria['id_categoria'];
 
 // Obtener productos de la categoría con sus imágenes
 $sql_productos = "SELECT p.*, GROUP_CONCAT(ip.imagen_path) as imagenes 

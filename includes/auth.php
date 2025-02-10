@@ -7,7 +7,7 @@ function isAuthenticated() {
 
 function requireAuth() {
     if (!isAuthenticated()) {
-        header('Location: login.php');
+        header('Location: InicioDeSesion');
         exit;
     }
 }

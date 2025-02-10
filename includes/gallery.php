@@ -50,7 +50,7 @@ function obtenerImagenAleatoria($db, $id_categoria)
                         <div class="gallery-item h-100">
                             <img src="<?php echo htmlspecialchars($imagen); ?>" class="img-fluid" alt="<?php echo htmlspecialchars($categoria['nombre_categoria']); ?>">
                             <div class="gallery-links d-flex align-items-center justify-content-center">
-                                <a href="categorias.php?id=<?php echo $categoria['id_categoria']; ?>" class="details-link">
+                                <a href="Categorias_<?php echo urlencode(str_replace(' ', '_', $categoria['nombre_categoria'])); ?>" class="details-link">
                                     <i class="bi bi-link-45deg"></i>
                                 </a>
                             </div>

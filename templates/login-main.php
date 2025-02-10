@@ -46,7 +46,7 @@ $(document).ready(function() {
                         showConfirmButton: false,
                         timer: 1500
                     }).then(function() {
-                        window.location.href = 'admin.php';
+                        window.location.href = 'Administrador';
                     });
                 } else {
                     Swal.fire({
