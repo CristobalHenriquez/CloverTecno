@@ -20,7 +20,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $total_imagenes = count($imagenes['name']);
         $imagenes_guardadas = 0;
 
-        for ($i = 0; $i < $total_imagenes && $imagenes_guardadas < 3; $i++) {
+        if ($total_imagenes > 3) {
+            echo json_encode(['success' => false, 'message' => 'No se pueden subir más de 3 imágenes']);
+            exit;
+        }
+
+        for ($i = 0; $i < $total_imagenes; $i++) {
             if ($imagenes['error'][$i] === UPLOAD_ERR_OK) {
                 $extension = pathinfo($imagenes['name'][$i], PATHINFO_EXTENSION);
                 $nombre_archivo = 'SD' . str_pad($id_producto, 6, '0', STR_PAD_LEFT) . '_' . ($imagenes_guardadas + 1) . '.' . $extension;

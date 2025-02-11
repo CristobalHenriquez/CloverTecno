@@ -176,42 +176,6 @@ include_once 'includes/inc.footer.php';
             ]
         });
 
-        // Manejar el envío del formulario de agregar producto
-        $('#agregarProductoForm').on('submit', function(e) {
-            e.preventDefault();
-            var formData = new FormData(this);
-
-            $.ajax({
-                url: 'controllers/procesar_agregar_producto.php',
-                type: 'POST',
-                data: formData,
-                success: function(response) {
-                    var result = JSON.parse(response);
-                    if (result.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: '¡Éxito!',
-                            text: result.message,
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: result.message
-                        });
-                    }
-                    $('#agregarProductoModal').modal('hide');
-                },
-                cache: false,
-                contentType: false,
-                processData: false
-            });
-        });
-
         // Manejar clic en botón editar
         $('.editar-producto').on('click', function() {
             var id_producto = $(this).data('id');

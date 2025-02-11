@@ -8,22 +8,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $categoria = intval($_POST['categoria']);
     $precio = floatval($_POST['precio']);
 
-    // Actualizar el producto
-    $sql = "UPDATE productos SET nombre_producto = ?, descripcion_producto = ?, id_categoria = ?, valor_producto = ? WHERE id_producto = ?";
-    $stmt = $db->prepare($sql);
-    $stmt->bind_param("ssidi", $nombre, $descripcion, $categoria, $precio, $id_producto);
-    
-    if ($stmt->execute()) {
+    // Iniciar transacción
+    $db->begin_transaction();
+
+    try {
+        // Actualizar el producto
+        $sql = "UPDATE productos SET nombre_producto = ?, descripcion_producto = ?, id_categoria = ?, valor_producto = ? WHERE id_producto = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("ssidi", $nombre, $descripcion, $categoria, $precio, $id_producto);
+        $stmt->execute();
+
         // Procesar imágenes eliminadas
         if (isset($_POST['eliminar_imagen'])) {
-            foreach ($_POST['eliminar_imagen'] as $imagen_eliminar) {
+            $imagenes_eliminar = json_decode($_POST['eliminar_imagen'], true);
+            foreach ($imagenes_eliminar as $imagen_eliminar) {
+                // Eliminar de la base de datos
                 $sql_eliminar = "DELETE FROM imagenes_productos WHERE id_producto = ? AND imagen_path = ?";
                 $stmt_eliminar = $db->prepare($sql_eliminar);
                 $stmt_eliminar->bind_param("is", $id_producto, $imagen_eliminar);
                 $stmt_eliminar->execute();
                 
                 // Eliminar el archivo físico
-                $ruta_fisica = dirname(dirname(__FILE__)) . $imagen_eliminar;
+                $ruta_fisica = dirname(dirname(__FILE__)) . '/' . $imagen_eliminar;
                 if (file_exists($ruta_fisica)) {
                     unlink($ruta_fisica);
                 }
@@ -31,13 +37,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Procesar nuevas imágenes
+        $imagenes_actuales = $db->query("SELECT COUNT(*) as total FROM imagenes_productos WHERE id_producto = $id_producto")->fetch_assoc()['total'];
+
         if (isset($_FILES['nuevas_imagenes']) && $_FILES['nuevas_imagenes']['name'][0] !== '') {
             $imagenes = $_FILES['nuevas_imagenes'];
-            $total_imagenes = count($imagenes['name']);
-            $imagenes_actuales = $db->query("SELECT COUNT(*) as total FROM imagenes_productos WHERE id_producto = $id_producto")->fetch_assoc()['total'];
-            $imagenes_disponibles = 3 - $imagenes_actuales;
+            $total_nuevas_imagenes = count($imagenes['name']);
+            
+            if ($imagenes_actuales + $total_nuevas_imagenes > 3) {
+                throw new Exception('No se pueden tener más de 3 imágenes en total');
+            }
 
-            for ($i = 0; $i < $total_imagenes && $imagenes_disponibles > 0; $i++) {
+            for ($i = 0; $i < $total_nuevas_imagenes; $i++) {
                 if ($imagenes['error'][$i] === UPLOAD_ERR_OK) {
                     $extension = pathinfo($imagenes['name'][$i], PATHINFO_EXTENSION);
                     $nombre_archivo = 'SD' . str_pad($id_producto, 6, '0', STR_PAD_LEFT) . '_' . (time() + $i) . '.' . $extension;
@@ -49,15 +59,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $stmt_imagen = $db->prepare($sql_imagen);
                         $stmt_imagen->bind_param("is", $id_producto, $ruta_db);
                         $stmt_imagen->execute();
-                        $imagenes_disponibles--;
                     }
                 }
             }
         }
 
+        // Confirmar transacción
+        $db->commit();
         echo json_encode(['success' => true, 'message' => 'Producto actualizado con éxito']);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Error al actualizar el producto']);
+    } catch (Exception $e) {
+        // Revertir cambios en caso de error
+        $db->rollback();
+        echo json_encode(['success' => false, 'message' => 'Error al actualizar el producto: ' . $e->getMessage()]);
     }
 } else {
     echo json_encode(['success' => false, 'message' => 'Método no permitido']);

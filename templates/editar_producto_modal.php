@@ -48,3 +48,78 @@
     </div>
 </div>
 
+<script>
+// Validar número de imágenes nuevas
+document.getElementById('nuevas_imagenes').addEventListener('change', function(e) {
+    const imagenesActuales = document.querySelectorAll('#imagenes_actuales input[type="checkbox"]:not(:checked)').length;
+    const nuevasImagenes = this.files.length;
+    const totalImagenes = imagenesActuales + nuevasImagenes;
+
+    if (totalImagenes > 3) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: `Solo puedes tener un máximo de 3 imágenes en total. Actualmente tienes ${imagenesActuales} imagen(es).`
+        });
+        this.value = ''; // Limpiar la selección
+    }
+});
+
+// Manejar el envío del formulario de editar producto
+$('#editarProductoForm').on('submit', function(e) {
+    e.preventDefault();
+    var formData = new FormData(this);
+    
+    // Validar número total de imágenes
+    const imagenesActuales = document.querySelectorAll('#imagenes_actuales input[type="checkbox"]:not(:checked)').length;
+    const nuevasImagenes = $('#nuevas_imagenes')[0].files.length;
+    const totalImagenes = imagenesActuales + nuevasImagenes;
+
+    if (totalImagenes === 0 || totalImagenes > 3) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Debes tener entre 1 y 3 imágenes en total'
+        });
+        return;
+    }
+
+    // Agregar las rutas de las imágenes a eliminar
+    const imagenesEliminar = [];
+    document.querySelectorAll('#imagenes_actuales input[type="checkbox"]:checked').forEach(checkbox => {
+        imagenesEliminar.push(checkbox.value);
+    });
+    formData.append('eliminar_imagen', JSON.stringify(imagenesEliminar));
+
+    $.ajax({
+        url: 'controllers/procesar_editar_producto.php',
+        type: 'POST',
+        data: formData,
+        success: function(response) {
+            var result = JSON.parse(response);
+            if (result.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: result.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: result.message
+                });
+            }
+            $('#editarProductoModal').modal('hide');
+        },
+        cache: false,
+        contentType: false,
+        processData: false
+    });
+});
+</script>
+
