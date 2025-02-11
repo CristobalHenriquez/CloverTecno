@@ -10,7 +10,7 @@
                 <form id="editarProductoForm" enctype="multipart/form-data">
                     <input type="hidden" name="id_producto" id="edit_id_producto">
                     <div class="mb-3">
-                        <label for="edit_nombre" class="form-label">Nombre*</label>
+                        <label for="edit_nombre" class="form-label">Nombre</label>
                         <input type="text" class="form-control" id="edit_nombre" name="nombre" required>
                     </div>
                     <div class="mb-3">
@@ -18,7 +18,7 @@
                         <textarea class="form-control" id="edit_descripcion" name="descripcion"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_categoria" class="form-label">Categoría*</label>
+                        <label for="edit_categoria" class="form-label">Categoría</label>
                         <select class="form-select" id="edit_categoria" name="categoria" required>
                             <?php
                             $sql_categorias = "SELECT id_categoria, nombre_categoria FROM categorias";
@@ -30,7 +30,7 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_precio" class="form-label">Precio*</label>
+                        <label for="edit_precio" class="form-label">Precio</label>
                         <input type="number" class="form-control" id="edit_precio" name="precio" step="0.01" required>
                     </div>
                     <div class="mb-3">
@@ -41,7 +41,7 @@
                         <label for="nuevas_imagenes" class="form-label">Agregar nuevas imágenes (máximo 3 en total)</label>
                         <input type="file" class="form-control" id="nuevas_imagenes" name="nuevas_imagenes[]" multiple accept="image/*">
                     </div>
-                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <button type="submit" class="btn btn-success">Guardar Cambios</button>
                 </form>
             </div>
         </div>

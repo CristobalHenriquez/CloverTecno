@@ -47,7 +47,7 @@
                     </div>
                     <div class="text-end">
                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        <button type="submit" class="btn btn-success">Guardar Cambios</button>
                     </div>
                 </form>
             </div>
@@ -67,7 +67,7 @@
                 <div class="list-group-item d-flex justify-content-between align-items-center">
                     ${categoria.nombre_categoria}
                     <div class="btn-group">
-                        <button class="btn btn-sm btn-primary editar-categoria" 
+                        <button class="btn btn-sm btn-warning editar-categoria" 
                                 data-id="${categoria.id_categoria}" 
                                 data-nombre="${categoria.nombre_categoria}">
                             <i class="bi bi-pencil"></i>

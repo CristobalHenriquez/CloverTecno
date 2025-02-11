@@ -15,8 +15,8 @@ if (!$result) {
 }
 ?>
 
-<div class="table-responsive">
-    <table id="productTable" class="table table-striped table-hover">
+<div class="">
+    <table id="productTable" class="table table-striped table-hover table-bordered table-responsive">
         <thead>
             <tr>
                 <th>Imagen</th>
@@ -41,18 +41,17 @@ if (!$result) {
                     <td><?php echo htmlspecialchars($row['nombre_producto']); ?></td>
                     <td><?php echo htmlspecialchars(substr($row['descripcion_producto'], 0, 100)) . '...'; ?></td>
                     <td><?php echo htmlspecialchars($row['nombre_categoria']); ?></td>
-                    <td>$<?php echo number_format($row['valor_producto'], 2); ?></td>
-                    <td>
+                    <td>$<?php echo number_format($row['valor_producto'], 0, ',', '.'); ?></td>                    <td>
                         <button type="button" 
-                                class="btn btn-sm btn-primary editar-producto" 
+                                class="btn btn-sm btn-outline-warning editar-producto" 
                                 data-id="<?php echo $row['id_producto']; ?>">
-                            <i class="bi bi-pencil"></i> Editar
+                            <i class="bi bi-pencil"></i>
                         </button>
                         <button type="button" 
-                                class="btn btn-sm btn-danger eliminar-producto" 
+                                class="btn btn-sm btn-outline-danger eliminar-producto" 
                                 data-id="<?php echo $row['id_producto']; ?>"
                                 data-nombre="<?php echo htmlspecialchars($row['nombre_producto']); ?>">
-                            <i class="bi bi-trash"></i> Eliminar
+                            <i class="bi bi-trash"></i>
                         </button>
                     </td>
                 </tr>

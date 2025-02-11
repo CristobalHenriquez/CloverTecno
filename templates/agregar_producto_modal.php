@@ -36,7 +36,7 @@
                         <label for="imagenes" class="form-label">Imágenes (máximo 3)*</label>
                         <input type="file" class="form-control" id="imagenes" name="imagenes[]" multiple accept="image/*" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Guardar Producto</button>
+                    <button type="submit" class="btn btn-success">Guardar Producto</button>
                 </form>
             </div>
         </div>

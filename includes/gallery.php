@@ -48,15 +48,14 @@ function obtenerImagenAleatoria($db, $id_categoria)
                     <?php $imagen = obtenerImagenAleatoria($db, $categoria['id_categoria']); ?>
                     <div class="col-xl-3 col-lg-4 col-md-6">
                         <div class="gallery-item h-100">
-                            <img src="<?php echo htmlspecialchars($imagen); ?>" class="img-fluid" alt="<?php echo htmlspecialchars($categoria['nombre_categoria']); ?>">
-                            <div class="gallery-links d-flex align-items-center justify-content-center">
-                                <a href="Categorias_<?php echo urlencode(str_replace(' ', '_', $categoria['nombre_categoria'])); ?>" class="details-link">
-                                    <i class="bi bi-link-45deg"></i>
-                                </a>
-                            </div>
-                            <div class="category-name">
-                                <?php echo htmlspecialchars($categoria['nombre_categoria']); ?>
-                            </div>
+                            <a href="Categorias_<?php echo urlencode(str_replace(' ', '_', $categoria['nombre_categoria'])); ?>" class="details-link">
+                                <img src="<?php echo htmlspecialchars($imagen); ?>" class="img-fluid" alt="<?php echo htmlspecialchars($categoria['nombre_categoria']); ?>">
+                                <div class="gallery-links d-flex align-items-center justify-content-center">
+                                </div>
+                                <div class="category-name">
+                                    <?php echo htmlspecialchars($categoria['nombre_categoria']); ?>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 <?php endforeach; ?>
