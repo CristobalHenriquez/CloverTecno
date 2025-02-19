@@ -39,13 +39,105 @@ include_once 'db_connection.php';
   <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
 
+  <style>
+    #navmenu ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+    }
+
+    #navmenu li {
+      margin-right: 30px;
+    }
+
+    #navmenu a {
+      position: relative;
+      display: block;
+      padding: 5px;
+      color: var(--text-color);
+      text-decoration: none;
+    }
+
+    #navmenu a::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(to right, #104D43, #156658, #006658);
+      z-index: 1;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.5s ease-in-out;
+    }
+
+    #navmenu a:hover::before {
+      transform: scaleX(1);
+    }
+
+    #navmenu[data-animation="to-left"] a::before {
+      transform-origin: right;
+    }
+
+    #navmenu[data-animation="center"] a::before {
+      transform-origin: center;
+    }
+
+    #navmenu[data-animation="bonus"] a::before {
+      transform-origin: right;
+    }
+
+    #navmenu[data-animation="bonus"] a:hover::before {
+      transform-origin: left;
+      transform: scaleX(1);
+      transition-timing-function: cubic-bezier(0.2, 1, 0.82, 0.94);
+    }
+
+    #header {
+      position: relative;
+      overflow: hidden;
+      /* Para ocultar la parte de la línea que se sale durante la animación */
+    }
+
+    .header-border {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(to right, #0E443B, #104D43, #187766);
+      background-size: 200% 100%;
+      animation: borderAnimation 3s linear infinite;
+    }
+
+    .footer-border {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(to right, #0E443B, #104D43, #187766);
+      background-size: 200% 100%;
+      animation: borderAnimation 3s linear infinite;
+    }
+
+    @keyframes borderAnimation {
+      0% {
+        background-position: 100% 0;
+      }
+
+      100% {
+        background-position: -100% 0;
+      }
+    }
+  </style>
 </head>
 
 <body class="index-page">
 
   <header id="header" class="header d-flex align-items-center sticky-top">
     <div class="container-fluid position-relative d-flex align-items-center justify-content-between">
-
       <a href="Inicio" class="logo d-flex align-items-center me-auto me-xl-0">
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <img src="assets/img/logo.png" alt="">
@@ -53,12 +145,12 @@ include_once 'db_connection.php';
         <!--<h1 class="sitename">PhotoFolio</h1>-->
       </a>
 
-      <nav id="navmenu" class="navmenu">
+      <nav id="navmenu" class="navmenu" data-animation="bonus">
         <?php
         $current_page = basename($_SERVER['REQUEST_URI'], ".php");
         ?>
         <ul>
-          <li><a href="Inicio" class="<?= ($current_page == 'Inicio' || $current_page == '') ? 'active' : '' ?>">Inicio<br></a></li>
+          <li><a href="Inicio" class="<?= ($current_page == 'Inicio' || $current_page == '') ? 'active' : '' ?>">Inicio</a></li>
           <li><a href="Nosotros" class="<?= ($current_page == 'Nosotros') ? 'active' : '' ?>">Nosotros</a></li>
           <li><a href="Servicios" class="<?= ($current_page == 'Servicios') ? 'active' : '' ?>">Servicios</a></li>
           <li><a href="Contacto" class="<?= ($current_page == 'Contacto') ? 'active' : '' ?>">Contacto</a></li>
@@ -74,4 +166,5 @@ include_once 'db_connection.php';
       </div>
 
     </div>
+    <div class="header-border"></div>
   </header>
