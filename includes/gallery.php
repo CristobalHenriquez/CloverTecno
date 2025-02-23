@@ -1,6 +1,6 @@
 <?php
 // Obtener las 8 categorías
-$sql_categorias = "SELECT id_categoria, nombre_categoria FROM categorias LIMIT 8";
+$sql_categorias = "SELECT id_categoria, nombre_categoria FROM categorias";
 $result_categorias = $db->query($sql_categorias);
 
 $categorias = [];
