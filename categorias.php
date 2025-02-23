@@ -44,7 +44,7 @@ include_once 'includes/inc.head.php';
 
 <main class="main">
     <!-- Hero Section -->
-    <section id="hero" class="hero section">
+    <section id="hero" class="hero section pb-1">
         <div class="container">
             <div class="row align-items-center justify-content-center">
                 <div class="col-md-8 text-center" data-aos="fade-up" data-aos-delay="100">
@@ -62,27 +62,35 @@ include_once 'includes/inc.head.php';
                 <?php while ($producto = $productos->fetch_assoc()): ?>
                     <?php $imagenes = explode(',', $producto['imagenes']); ?>
                     <div class="col-lg-4 col-md-6">
-                        <div class="product-item">
-                            <div class="product-img">
-                                <div class="swiper">
-                                    <div class="swiper-wrapper">
-                                        <?php foreach ($imagenes as $imagen): ?>
-                                            <div class="swiper-slide">
-                                                <img src="<?php echo htmlspecialchars($imagen); ?>" class="img-fluid" alt="<?php echo htmlspecialchars($producto['nombre_producto']); ?>">
+                        <div class="card">
+                            <div class="card-overlay"></div>
+                            <div class="card-inner">
+                                <div class="product-content">
+                                    <div class="product-image">
+                                        <div class="swiper">
+                                            <div class="swiper-wrapper">
+                                                <?php foreach ($imagenes as $imagen): ?>
+                                                    <div class="swiper-slide">
+                                                        <img src="<?php echo htmlspecialchars($imagen); ?>"
+                                                            alt="<?php echo htmlspecialchars($producto['nombre_producto']); ?>">
+                                                    </div>
+                                                <?php endforeach; ?>
                                             </div>
-                                        <?php endforeach; ?>
+                                            <div class="swiper-pagination"></div>
+                                        </div>
                                     </div>
-                                    <div class="swiper-pagination"></div>
-                                </div>
-                            </div>
-                            <div class="product-info">
-                                <h3><?php echo htmlspecialchars($producto['nombre_producto']); ?></h3>
-                                <p><?php echo htmlspecialchars($producto['descripcion_producto']); ?></p>
-                                <div class="price-contact">
-                                    <div class="price"><b>$<?php echo number_format($producto['valor_producto'], 0, ',', '.'); ?></b></div>
-                                    <a href="https://wa.me/5493416578661?text=<?php echo urlencode('Hola, estoy interesado en ' . $producto['nombre_producto']); ?>" class="btn-buy whatsapp-btn" target="_blank">
-                                        <i class="bi bi-whatsapp"></i> Contactar
-                                    </a>
+                                    <div class="product-details">
+                                        <h3><?php echo htmlspecialchars($producto['nombre_producto']); ?></h3>
+                                        <p><?php echo htmlspecialchars($producto['descripcion_producto']); ?></p>
+                                        <div class="price-action">
+                                            <span class="price">$<?php echo number_format($producto['valor_producto'], 0, ',', '.'); ?></span>
+                                            <a href="https://wa.me/5493416578661?text=<?php echo urlencode('Hola, estoy interesado en ' . $producto['nombre_producto']); ?>"
+                                                class="whatsapp-link"
+                                                target="_blank">
+                                                <i class="bi bi-whatsapp"></i>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -93,6 +101,142 @@ include_once 'includes/inc.head.php';
     </section>
 
     <?php include_once 'includes/inc.footer.php'; ?>
+
+    <style>
+        .card {
+            --bg: #e8e8e8;
+            --contrast: #e2e0e0;
+            --grey: #93a1a1;
+            position: relative;
+            padding: 9px;
+            background-color: var(--bg);
+            border-radius: 35px;
+            box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+                rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+                rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+            margin-bottom: 30px;
+        }
+
+        .card-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: repeating-conic-gradient(var(--bg) 0.0000001%, var(--grey) 0.000104%) 60% 60%/600% 600%;
+            filter: opacity(10%) contrast(105%);
+            border-radius: 35px;
+        }
+
+        .card-inner {
+            background-color: var(--contrast);
+            border-radius: 30px;
+            overflow: hidden;
+            height: auto;
+            /* Cambiado de 100% a auto */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-content {
+            height: auto;
+            /* Cambiado de 100% a auto */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-image {
+            height: 300px;
+            min-height: 300px;
+            /* Añadido para mantener la altura mínima */
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-details {
+            padding: 2rem;
+            /* Aumentado de 1.5rem */
+            background: var(--contrast);
+        }
+
+        .product-details h3 {
+            font-size: 1.4rem;
+            /* Aumentado de 1.2rem */
+            margin-bottom: 1rem;
+            /* Aumentado de 0.5rem */
+            color: #333;
+        }
+
+        .product-details p {
+            font-size: 1rem;
+            /* Aumentado de 0.9rem */
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .price-action {
+            padding-top: 0.5rem;
+            /* Añadido espacio superior */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price {
+            font-size: 1.5rem;
+            /* Aumentado de 1.25rem */
+            font-weight: bold;
+            color: #333;
+        }
+
+        .whatsapp-link {
+            background: #25D366;
+            color: white;
+            padding: 10px 14px;
+            /* Aumentado de 8px 12px */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .whatsapp-link:hover {
+            transform: scale(1.1);
+            color: white;
+        }
+
+        .swiper {
+            width: 100%;
+            height: 100%;
+        }
+
+        .swiper-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @media (max-width: 768px) {
+
+            .product-image {
+        height: 250px;
+        min-height: 250px;
+    }
+
+            .card {
+                margin-bottom: 20px;
+            }
+
+            .product-details {
+                padding: 1.5rem;
+            }
+        }
+    </style>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
     <script>
