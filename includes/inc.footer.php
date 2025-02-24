@@ -1,10 +1,10 @@
-    <a href="https://wa.me/5493416578661?text=Hola,%20necesito%20información%20sobre%20..." class="whatsapp-float" target="_blank">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
-    </a>
     </main>
 
     <footer id="footer" class="footer">
       <div class="footer-border"></div>
+      <a href="https://wa.me/5493416578661?text=Hola,%20necesito%20información%20sobre%20..." class="whatsapp-float" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+      </a>
 
       <div class="container">
         <!-- Redes sociales -->
@@ -22,6 +22,7 @@
           </a>
         </div>
       </div>
+
 
 
     </footer>

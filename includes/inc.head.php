@@ -198,7 +198,7 @@ $categorias = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
   <style>
     .categoria-card {
-      background-color: #104D43;
+      background-color: #104D43 !important;
       transition: all 0.3s ease;
       cursor: pointer;
       min-height: 120px;

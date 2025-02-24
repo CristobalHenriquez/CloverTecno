@@ -57,70 +57,69 @@ function obtenerImagenAleatoria($db, $id_categoria)
 </main>
 
 <style>
-.gallery-card {
-    box-sizing: border-box;
-    width: 100%;
-    height: 254px;
-    background: rgba(217, 217, 217, 0.58);
-    border: 1px solid white;
-    box-shadow: 12px 17px 51px rgba(0, 0, 0, 0.22);
-    backdrop-filter: blur(6px);
-    border-radius: 17px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.5s;
-    position: relative;
-    overflow: hidden;
-}
-
-.gallery-card:hover {
-    border: 1px solid black;
-    transform: scale(1.05);
-}
-
-.gallery-card:active {
-    transform: scale(0.95) rotateZ(1.7deg);
-}
-
-.card-link {
-    display: block;
-    width: 100%;
-    height: 100%;
-    text-decoration: none;
-}
-
-.card-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.card-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 15px;
-    transform: translateY(100%);
-    transition: transform 0.3s ease;
-}
-
-.gallery-card:hover .card-overlay {
-    transform: translateY(0);
-}
-
-.card-title {
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: 500;
-}
-
-@media (max-width: 768px) {
     .gallery-card {
-        height: 200px;
+        box-sizing: border-box;
+        width: 100%;
+        height: 254px;
+        background: rgba(217, 217, 217, 0.58);
+        border: 1px solid white;
+        box-shadow: 12px 17px 51px rgba(0, 0, 0, 0.22);
+        backdrop-filter: blur(6px);
+        border-radius: 17px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.5s;
+        position: relative;
+        overflow: hidden;
     }
-}
-</style>
 
+    .gallery-card:hover {
+        border: 1px solid black;
+        transform: scale(1.05);
+    }
+
+    .gallery-card:active {
+        transform: scale(0.95) rotateZ(1.7deg);
+    }
+
+    .card-link {
+        display: block;
+        width: 100%;
+        height: 100%;
+        text-decoration: none;
+    }
+
+    .card-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .card-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 15px;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+    }
+
+    .gallery-card:hover .card-overlay {
+        transform: translateY(0);
+    }
+
+    .card-title {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+        .gallery-card {
+            height: 200px;
+        }
+    }
+</style>
