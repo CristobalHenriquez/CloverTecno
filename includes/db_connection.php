@@ -3,24 +3,33 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 } // Iniciar la sesión al principio
 
-// Configuración de la conexión según el entorno
-if ($_SERVER['HTTP_HOST'] === 'localhost') { // O comprueba alguna otra variable de entorno
+// Detectar entorno (local o producción)
+$isLocal = in_array($_SERVER['HTTP_HOST'], ['localhost', '127.0.0.1']) || strpos($_SERVER['HTTP_HOST'], 'local') !== false;
+
+if ($isLocal) {
+    // Configuración para entorno local
     $server = 'localhost:3307';
     $username = 'root';
     $password = '';
     $database = 'clovertecno';
 } else {
-    $server = '';
-    $username = '';
-    $password = '';
-    $database = '';
+    // Configuración para entorno de producción
+    $server = 'localhost'; // Ajusta según sea necesario
+    $username = 'u978865485_clover';
+    $password = 'Ramcc202323@';
+    $database = 'u978865485_clover';
 }
 
-$db = mysqli_connect($server, $username, $password, $database);
+// Crear conexión con MySQL
+$db = new mysqli($server, $username, $password, $database);
 
 // Verificar la conexión
-if (!$db) {
-    die("Error de conexión: " . mysqli_connect_error()); // O maneja el error de otra forma
+if ($db->connect_error) {
+    die("❌ Error de conexión: " . $db->connect_error);
+} else {
+    echo "✅ Conexión a la base de datos exitosa.<br>";
 }
 
-mysqli_query($db, "SET NAMES 'utf8'"); 
+// Configurar conjunto de caracteres para evitar problemas con acentos y caracteres especiales
+$db->set_charset("utf8mb4");
+?>
