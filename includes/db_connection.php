@@ -27,7 +27,6 @@ $db = new mysqli($server, $username, $password, $database);
 if ($db->connect_error) {
     die("❌ Error de conexión: " . $db->connect_error);
 } else {
-    
 }
 
 // Configurar conjunto de caracteres para evitar problemas con acentos y caracteres especiales
