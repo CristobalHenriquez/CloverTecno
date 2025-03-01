@@ -14,7 +14,7 @@ if ($isLocal) {
     $database = 'clovertecno';
 } else {
     // Configuración para entorno de producción
-    $server = 'localhost'; // Ajusta según sea necesario
+    $server = 'localhost'; // Ajusta según sea necesarios
     $username = 'u978865485_clover';
     $password = 'Ramcc202323@';
     $database = 'u978865485_clover';
@@ -25,10 +25,9 @@ $db = new mysqli($server, $username, $password, $database);
 
 // Verificar la conexión
 if ($db->connect_error) {
-    die("❌ Error de conexión: " . $db->connect_error);
+    die("❌ Error de conexión: {$db->connect_error}");
 } else {
 }
 
 // Configurar conjunto de caracteres para evitar problemas con acentos y caracteres especiales
 $db->set_charset("utf8mb4");
-?>
