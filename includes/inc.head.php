@@ -155,7 +155,7 @@ $categorias = mysqli_fetch_all($result, MYSQLI_ASSOC);
           <li><a href="Inicio" class="<?= ($current_page == 'Inicio' || $current_page == '') ? 'active' : '' ?>">Inicio</a></li>
           <li><a href="Nosotros" class="<?= ($current_page == 'Nosotros') ? 'active' : '' ?>">Nosotros</a></li>
           <li><a href="Servicios" class="<?= ($current_page == 'Servicios') ? 'active' : '' ?>">Servicios</a></li>
-          <li><a href="#" data-bs-toggle="modal" data-bs-target="#categoriasModal" class="<?= (strpos($current_page, 'categoria') !== false) ? 'active' : '' ?>">Categorías</a></li>
+          <li><a href="#" data-bs-toggle="modal" data-bs-target="#categoriasModalNav" class="<?= (strpos($current_page, 'categoria') !== false) ? 'active' : '' ?>">Categorías</a></li>
           <li><a href="Contacto" class="<?= ($current_page == 'Contacto') ? 'active' : '' ?>">Contacto</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -170,11 +170,11 @@ $categorias = mysqli_fetch_all($result, MYSQLI_ASSOC);
   </header>
 
   <!-- Modal de Categorías -->
-  <div class="modal fade" id="categoriasModal" tabindex="-1" aria-labelledby="categoriasModalLabel" aria-hidden="true">
+  <div class="modal fade" id="categoriasModalNav" tabindex="-1" aria-labelledby="categoriasModalNavLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="categoriasModalLabel">Categorías</h5>
+          <h5 class="modal-title" id="categoriasModalNavLabel">Categorías</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -244,7 +244,7 @@ $categorias = mysqli_fetch_all($result, MYSQLI_ASSOC);
     document.addEventListener('DOMContentLoaded', function() {
       const currentPage = '<?= $current_page ?>';
       if (currentPage.startsWith('categoria')) {
-        document.querySelector('#navmenu a[data-bs-target="#categoriasModal"]').classList.add('active');
+        document.querySelector('#navmenu a[data-bs-target="#categoriasModalNav"]').classList.add('active');
       }
     });
   </script>
