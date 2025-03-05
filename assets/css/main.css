@@ -1611,3 +1611,194 @@ section,
     width: auto;
   }
 }
+
+/*--------------------------------------------------------------
+# Categorías Adaptadas - Estilos mejorados
+--------------------------------------------------------------*/
+.category-cards .swiper-wrapper {
+  height: auto !important;
+}
+
+.category-cards .category-card {
+  display: flex;
+  flex-direction: row;
+  background-color: #ffffff;
+  border-radius: 15px;
+  overflow: hidden;
+  height: 220px; /* Altura reducida para mejor visualización */
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(16, 77, 67, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.category-cards .category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(16, 77, 67, 0.3);
+  border-color: var(--accent-color);
+}
+
+.category-cards .category-content {
+  padding: 1.5rem;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #ffffff;
+}
+
+.category-cards .category-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: #104d43;
+  font-family: var(--heading-font);
+  text-transform: uppercase;
+  line-height: 1.2;
+  max-width: 100%;
+}
+
+.category-cards .category-title a {
+  color: #104d43;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limita a 2 líneas */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.category-cards .category-title a:hover {
+  color: #0d3d35;
+}
+
+.category-cards .category-description {
+  flex-grow: 1;
+  margin-bottom: 0.75rem;
+}
+
+.category-cards .category-description p {
+  color: #4a5568;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limita a 2 líneas */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.category-cards .view-all {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #104d43;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  width: 120px;
+  text-align: center;
+}
+
+.category-cards .view-all i {
+  margin-left: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+.category-cards .view-all:hover {
+  background-color: #0d3d35;
+}
+
+.category-cards .view-all:hover i {
+  transform: translateX(5px);
+}
+
+.category-cards .category-image {
+  width: 50%;
+  position: relative;
+  background-color: #f8f9fa;
+  overflow: hidden;
+}
+
+.category-cards .category-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  transition: transform 0.5s ease;
+  padding: 0.5rem;
+}
+
+/* Ajustes responsive mejorados */
+@media (max-width: 767px) {
+  .category-cards .category-card {
+    height: 160px; /* Altura más pequeña para móvil */
+  }
+
+  .category-cards .category-content {
+    padding: 0.75rem;
+  }
+
+  .category-cards .category-title {
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .category-cards .category-description p {
+    font-size: 0.6rem;
+    -webkit-line-clamp: 2;
+    line-height: 1.3;
+  }
+
+  .category-cards .view-all {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+    width: 60px;
+  }
+
+  /* Importante: Eliminar el grid que estaba causando problemas */
+  .category-cards-slider .swiper-wrapper {
+    display: flex;
+  }
+}
+
+/* Ajustes para tablets */
+@media (min-width: 768px) and (max-width: 991px) {
+  .category-cards .category-card {
+    height: 200px;
+  }
+
+  .category-cards .category-content {
+    padding: 1rem;
+  }
+
+  .category-cards .category-title {
+    font-size: 1.25rem;
+  }
+
+  .category-cards .view-all {
+    width: 110px;
+  }
+}
+
+/* Estilos para la paginación */
+.category-cards .swiper-pagination {
+  position: relative;
+  margin-top: 20px;
+}
+
+.category-cards .swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background-color: #104d43;
+  opacity: 0.5;
+}
+
+.category-cards .swiper-pagination-bullet-active {
+  opacity: 1;
+  background-color: #104d43;
+}

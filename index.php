@@ -50,7 +50,8 @@ ini_set('display_errors', 1);
       </div>
     </section>
     <?php include_once 'reels.php'; ?>
-    <?php include_once 'includes/gallery.php'; ?>
+    <?php //include_once 'includes/gallery.php'; ?>
+    <?php include_once 'templates/categorias-swiper.php';?>
     <?php include_once 'includes/testimonials.php'; ?>
     <!-- Gallery Section -->
     
