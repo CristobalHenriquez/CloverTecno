@@ -27,13 +27,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
         $sql_delete_imagenes = "DELETE FROM imagenes_productos WHERE id_producto = ?";
         $stmt_delete_imagenes = $db->prepare($sql_delete_imagenes);
         $stmt_delete_imagenes->bind_param("i", $id_producto);
-        $stmt_delete_imagenes->execute();
+        
+        if (!$stmt_delete_imagenes->execute()) {
+            throw new Exception("Error al eliminar las imágenes: " . $stmt_delete_imagenes->error);
+        }
         
         // Luego eliminamos el producto
         $sql_delete_producto = "DELETE FROM productos WHERE id_producto = ?";
         $stmt_delete_producto = $db->prepare($sql_delete_producto);
         $stmt_delete_producto->bind_param("i", $id_producto);
-        $stmt_delete_producto->execute();
+        
+        if (!$stmt_delete_producto->execute()) {
+            throw new Exception("Error al eliminar el producto: " . $stmt_delete_producto->error);
+        }
         
         // Si todo salió bien, confirmamos la transacción
         $db->commit();
@@ -67,4 +73,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
         'message' => 'Solicitud inválida'
     ]);
 }
+?>
 
