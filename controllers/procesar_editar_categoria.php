@@ -1,45 +1,169 @@
 <?php
 require_once '../includes/db_connection.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_categoria']) && isset($_POST['nombre_categoria'])) {
-    $id = intval($_POST['id_categoria']);
-    $nombre = $db->real_escape_string(trim($_POST['nombre_categoria']));
-    
-    // Verificar si el nuevo nombre ya existe en otra categoría
-    $sql_check = "SELECT id_categoria FROM categorias WHERE nombre_categoria = ? AND id_categoria != ?";
-    $stmt_check = $db->prepare($sql_check);
-    $stmt_check->bind_param("si", $nombre, $id);
-    $stmt_check->execute();
-    $result_check = $stmt_check->get_result();
-    
-    if ($result_check->num_rows > 0) {
-        echo json_encode([
-            'success' => false,
-            'message' => 'Ya existe una categoría con ese nombre'
-        ]);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id_categoria = intval($_POST['id_categoria']);
+    $nombre_categoria = $db->real_escape_string($_POST['nombre_categoria']);
+    $descripcion_categoria = $db->real_escape_string($_POST['descripcion_categoria']);
+
+    // Validar que el nombre no esté vacío
+    if (empty($nombre_categoria)) {
+        echo json_encode(['success' => false, 'message' => 'El nombre de la categoría es obligatorio']);
         exit;
     }
-    
-    // Actualizar categoría
-    $sql = "UPDATE categorias SET nombre_categoria = ? WHERE id_categoria = ?";
-    $stmt = $db->prepare($sql);
-    $stmt->bind_param("si", $nombre, $id);
-    
-    if ($stmt->execute()) {
-        echo json_encode([
-            'success' => true,
-            'message' => 'Categoría actualizada con éxito'
-        ]);
-    } else {
-        echo json_encode([
-            'success' => false,
-            'message' => 'Error al actualizar la categoría'
-        ]);
+
+    // Iniciar transacción
+    $db->begin_transaction();
+
+    try {
+        // Obtener la imagen actual
+        $sql_imagen = "SELECT imagen_categoria FROM categorias WHERE id_categoria = ?";
+        $stmt_imagen = $db->prepare($sql_imagen);
+        $stmt_imagen->bind_param("i", $id_categoria);
+        $stmt_imagen->execute();
+        $resultado_imagen = $stmt_imagen->get_result();
+        $imagen_actual = $resultado_imagen->fetch_assoc()['imagen_categoria'];
+
+        // Actualizar la categoría
+        $sql = "UPDATE categorias SET nombre_categoria = ?, descripcion_categoria = ? WHERE id_categoria = ?";
+        $stmt = $db->prepare($sql);
+        $stmt->bind_param("ssi", $nombre_categoria, $descripcion_categoria, $id_categoria);
+        $stmt->execute();
+
+        // Procesar la nueva imagen si se proporcionó
+        if (isset($_FILES['imagen_categoria']) && $_FILES['imagen_categoria']['error'] === UPLOAD_ERR_OK) {
+            $extension = pathinfo($_FILES['imagen_categoria']['name'], PATHINFO_EXTENSION);
+            $nombre_archivo = 'categoria-' . strtolower(str_replace(' ', '-', $nombre_categoria)) . '.' . $extension;
+            $ruta_destino = dirname(dirname(__FILE__)) . '/uploads/categorias/';
+            
+            // Crear directorio si no existe
+            if (!is_dir($ruta_destino)) {
+                mkdir($ruta_destino, 0755, true);
+            }
+            
+            $ruta_destino .= $nombre_archivo;
+            $ruta_db = './uploads/categorias/' . $nombre_archivo;
+
+            // Comprimir y redimensionar la imagen
+            $imagen_comprimida = comprimirImagen($_FILES['imagen_categoria']['tmp_name'], $ruta_destino, 800, 800, 80);
+            
+            if ($imagen_comprimida) {
+                // Actualizar la ruta de la imagen en la base de datos
+                $sql_update = "UPDATE categorias SET imagen_categoria = ? WHERE id_categoria = ?";
+                $stmt_update = $db->prepare($sql_update);
+                $stmt_update->bind_param("si", $ruta_db, $id_categoria);
+                $stmt_update->execute();
+                
+                // Eliminar la imagen anterior si existe y es diferente
+                if (!empty($imagen_actual) && $imagen_actual !== $ruta_db) {
+                    $ruta_fisica = dirname(dirname(__FILE__)) . '/' . ltrim($imagen_actual, './');
+                    if (file_exists($ruta_fisica)) {
+                        unlink($ruta_fisica);
+                    }
+                }
+            } else {
+                throw new Exception('Error al procesar la imagen');
+            }
+        }
+
+        // Confirmar transacción
+        $db->commit();
+        echo json_encode(['success' => true, 'message' => 'Categoría actualizada con éxito']);
+    } catch (Exception $e) {
+        // Revertir cambios en caso de error
+        $db->rollback();
+        echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
     }
 } else {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Datos inválidos'
-    ]);
+    echo json_encode(['success' => false, 'message' => 'Método no permitido']);
 }
 
+/**
+ * Comprime y redimensiona una imagen
+ * 
+ * @param string $ruta_origen Ruta del archivo temporal
+ * @param string $ruta_destino Ruta donde se guardará la imagen
+ * @param int $ancho_max Ancho máximo de la imagen
+ * @param int $alto_max Alto máximo de la imagen
+ * @param int $calidad Calidad de la imagen (0-100)
+ * @return bool True si se comprimió correctamente, false en caso contrario
+ */
+function comprimirImagen($ruta_origen, $ruta_destino, $ancho_max = 800, $alto_max = 800, $calidad = 80) {
+    // Obtener información de la imagen
+    $info = getimagesize($ruta_origen);
+    if ($info === false) return false;
+    
+    // Crear imagen según el tipo
+    switch ($info[2]) {
+        case IMAGETYPE_JPEG:
+            $imagen = imagecreatefromjpeg($ruta_origen);
+            break;
+        case IMAGETYPE_PNG:
+            $imagen = imagecreatefrompng($ruta_origen);
+            break;
+        case IMAGETYPE_GIF:
+            $imagen = imagecreatefromgif($ruta_origen);
+            break;
+        default:
+            return false;
+    }
+    
+    if (!$imagen) return false;
+    
+    // Calcular nuevas dimensiones manteniendo la proporción
+    $ancho_original = $info[0];
+    $alto_original = $info[1];
+    
+    if ($ancho_original <= $ancho_max && $alto_original <= $alto_max) {
+        // Si la imagen es más pequeña que las dimensiones máximas, no se redimensiona
+        $ancho_nuevo = $ancho_original;
+        $alto_nuevo = $alto_original;
+    } else {
+        if ($ancho_original > $alto_original) {
+            // Imagen horizontal
+            $ancho_nuevo = $ancho_max;
+            $alto_nuevo = intval($alto_original * ($ancho_max / $ancho_original));
+        } else {
+            // Imagen vertical o cuadrada
+            $alto_nuevo = $alto_max;
+            $ancho_nuevo = intval($ancho_original * ($alto_max / $alto_original));
+        }
+    }
+    
+    // Crear imagen redimensionada
+    $imagen_nueva = imagecreatetruecolor($ancho_nuevo, $alto_nuevo);
+    
+    // Preservar transparencia para PNG
+    if ($info[2] === IMAGETYPE_PNG) {
+        imagealphablending($imagen_nueva, false);
+        imagesavealpha($imagen_nueva, true);
+        $transparent = imagecolorallocatealpha($imagen_nueva, 255, 255, 255, 127);
+        imagefilledrectangle($imagen_nueva, 0, 0, $ancho_nuevo, $alto_nuevo, $transparent);
+    }
+    
+    // Redimensionar
+    imagecopyresampled($imagen_nueva, $imagen, 0, 0, 0, 0, $ancho_nuevo, $alto_nuevo, $ancho_original, $alto_original);
+    
+    // Guardar imagen
+    $resultado = false;
+    switch ($info[2]) {
+        case IMAGETYPE_JPEG:
+            $resultado = imagejpeg($imagen_nueva, $ruta_destino, $calidad);
+            break;
+        case IMAGETYPE_PNG:
+            // Para PNG, la calidad va de 0 a 9 (invertida)
+            $calidad_png = 9 - round(($calidad / 100) * 9);
+            $resultado = imagepng($imagen_nueva, $ruta_destino, $calidad_png);
+            break;
+        case IMAGETYPE_GIF:
+            $resultado = imagegif($imagen_nueva, $ruta_destino);
+            break;
+    }
+    
+    // Liberar memoria
+    imagedestroy($imagen);
+    imagedestroy($imagen_nueva);
+    
+    return $resultado;
+}
+?>
