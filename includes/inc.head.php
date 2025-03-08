@@ -154,7 +154,7 @@ $categorias = mysqli_fetch_all($result, MYSQLI_ASSOC);
         <ul>
           <li><a href="Inicio" class="<?= ($current_page == 'Inicio' || $current_page == '') ? 'active' : '' ?>">Inicio</a></li>
           <li><a href="Nosotros" class="<?= ($current_page == 'Nosotros') ? 'active' : '' ?>">Nosotros</a></li>
-          <li><a href="Servicios" class="<?= ($current_page == 'Servicios') ? 'active' : '' ?>">Servicios</a></li>
+          <li><a href="productos.php" class="<?= ($current_page == 'Servicios') ? 'active' : '' ?>">Productos</a></li>
           <li><a href="#" data-bs-toggle="modal" data-bs-target="#categoriasModalNav" class="<?= (strpos($current_page, 'categoria') !== false) ? 'active' : '' ?>">Categorías</a></li>
           <li><a href="Contacto" class="<?= ($current_page == 'Contacto') ? 'active' : '' ?>">Contacto</a></li>
         </ul>
