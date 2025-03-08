@@ -4,7 +4,7 @@ ini_set('display_errors', 1);
 ?>
 <?php include_once 'includes/inc.head.php'; ?>
 
-    <?php include_once 'templates/hero-old.php'?>
+    <?php include_once 'templates/hero.php'?>
     <?php include_once 'reels.php'; ?>
     <?php //include_once 'includes/gallery.php'; ?>
     <?php include_once 'templates/categorias-swiper.php';?>
