@@ -1,4 +1,4 @@
-    </main>
+</main>
 
     <footer id="footer" class="footer">
       <div class="footer-border"></div>
@@ -31,9 +31,17 @@
     <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
     <!-- Preloader -->
-    <!-- <div id="preloader">
+    <?php
+    // Obtener el nombre del archivo actual
+    $current_page = basename($_SERVER['PHP_SELF']);
+    
+    // Verificar si NO estamos en las páginas de administración
+    if ($current_page !== 'admin.php' && $current_page !== 'admin-categorias.php'):
+    ?>
+    <div id="preloader">
       <div class="line"></div>
-    </div> -->
+    </div>
+    <?php endif; ?>
 
     <!-- Vendor JS Files -->
     <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

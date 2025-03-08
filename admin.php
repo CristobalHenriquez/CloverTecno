@@ -126,7 +126,6 @@ include_once 'includes/inc.head.php';
 <?php
 include_once 'templates/agregar_producto_modal.php';
 include_once 'templates/editar_producto_modal.php';
-include_once 'templates/categorias_modal.php';
 include_once 'includes/inc.footer.php';
 ?>
 

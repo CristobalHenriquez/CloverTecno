@@ -155,7 +155,6 @@ $categorias = mysqli_fetch_all($result, MYSQLI_ASSOC);
           <li><a href="Inicio" class="<?= ($current_page == 'Inicio' || $current_page == '') ? 'active' : '' ?>">Inicio</a></li>
           <li><a href="Nosotros" class="<?= ($current_page == 'Nosotros') ? 'active' : '' ?>">Nosotros</a></li>
           <li><a href="productos.php" class="<?= ($current_page == 'Servicios') ? 'active' : '' ?>">Productos</a></li>
-          <li><a href="#" data-bs-toggle="modal" data-bs-target="#categoriasModalNav" class="<?= (strpos($current_page, 'categoria') !== false) ? 'active' : '' ?>">Categorías</a></li>
           <li><a href="Contacto" class="<?= ($current_page == 'Contacto') ? 'active' : '' ?>">Contacto</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -168,83 +167,3 @@ $categorias = mysqli_fetch_all($result, MYSQLI_ASSOC);
     </div>
     <div class="header-border"></div>
   </header>
-
-  <!-- Modal de Categorías -->
-  <div class="modal fade" id="categoriasModalNav" tabindex="-1" aria-labelledby="categoriasModalNavLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="categoriasModalNavLabel">Categorías</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row row-cols-1 row-cols-md-2 g-4">
-            <?php foreach ($categorias as $categoria): ?>
-              <div class="col">
-                <a href="Categorias_<?= urlencode(str_replace(' ', '_', $categoria['nombre_categoria'])) ?>" class="text-decoration-none">
-                  <div class="card h-100 categoria-card">
-                    <div class="card-body d-flex align-items-center justify-content-center">
-                      <h3 class="card-title text-center mb-0"><?= htmlspecialchars($categoria['nombre_categoria']) ?></h3>
-                    </div>
-                  </div>
-                </a>
-              </div>
-            <?php endforeach; ?>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <style>
-    .categoria-card {
-      background-color: #104D43 !important;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      min-height: 120px;
-    }
-
-    .categoria-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .categoria-card .card-title {
-      color: white;
-      font-size: 1.5rem;
-      font-weight: 500;
-    }
-
-    .modal-content {
-      background-color: #f8f9fa;
-    }
-
-    .modal-header {
-      border-bottom: 2px solid #104D43;
-    }
-
-    .modal-header .modal-title {
-      color: #104D43;
-      font-weight: 600;
-    }
-
-    @media (max-width: 768px) {
-      .categoria-card {
-        min-height: 100px;
-      }
-
-      .categoria-card .card-title {
-        font-size: 1.2rem;
-      }
-    }
-  </style>
-
-  <script>
-    // Activar el enlace de Categorías si estamos en una página de categoría
-    document.addEventListener('DOMContentLoaded', function() {
-      const currentPage = '<?= $current_page ?>';
-      if (currentPage.startsWith('categoria')) {
-        document.querySelector('#navmenu a[data-bs-target="#categoriasModalNav"]').classList.add('active');
-      }
-    });
-  </script>
