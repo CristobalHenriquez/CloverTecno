@@ -38,8 +38,8 @@ function obtenerImagenAleatoria($db, $id_categoria)
 <section id="category-cards" class="category-cards section">
     <div class="container" data-aos="fade-up" data-aos-delay="100">
         <div class="section-title">
-            <h2>CATEGORÍAS</h2>
-            <p>Nuestras Categorías</p>
+            <h2>Productos</h2>
+            <p>Ordenados por categorías</p>
         </div>
 
         <div class="category-cards-slider swiper init-swiper">

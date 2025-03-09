@@ -156,8 +156,8 @@ h6 {
 }
 
 .hero img {
-  margin: 20px 0; /* Espacio arriba y abajo */
-  max-height: 300px; /* Tamaño máximo */
+  margin: 0px 0; /* Espacio arriba y abajo */
+  max-height: 500px; /* Tamaño máximo */
 }
 
 /* Tamaño del logo predeterminado */
@@ -2096,8 +2096,8 @@ section,
 
 .hero .content-col .content .promo-badge {
   display: inline-block;
-  background-color: rgba(0, 128, 128, 0.15); /* Color similar al de la imagen */
-  color: #104D43; /* Color similar al de la imagen */
+  background-color: #104D43; /* Color similar al de la imagen */
+  color: #ffffff; /* Color similar al de la imagen */
   font-size: 0.875rem;
   font-weight: 600;
   padding: 0.5rem 1rem;
