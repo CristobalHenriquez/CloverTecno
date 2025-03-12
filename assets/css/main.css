@@ -2475,3 +2475,596 @@ section,
   }
 }
 
+/*--------------------------------------------------------------
+# Ecommerce Product Details Section
+--------------------------------------------------------------*/
+/*--------------------------------------------------------------
+# Detalle de Producto
+--------------------------------------------------------------*/
+:root {
+  --agua-color: #00a0a0;
+  --h-color: #333333;
+  --t-color: #4b5563;
+  --light-bg: rgba(0, 160, 160, 0.05);
+  --success-color: #10b981;
+  --danger-color: #ef4444;
+  --whatsapp-color: #25D366;
+  --whatsapp-hover: #128C7E;
+}
+
+/* Estructura principal */
+.ecommerce-product-details {
+  padding: 3rem 0;
+}
+
+/* Galería de imágenes */
+.product-gallery {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .product-gallery {
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+}
+
+/* Miniaturas verticales */
+.thumbnails-vertical {
+  order: 2;
+  margin-top: 1rem;
+}
+
+.thumbnails-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .thumbnails-vertical {
+    order: 1;
+    width: 80px;
+    margin-top: 0;
+  }
+  
+  .thumbnails-container {
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+}
+
+.thumbnail-item {
+  cursor: pointer;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  background-color: #fff;
+  padding: 0.25rem;
+  width: 60px;
+  height: 60px;
+}
+
+@media (min-width: 768px) {
+  .thumbnail-item {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+.thumbnail-item:hover {
+  opacity: 0.9;
+}
+
+.thumbnail-item.active {
+  border-color: var(--agua-color);
+  opacity: 1;
+}
+
+.thumbnail-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Imagen principal */
+.main-image-wrapper {
+  order: 1;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .main-image-wrapper {
+    order: 2;
+    flex: 1;
+  }
+}
+
+.image-zoom-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background-color: #fff;
+  padding: 1rem;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-zoom-container a {
+  display: block;
+  position: relative;
+  width: 100%;
+  text-align: center;
+}
+
+.main-image {
+  max-width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+}
+
+.zoom-overlay {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  background-color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.image-zoom-container a:hover .zoom-overlay {
+  opacity: 1;
+}
+
+.zoom-overlay i {
+  color: var(--agua-color);
+  font-size: 1.25rem;
+}
+
+/* Navegación de imágenes */
+.image-nav {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0.5rem;
+  z-index: 5;
+}
+
+.image-nav-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.image-nav-btn i {
+  color: var(--agua-color);
+  font-size: 1.25rem;
+}
+
+.image-nav-btn:hover {
+  background-color: var(--agua-color);
+}
+
+.image-nav-btn:hover i {
+  color: #fff;
+}
+
+/* Información del producto */
+.product-info-wrapper {
+  height: 100%;
+  padding: 0 0.5rem;
+}
+
+@media (min-width: 992px) {
+  .product-info-wrapper {
+    padding: 0 1rem;
+    position: sticky;
+    top: 100px;
+  }
+}
+
+/* Metadatos del producto */
+.product-meta {
+  margin-bottom: 1.5rem;
+}
+
+.product-category {
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+.product-share {
+  position: relative;
+}
+
+.share-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #f3f4f6;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.share-btn i {
+  color: var(--agua-color);
+  font-size: 1rem;
+}
+
+.share-btn:hover {
+  background-color: var(--agua-color);
+}
+
+.share-btn:hover i {
+  color: #fff;
+}
+
+.share-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem;
+  display: flex;
+  gap: 0.75rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.share-btn:hover + .share-dropdown,
+.share-dropdown:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.share-dropdown a {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.share-dropdown a i {
+  color: #4b5563;
+  font-size: 0.875rem;
+}
+
+.share-dropdown a:hover {
+  background-color: var(--agua-color);
+}
+
+.share-dropdown a:hover i {
+  color: #fff;
+}
+
+.share-dropdown a.copy-link:hover {
+  background-color: #6366f1;
+}
+
+.share-dropdown a[href*="wa.me"]:hover {
+  background-color: var(--whatsapp-color);
+}
+
+.product-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0.75rem 0;
+  color: #fff;
+  line-height: 1.3;
+}
+
+@media (min-width: 768px) {
+  .product-title {
+    font-size: 2.25rem;
+  }
+}
+
+/* Precio del producto */
+.product-price-container {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background-color: var(--light-bg);
+  border-radius: 12px;
+}
+
+.price-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.current-price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent-color);
+}
+
+@media (max-width: 768px) {
+  .current-price {
+    font-size: 1.75rem;
+  }
+}
+
+.stock-info {
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.stock-info i {
+  margin-right: 0.5rem;
+}
+
+.stock-info span {
+  font-weight: 500;
+}
+
+.stock-info .stock-count {
+  margin-left: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: normal;
+}
+
+.stock-available i {
+  color: var(--success-color);
+}
+
+.stock-unavailable i {
+  color: var(--danger-color);
+}
+
+.stock-unavailable span {
+  color: var(--danger-color);
+}
+
+/* Descripción del producto */
+.product-short-description {
+  margin-bottom: 2rem;
+}
+
+.product-short-description p {
+  color: var(--t-color);
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+/* Botón de WhatsApp */
+.product-actions {
+  margin-bottom: 2rem;
+}
+
+.whatsapp-btn {
+  background-color: var(--whatsapp-color) !important;
+  border-color: var(--whatsapp-color) !important;
+  width: 100%;
+  padding: 1rem !important;
+  font-size: 1.1rem !important;
+  transition: all 0.3s ease !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.whatsapp-btn:hover {
+  background-color: var(--whatsapp-hover) !important;
+  border-color: var(--whatsapp-hover) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3) !important;
+}
+
+.whatsapp-btn i {
+  font-size: 1.3rem;
+  margin-right: 0.5rem;
+}
+
+/* Opciones de envío */
+.delivery-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .delivery-options {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.delivery-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.delivery-option:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.delivery-option i {
+  color: var(--agua-color);
+  font-size: 1.5rem;
+  margin-top: 0.25rem;
+}
+
+.delivery-option h6 {
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+  color: var(--h-color);
+}
+
+.delivery-option p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Estilos para GLightbox */
+.glightbox-container {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999999 !important;
+  overflow: hidden;
+  touch-action: none;
+  -webkit-text-size-adjust: 100%;
+  -webkit-backface-visibility: hidden;
+  outline: none;
+  overflow: hidden;
+}
+
+.glightbox-container .gloader {
+  height: 25px;
+  width: 25px;
+  -webkit-animation: lightboxLoader 0.8s linear infinite;
+  animation: lightboxLoader 0.8s linear infinite;
+  border: 2px solid #fff;
+  border-right-color: transparent;
+  border-radius: 50%;
+  position: absolute;
+  display: block;
+  z-index: 9999;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  top: 47%;
+}
+
+.glightbox-container .goverlay {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: #000;
+  opacity: 0.9;
+}
+
+.glightbox-container .gclose, 
+.glightbox-container .gnext, 
+.glightbox-container .gprev {
+  background-color: rgba(0, 0, 0, 0.75);
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+  z-index: 99999;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+}
+
+.glightbox-container .gclose {
+  top: 15px;
+  right: 15px;
+  font-size: 24px;
+}
+
+.glightbox-container .gnext, 
+.glightbox-container .gprev {
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+}
+
+.glightbox-container .gnext {
+  right: 15px;
+}
+
+.glightbox-container .gprev {
+  left: 15px;
+}
+
+.glightbox-container .gslide {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  user-select: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.glightbox-container .gslide-inner-content {
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.glightbox-container .gslide img {
+  max-height: 90vh;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+@-webkit-keyframes lightboxLoader {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes lightboxLoader {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

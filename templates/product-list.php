@@ -99,14 +99,14 @@ $result_productos = $db->query($sql_productos);
                                      class="img-fluid hover-img">
 
                                 <div class="product-overlay">
-                                    <a href="producto.php?id=<?php echo $producto['id_producto']; ?>" class="btn-cart">
+                                    <a href="detalle-producto.php?id=<?php echo $producto['id_producto']; ?>" class="btn-cart">
                                         <i class="bi bi-eye"></i> Ver Detalles
                                     </a>
                                 </div>
                             </div>
                             <div class="product-info">
                                 <h5 class="product-title">
-                                    <a href="producto.php?id=<?php echo $producto['id_producto']; ?>">
+                                    <a href="detalle-producto.php?id=<?php echo $producto['id_producto']; ?>">
                                         <?php echo htmlspecialchars($producto['nombre_producto']); ?>
                                     </a>
                                 </h5>
