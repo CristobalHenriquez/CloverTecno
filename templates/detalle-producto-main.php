@@ -75,7 +75,7 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
                         <div class="image-zoom-container">
                             <img src="<?php echo htmlspecialchars($imagenes[0]); ?>"
                                 alt="<?php echo htmlspecialchars($producto['nombre_producto']); ?>"
-                                class="img-fluid main-image"
+                                class="img-fluid main-image zoomable-image"
                                 id="main-product-image"
                                 data-zoomable>
                             <div class="zoom-overlay">
@@ -348,6 +348,11 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
         color: var(--agua-color);
         text-decoration: underline;
     }
+
+    /* Cursor de zoom para la imagen principal */
+    .zoomable-image {
+        cursor: zoom-in;
+    }
 </style>
 
 <script>
@@ -368,6 +373,11 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
         // Índice de la imagen actual
         let currentIndex = 0;
         const totalImages = thumbnails.length;
+
+        // Variable para detectar doble clic
+        let clickCount = 0;
+        let clickTimer = null;
+        const clickDelay = 300; // Tiempo en ms para considerar doble clic
 
         // Función para cambiar la imagen principal
         function changeMainImage(index) {
@@ -439,12 +449,26 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
             }
         }
 
-        // Zoom de imagen
+        // Zoom de imagen con doble clic
         mainImage.addEventListener('click', function(e) {
             e.preventDefault();
-            zoomImage.src = this.src;
-            zoomImage.alt = this.alt;
-            zoomModal.style.display = 'flex';
+            
+            clickCount++;
+            
+            if (clickCount === 1) {
+                clickTimer = setTimeout(function() {
+                    clickCount = 0;
+                    // Acción para un solo clic (ninguna en este caso)
+                }, clickDelay);
+            } else if (clickCount === 2) {
+                clearTimeout(clickTimer);
+                clickCount = 0;
+                
+                // Acción para doble clic (abrir zoom)
+                zoomImage.src = this.src;
+                zoomImage.alt = this.alt;
+                zoomModal.style.display = 'flex';
+            }
         });
 
         // Cerrar zoom modal
@@ -459,14 +483,16 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
         });
 
         // Navegación en el zoom modal con botones
-        zoomPrev.addEventListener('click', () => {
+        zoomPrev.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evitar que el clic se propague al modal
             let newIndex = currentIndex - 1;
             if (newIndex < 0) newIndex = totalImages - 1;
             changeMainImage(newIndex);
             zoomImage.src = mainImage.src;
         });
 
-        zoomNext.addEventListener('click', () => {
+        zoomNext.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evitar que el clic se propague al modal
             let newIndex = currentIndex + 1;
             if (newIndex >= totalImages) newIndex = 0;
             changeMainImage(newIndex);
@@ -475,6 +501,7 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
 
         // Navegación en el zoom modal con clic en la imagen
         zoomImage.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evitar que el clic se propague al modal
             const rect = zoomImage.getBoundingClientRect();
             const x = e.clientX - rect.left;
 

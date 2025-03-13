@@ -58,13 +58,13 @@ $result_productos = $db->query($sql_productos);
         <div class="row">
             <div class="col-12">
                 <div class="product-filters mb-5 d-flex justify-content-center" data-aos="fade-up">
-                    <ul class="d-flex flex-wrap gap-2 list-unstyled">
-                        <li class="<?php echo $categoria_filter === 0 ? 'filter-active' : ''; ?>">
-                            <a href="?categoria=0" class="filter-link">Todos</a>
+                    <ul class="d-flex flex-wrap gap-2 list-unstyled" id="category-filters">
+                        <li class="<?php echo $categoria_filter == 0 ? 'filter-active' : ''; ?>">
+                            <a href="?categoria=0&no_preload=1" class="filter-link">Todos</a>
                         </li>
                         <?php foreach ($categorias as $categoria): ?>
-                            <li class="<?php echo $categoria_filter === $categoria['id_categoria'] ? 'filter-active' : ''; ?>">
-                                <a href="?categoria=<?php echo $categoria['id_categoria']; ?>" class="filter-link">
+                            <li class="<?php echo $categoria_filter == $categoria['id_categoria'] ? 'filter-active' : ''; ?>">
+                                <a href="?categoria=<?php echo $categoria['id_categoria']; ?>&no_preload=1" class="filter-link">
                                     <?php echo htmlspecialchars($categoria['nombre_categoria']); ?>
                                 </a>
                             </li>
@@ -77,7 +77,7 @@ $result_productos = $db->query($sql_productos);
         <!-- Lista de productos -->
         <div class="row product-container" data-aos="fade-up" data-aos-delay="200">
             <?php if ($result_productos->num_rows > 0): ?>
-                <?php while ($producto = $result_productos->fetch_assoc()): 
+                <?php while ($producto = $result_productos->fetch_assoc()):
                     // Procesar imágenes
                     $imagenes = explode(',', $producto['imagenes']);
                     $imagen_principal = $imagenes[0] ?? 'assets/img/placeholder.jpg';
@@ -89,14 +89,14 @@ $result_productos = $db->query($sql_productos);
                                 <?php if ($producto['valor_producto'] > 0): ?>
                                     <span class="badge">$<?php echo number_format($producto['valor_producto'], 0, ',', '.'); ?></span>
                                 <?php endif; ?>
-                                
-                                <img src="<?php echo htmlspecialchars($imagen_principal); ?>" 
-                                     alt="<?php echo htmlspecialchars($producto['nombre_producto']); ?>" 
-                                     class="img-fluid main-img">
-                                
-                                <img src="<?php echo htmlspecialchars($imagen_hover); ?>" 
-                                     alt="<?php echo htmlspecialchars($producto['nombre_producto']); ?>" 
-                                     class="img-fluid hover-img">
+
+                                <img src="<?php echo htmlspecialchars($imagen_principal); ?>"
+                                    alt="<?php echo htmlspecialchars($producto['nombre_producto']); ?>"
+                                    class="img-fluid main-img">
+
+                                <img src="<?php echo htmlspecialchars($imagen_hover); ?>"
+                                    alt="<?php echo htmlspecialchars($producto['nombre_producto']); ?>"
+                                    class="img-fluid hover-img">
 
                                 <div class="product-overlay">
                                     <a href="detalle-producto.php?id=<?php echo $producto['id_producto']; ?>" class="btn-cart">
@@ -114,7 +114,7 @@ $result_productos = $db->query($sql_productos);
                                     <span><?php echo htmlspecialchars($producto['nombre_categoria']); ?></span>
                                 </div>
                                 <div class="product-description">
-                                    <?php 
+                                    <?php
                                     $descripcion = $producto['descripcion_producto'];
                                     if (strlen($descripcion) > 100) {
                                         $descripcion = substr($descripcion, 0, 97) . '...';
@@ -140,7 +140,7 @@ $result_productos = $db->query($sql_productos);
                     <ul class="pagination">
                         <?php if ($page > 1): ?>
                             <li class="page-item">
-                                <a class="page-link" href="?page=<?php echo ($page - 1); ?>&categoria=<?php echo $categoria_filter; ?>">
+                                <a class="page-link" href="?page=<?php echo ($page - 1); ?>&categoria=<?php echo $categoria_filter; ?>&no_preload=1">
                                     <i class="bi bi-chevron-left"></i>
                                 </a>
                             </li>
@@ -148,7 +148,7 @@ $result_productos = $db->query($sql_productos);
 
                         <?php for ($i = 1; $i <= $total_pages; $i++): ?>
                             <li class="page-item <?php echo $page === $i ? 'active' : ''; ?>">
-                                <a class="page-link" href="?page=<?php echo $i; ?>&categoria=<?php echo $categoria_filter; ?>">
+                                <a class="page-link" href="?page=<?php echo $i; ?>&categoria=<?php echo $categoria_filter; ?>&no_preload=1">
                                     <?php echo $i; ?>
                                 </a>
                             </li>
@@ -156,7 +156,7 @@ $result_productos = $db->query($sql_productos);
 
                         <?php if ($page < $total_pages): ?>
                             <li class="page-item">
-                                <a class="page-link" href="?page=<?php echo ($page + 1); ?>&categoria=<?php echo $categoria_filter; ?>">
+                                <a class="page-link" href="?page=<?php echo ($page + 1); ?>&categoria=<?php echo $categoria_filter; ?>&no_preload=1">
                                     <i class="bi bi-chevron-right"></i>
                                 </a>
                             </li>
@@ -167,3 +167,25 @@ $result_productos = $db->query($sql_productos);
         <?php endif; ?>
     </div>
 </section>
+
+<!-- Script para resaltar la categoría activa -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Obtener la categoría actual de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentCategoria = parseInt(urlParams.get('categoria') || 0);
+
+        // Resaltar la categoría activa
+        const categoryLinks = document.querySelectorAll('#category-filters li');
+        categoryLinks.forEach(li => {
+            const link = li.querySelector('a');
+            const linkCategoria = parseInt(new URLSearchParams(link.href.split('?')[1]).get('categoria'));
+
+            if (linkCategoria === currentCategoria) {
+                li.classList.add('filter-active');
+            } else {
+                li.classList.remove('filter-active');
+            }
+        });
+    });
+</script>

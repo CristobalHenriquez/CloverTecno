@@ -35,8 +35,8 @@
     // Obtener el nombre del archivo actual
     $current_page = basename($_SERVER['PHP_SELF']);
     
-    // Verificar si NO estamos en las páginas de administración
-    if ($current_page !== 'admin.php' && $current_page !== 'admin-categorias.php'):
+    // Verificar si NO estamos en las páginas de administración y si no es una navegación interna
+    if ($current_page !== 'admin.php' && $current_page !== 'admin-categorias.php' && !isset($_GET['no_preload'])):
     ?>
     <div id="preloader">
       <div class="line"></div>
@@ -55,6 +55,15 @@
     <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
     <script>
       const lightbox = GLightbox();
+      
+      // Scroll suave al cambiar de categoría o página
+      document.addEventListener('DOMContentLoaded', function() {
+        // Verificar si es una navegación interna
+        if (window.location.search.includes('no_preload=1')) {
+          // Scroll suave hacia la sección de productos
+          document.getElementById('product-list').scrollIntoView({behavior: 'smooth'});
+        }
+      });
     </script>
 
 
