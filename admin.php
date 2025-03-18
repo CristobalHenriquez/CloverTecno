@@ -105,12 +105,16 @@ include_once 'includes/inc.head.php';
                     <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#agregarProductoModal">
                         <i class="bi bi-plus-circle"></i> Agregar Producto
                     </button>
+                    <a href="AdministradorOfertas">
+                        <button type="button" class="btn btn-success mb-3"">
+                        <i class="bi bi-tag"></i> Ofertas
+                        </button>
+                    </a>
                     <a href="AdministradorCategorias">
                         <button type="button" class="btn btn-success mb-3"">
                         <i class=" bi bi-folder"></i> Categorías
                         </button>
                     </a>
-
                 </div>
 
                 <?php include_once 'includes/admin-table.php'; ?>

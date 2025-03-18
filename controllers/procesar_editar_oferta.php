@@ -19,7 +19,6 @@ $dia_semana = $_POST['dia_semana'];
 $titulo = $_POST['titulo'];
 $descripcion = $_POST['descripcion'] ?? '';
 $visible = isset($_POST['visible']) ? (int)$_POST['visible'] : 1;
-$orden = isset($_POST['orden']) ? (int)$_POST['orden'] : 0;
 
 // Obtener la información actual de la oferta
 $stmt = $db->prepare("SELECT imagen FROM ofertas WHERE id = ?");
@@ -81,8 +80,14 @@ if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK && 
     }
 
     // Generar un nombre único para el archivo
-    $newFileName = $dia_semana . '_' . date('Y-m-d') . '_' . uniqid() . '.' . $fileExt;
+    $newFileName = $dia_semana . '_' . date('Y-m-d') . '.' . $fileExt;
     $uploadPath = $uploadDir . $newFileName;
+
+    // Si ya existe un archivo con ese nombre, agregar un identificador único
+    if (file_exists($uploadPath) && $uploadPath != '../' . $currentImage) {
+        $newFileName = $dia_semana . '_' . date('Y-m-d') . '_' . uniqid() . '.' . $fileExt;
+        $uploadPath = $uploadDir . $newFileName;
+    }
 
     // Mover el archivo
     if (!move_uploaded_file($fileTmpName, $uploadPath)) {
@@ -97,14 +102,14 @@ if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK && 
     $dbImagePath = 'uploads/ofertas/' . $newFileName;
 
     // Eliminar la imagen anterior si existe y no es la imagen por defecto
-    if ($currentImage && file_exists('../' . $currentImage)) {
+    if ($currentImage && file_exists('../' . $currentImage) && $dbImagePath != $currentImage) {
         @unlink('../' . $currentImage);
     }
 }
 
 // Actualizar en la base de datos
-$stmt = $db->prepare("UPDATE ofertas SET dia_semana = ?, titulo = ?, descripcion = ?, imagen = ?, visible = ?, orden = ? WHERE id = ?");
-$stmt->bind_param("ssssiis", $dia_semana, $titulo, $descripcion, $dbImagePath, $visible, $orden, $id);
+$stmt = $db->prepare("UPDATE ofertas SET dia_semana = ?, titulo = ?, descripcion = ?, imagen = ?, visible = ? WHERE id = ?");
+$stmt->bind_param("ssssii", $dia_semana, $titulo, $descripcion, $dbImagePath, $visible, $id);
 
 if ($stmt->execute()) {
     echo json_encode([

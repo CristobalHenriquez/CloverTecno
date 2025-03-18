@@ -17,7 +17,6 @@ $dia_semana = $_POST['dia_semana'];
 $titulo = $_POST['titulo'];
 $descripcion = $_POST['descripcion'] ?? '';
 $visible = isset($_POST['visible']) ? (int)$_POST['visible'] : 1;
-$orden = isset($_POST['orden']) ? (int)$_POST['orden'] : 0;
 
 // Verificar si se subió una imagen
 if (!isset($_FILES['imagen']) || $_FILES['imagen']['error'] !== UPLOAD_ERR_OK) {
@@ -67,8 +66,14 @@ if (!file_exists($uploadDir)) {
 }
 
 // Generar un nombre único para el archivo
-$newFileName = $dia_semana . '_' . date('Y-m-d') . '_' . uniqid() . '.' . $fileExt;
+$newFileName = $dia_semana . '_' . date('Y-m-d') . '.' . $fileExt;
 $uploadPath = $uploadDir . $newFileName;
+
+// Si ya existe un archivo con ese nombre, agregar un identificador único
+if (file_exists($uploadPath)) {
+    $newFileName = $dia_semana . '_' . date('Y-m-d') . '_' . uniqid() . '.' . $fileExt;
+    $uploadPath = $uploadDir . $newFileName;
+}
 
 // Mover el archivo
 if (!move_uploaded_file($fileTmpName, $uploadPath)) {
@@ -82,15 +87,19 @@ if (!move_uploaded_file($fileTmpName, $uploadPath)) {
 // Ruta relativa para guardar en la base de datos
 $dbImagePath = 'uploads/ofertas/' . $newFileName;
 
-// Insertar en la base de datos
-$stmt = $db->prepare("INSERT INTO ofertas (dia_semana, titulo, descripcion, imagen, visible, orden) VALUES (?, ?, ?, ?, ?, ?)");
-$stmt->bind_param("ssssii", $dia_semana, $titulo, $descripcion, $dbImagePath, $visible, $orden);
+// Insertar en la base de datos (sin el campo orden)
+$stmt = $db->prepare("INSERT INTO ofertas (dia_semana, titulo, descripcion, imagen, visible) VALUES (?, ?, ?, ?, ?)");
+$stmt->bind_param("ssssi", $dia_semana, $titulo, $descripcion, $dbImagePath, $visible);
 
 if ($stmt->execute()) {
-    echo json_encode([
+    // Preparar la respuesta JSON
+    $jsonResponse = json_encode([
         'success' => true,
         'message' => 'Oferta agregada correctamente'
     ]);
+    
+    // Enviar la respuesta JSON
+    echo $jsonResponse;
 } else {
     // Si hay un error, eliminar la imagen subida
     @unlink($uploadPath);

@@ -125,11 +125,11 @@ include_once 'includes/inc.head.php';
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="agregarOfertaModalLabel">Agregar Nueva Oferta</h5>
+                <h5 class="modal-title" id="agregarOfertaModalLabel" style="color: #000;">Agregar Nueva Oferta</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="agregarOfertaForm" enctype="multipart/form-data">
+                <form id="agregarOfertaForm" action="controllers/procesar_agregar_oferta.php" method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="dia_semana" class="form-label">Día de la Semana</label>
                         <select class="form-select" id="dia_semana" name="dia_semana" required>
@@ -162,10 +162,6 @@ include_once 'includes/inc.head.php';
                             <option value="0">No</option>
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label for="orden" class="form-label">Orden</label>
-                        <input type="number" class="form-control" id="orden" name="orden" value="0" min="0">
-                    </div>
                     <div class="text-end">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-success">Guardar</button>
@@ -181,11 +177,11 @@ include_once 'includes/inc.head.php';
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editarOfertaModalLabel">Editar Oferta</h5>
+                <h5 class="modal-title" id="editarOfertaModalLabel" style="color: #000;">Editar Oferta</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="editarOfertaForm" enctype="multipart/form-data">
+                <form id="editarOfertaForm" action="controllers/procesar_editar_oferta.php" method="POST" enctype="multipart/form-data">
                     <input type="hidden" id="edit_id" name="id">
                     <div class="mb-3">
                         <label for="edit_dia_semana" class="form-label">Día de la Semana</label>
@@ -222,10 +218,6 @@ include_once 'includes/inc.head.php';
                             <option value="1">Sí</option>
                             <option value="0">No</option>
                         </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_orden" class="form-label">Orden</label>
-                        <input type="number" class="form-control" id="edit_orden" name="orden" min="0">
                     </div>
                     <div class="text-end">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -287,50 +279,72 @@ include_once 'includes/inc.footer.php';
 
         // Manejar envío del formulario para agregar oferta
         $('#agregarOfertaForm').on('submit', function(e) {
-            e.preventDefault();
+            e.preventDefault(); // Prevenir el envío normal del formulario
+            
             var formData = new FormData(this);
-
+            
+            // Mostrar indicador de carga
+            Swal.fire({
+                title: 'Procesando...',
+                text: 'Guardando la nueva oferta',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
             $.ajax({
-                url: 'controllers/procesar_agregar_oferta.php',
+                url: $(this).attr('action'),
                 type: 'POST',
                 data: formData,
+                processData: false,
+                contentType: false,
                 success: function(response) {
+                    console.log("Respuesta recibida:", response);
                     try {
                         var result = JSON.parse(response);
                         if (result.success) {
+                            // Cerrar el modal primero
+                            $('#agregarOfertaModal').modal('hide');
+                            
+                            // Mostrar mensaje de éxito
                             Swal.fire({
                                 icon: 'success',
-                                title: '¡Éxito!',
-                                text: result.message,
-                                showConfirmButton: false,
-                                timer: 1500
+                                title: '¡Oferta agregada con éxito!',
+                                text: 'La oferta ha sido agregada correctamente.',
+                                showConfirmButton: true,
+                                confirmButtonText: 'Aceptar',
+                                confirmButtonColor: '#104D43'
                             }).then(() => {
+                                // Recargar la página para mostrar la nueva oferta
                                 location.reload();
                             });
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: result.message
+                                text: result.message || 'Ocurrió un error al agregar la oferta.',
+                                confirmButtonColor: '#104D43'
                             });
                         }
                     } catch (e) {
+                        console.error("Error parsing JSON:", response, e);
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Ocurrió un error al procesar la respuesta'
+                            text: 'Ocurrió un error al procesar la respuesta: ' + e.message,
+                            confirmButtonColor: '#104D43'
                         });
                     }
-                    $('#agregarOfertaModal').modal('hide');
                 },
-                cache: false,
-                contentType: false,
-                processData: false,
-                error: function() {
+                error: function(xhr, status, error) {
+                    console.error("AJAX Error:", status, error, xhr.responseText);
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Ocurrió un error al procesar la solicitud'
+                        text: 'Ocurrió un error al procesar la solicitud: ' + error,
+                        confirmButtonColor: '#104D43'
                     });
                 }
             });
@@ -340,10 +354,24 @@ include_once 'includes/inc.footer.php';
         $(document).on('click', '.editar-oferta', function() {
             var id = $(this).data('id');
 
+            // Mostrar indicador de carga
+            Swal.fire({
+                title: 'Cargando...',
+                text: 'Obteniendo información de la oferta',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             // Obtener datos de la oferta
             $.get('controllers/obtener_oferta.php', {
                 id: id
             }, function(response) {
+                // Cerrar el indicador de carga
+                Swal.close();
+                
                 try {
                     var data = JSON.parse(response);
                     if (data.success) {
@@ -355,7 +383,6 @@ include_once 'includes/inc.footer.php';
                         $('#edit_titulo').val(oferta.titulo);
                         $('#edit_descripcion').val(oferta.descripcion);
                         $('#edit_visible').val(oferta.visible);
-                        $('#edit_orden').val(oferta.orden);
 
                         // Mostrar imagen actual
                         var imagenHtml = `
@@ -370,14 +397,17 @@ include_once 'includes/inc.footer.php';
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: data.message
+                            text: data.message || 'No se pudo obtener la información de la oferta.',
+                            confirmButtonColor: '#104D43'
                         });
                     }
                 } catch (e) {
+                    console.error("Error parsing JSON:", response, e);
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Ocurrió un error al procesar la respuesta'
+                        text: 'Ocurrió un error al procesar la respuesta: ' + e.message,
+                        confirmButtonColor: '#104D43'
                     });
                 }
             });
@@ -386,49 +416,136 @@ include_once 'includes/inc.footer.php';
         // Manejar el envío del formulario de editar oferta
         $('#editarOfertaForm').on('submit', function(e) {
             e.preventDefault();
+            
             var formData = new FormData(this);
-
+            
+            // Mostrar indicador de carga
+            Swal.fire({
+                title: 'Procesando...',
+                text: 'Actualizando la oferta',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
             $.ajax({
-                url: 'controllers/procesar_editar_oferta.php',
+                url: $(this).attr('action'),
                 type: 'POST',
                 data: formData,
+                processData: false,
+                contentType: false,
                 success: function(response) {
+                    console.log("Respuesta recibida:", response);
                     try {
                         var result = JSON.parse(response);
                         if (result.success) {
+                            // Cerrar el modal primero
+                            $('#editarOfertaModal').modal('hide');
+                            
+                            // Mostrar mensaje de éxito
                             Swal.fire({
                                 icon: 'success',
-                                title: '¡Éxito!',
-                                text: result.message,
-                                showConfirmButton: false,
-                                timer: 1500
+                                title: '¡Oferta actualizada con éxito!',
+                                text: 'La oferta ha sido actualizada correctamente.',
+                                showConfirmButton: true,
+                                confirmButtonText: 'Aceptar',
+                                confirmButtonColor: '#104D43'
                             }).then(() => {
+                                // Recargar la página para mostrar los cambios
                                 location.reload();
                             });
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: result.message
+                                text: result.message || 'Ocurrió un error al actualizar la oferta.',
+                                confirmButtonColor: '#104D43'
                             });
                         }
                     } catch (e) {
+                        console.error("Error parsing JSON:", response, e);
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Ocurrió un error al procesar la respuesta'
+                            text: 'Ocurrió un error al procesar la respuesta: ' + e.message,
+                            confirmButtonColor: '#104D43'
                         });
                     }
-                    $('#editarOfertaModal').modal('hide');
                 },
-                cache: false,
-                contentType: false,
-                processData: false,
-                error: function() {
+                error: function(xhr, status, error) {
+                    console.error("AJAX Error:", status, error, xhr.responseText);
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Ocurrió un error al procesar la solicitud'
+                        text: 'Ocurrió un error al procesar la solicitud: ' + error,
+                        confirmButtonColor: '#104D43'
+                    });
+                }
+            });
+        });
+        
+        // Manejar clic en botón eliminar
+        $(document).on('click', '.eliminar-oferta', function() {
+            var id = $(this).data('id');
+            var titulo = $(this).data('titulo');
+            
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: `¿Deseas eliminar la oferta "${titulo}"?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Mostrar indicador de carga
+                    Swal.fire({
+                        title: 'Procesando...',
+                        text: 'Eliminando la oferta',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    
+                    $.post('controllers/procesar_eliminar_oferta.php', {
+                        id: id
+                    }, function(response) {
+                        try {
+                            var data = JSON.parse(response);
+                            if (data.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: '¡Eliminado!',
+                                    text: 'La oferta ha sido eliminada correctamente.',
+                                    showConfirmButton: true,
+                                    confirmButtonText: 'Aceptar',
+                                    confirmButtonColor: '#104D43'
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: data.message || 'No se pudo eliminar la oferta.',
+                                    confirmButtonColor: '#104D43'
+                                });
+                            }
+                        } catch (e) {
+                            console.error("Error parsing JSON:", response, e);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Ocurrió un error al procesar la respuesta: ' + e.message,
+                                confirmButtonColor: '#104D43'
+                            });
+                        }
                     });
                 }
             });
