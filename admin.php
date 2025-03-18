@@ -1,7 +1,7 @@
 <?php
 include_once 'includes/auth.php';
 requireAuth();
-include_once 'includes/inc.head.php';
+include_once 'includes/inc.head.admin.php';
 ?>
 
 <!-- jQuery -->
@@ -113,6 +113,11 @@ include_once 'includes/inc.head.php';
                     <a href="AdministradorCategorias">
                         <button type="button" class="btn btn-success mb-3"">
                         <i class=" bi bi-folder"></i> Categorías
+                        </button>
+                    </a>
+                    <a href="AdministradorDestacados">
+                        <button type="button" class="btn btn-success mb-3"">
+                        <i class=" bi bi-star"></i> Destacados
                         </button>
                     </a>
                 </div>

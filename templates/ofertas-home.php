@@ -152,7 +152,7 @@ if (!$result) {
     }
 
     .modal-header h5 {
-        color: #0D3D35; /* Rojo para el título del modal */
+        color: #ffffff; /* Rojo para el título del modal */
         font-weight: 600;
     }
 

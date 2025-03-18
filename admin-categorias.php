@@ -1,7 +1,7 @@
 <?php
 include_once 'includes/auth.php';
 requireAuth();
-include_once 'includes/inc.head.php';
+include_once 'includes/inc.head.admin.php';
 ?>
 
 <!-- jQuery -->

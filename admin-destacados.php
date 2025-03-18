@@ -83,7 +83,7 @@ include_once 'includes/inc.head.admin.php';
         border-color: #0d3c34;
     }
 
-    #ofertasTable_wrapper {
+    #destacadosTable_wrapper {
         margin: 0 auto;
     }
 
@@ -94,23 +94,41 @@ include_once 'includes/inc.head.admin.php';
     .dataTables_length {
         margin-bottom: 1rem;
     }
+    
+    .price-display {
+        font-weight: bold;
+        color: #104D43;
+    }
+    
+    .alert-info {
+        background-color: #e8f4f8;
+        border-color: #b8e2ef;
+        color: #0c5460;
+        margin-bottom: 20px;
+    }
 </style>
 
 <main class="main">
     <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="col-10">
-                <h1 class="mb-4 text-center"><b>Administración de Ofertas</b></h1>
+                <h1 class="mb-4 text-center"><b>Administración de Productos Destacados</b></h1>
+                
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <strong>Nota:</strong> Los productos destacados aparecen en la sección principal (Hero) de la página de inicio. Se mostrarán un máximo de 2 productos.
+                </div>
+                
                 <div class="d-flex justify-content-between align-items-center">
                     <a href="Administrador" class="btn btn-outline-secondary mb-3">
                         <i class="bi bi-box-arrow-left"></i> Volver a Productos
                     </a>
-                    <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#agregarOfertaModal">
-                        <i class="bi bi-plus-circle"></i> Agregar Oferta
+                    <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#agregarDestacadoModal">
+                        <i class="bi bi-plus-circle"></i> Agregar Producto Destacado
                     </button>
                 </div>
 
-                <?php include_once 'includes/admin-table-ofertas.php'; ?>
+                <?php include_once 'includes/admin-table-destacados.php'; ?>
 
                 <a href="logout.php" class="btn btn-danger mt-3">
                     <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
@@ -120,47 +138,31 @@ include_once 'includes/inc.head.admin.php';
     </div>
 </main>
 
-<!-- Modal para Agregar Oferta -->
-<div class="modal fade" id="agregarOfertaModal" tabindex="-1" aria-labelledby="agregarOfertaModalLabel" aria-hidden="true">
+<!-- Modal para Agregar Producto Destacado -->
+<div class="modal fade" id="agregarDestacadoModal" tabindex="-1" aria-labelledby="agregarDestacadoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="agregarOfertaModalLabel" style="color: #000;">Agregar Nueva Oferta</h5>
+                <h5 class="modal-title" id="agregarDestacadoModalLabel" style="color: #000;">Agregar Nuevo Producto Destacado</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="agregarOfertaForm" action="controllers/procesar_agregar_oferta.php" method="POST" enctype="multipart/form-data">
+                <form id="agregarDestacadoForm" action="controllers/procesar_agregar_destacado.php" method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
-                        <label for="dia_semana" class="form-label">Día de la Semana</label>
-                        <select class="form-select" id="dia_semana" name="dia_semana" required>
-                            <option value="">Seleccione un día</option>
-                            <option value="Lunes">Lunes</option>
-                            <option value="Martes">Martes</option>
-                            <option value="Miércoles">Miércoles</option>
-                            <option value="Jueves">Jueves</option>
-                            <option value="Viernes">Viernes</option>
-                            <option value="Sábado">Sábado</option>
-                            <option value="Domingo">Domingo</option>
-                        </select>
+                        <label for="nombre_destacado" class="form-label">Nombre del Producto</label>
+                        <input type="text" class="form-control" id="nombre_destacado" name="nombre_destacado" required>
                     </div>
                     <div class="mb-3">
-                        <label for="titulo" class="form-label">Título de la Oferta</label>
-                        <input type="text" class="form-control" id="titulo" name="titulo" required>
+                        <label for="precio_destacado" class="form-label">Precio</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="precio_destacado" name="precio_destacado" min="0" required>
+                        </div>
                     </div>
                     <div class="mb-3">
-                        <label for="descripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="imagen" class="form-label">Imagen</label>
-                        <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="visible" class="form-label">Visible</label>
-                        <select class="form-select" id="visible" name="visible">
-                            <option value="1" selected>Sí</option>
-                            <option value="0">No</option>
-                        </select>
+                        <label for="imagen_destacado" class="form-label">Imagen</label>
+                        <input type="file" class="form-control" id="imagen_destacado" name="imagen_destacado" accept="image/*" required>
+                        <small class="form-text text-muted">Recomendado: Imagen con fondo transparente (PNG) para mejor visualización.</small>
                     </div>
                     <div class="text-end">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -172,52 +174,36 @@ include_once 'includes/inc.head.admin.php';
     </div>
 </div>
 
-<!-- Modal para Editar Oferta -->
-<div class="modal fade" id="editarOfertaModal" tabindex="-1" aria-labelledby="editarOfertaModalLabel" aria-hidden="true">
+<!-- Modal para Editar Producto Destacado -->
+<div class="modal fade" id="editarDestacadoModal" tabindex="-1" aria-labelledby="editarDestacadoModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editarOfertaModalLabel" style="color: #000;">Editar Oferta</h5>
+                <h5 class="modal-title" id="editarDestacadoModalLabel" style="color: #000;">Editar Producto Destacado</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="editarOfertaForm" action="controllers/procesar_editar_oferta.php" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" id="edit_id" name="id">
+                <form id="editarDestacadoForm" action="controllers/procesar_editar_destacado.php" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" id="edit_id_destacado" name="id_destacado">
                     <div class="mb-3">
-                        <label for="edit_dia_semana" class="form-label">Día de la Semana</label>
-                        <select class="form-select" id="edit_dia_semana" name="dia_semana" required>
-                            <option value="">Seleccione un día</option>
-                            <option value="Lunes">Lunes</option>
-                            <option value="Martes">Martes</option>
-                            <option value="Miércoles">Miércoles</option>
-                            <option value="Jueves">Jueves</option>
-                            <option value="Viernes">Viernes</option>
-                            <option value="Sábado">Sábado</option>
-                            <option value="Domingo">Domingo</option>
-                        </select>
+                        <label for="edit_nombre_destacado" class="form-label">Nombre del Producto</label>
+                        <input type="text" class="form-control" id="edit_nombre_destacado" name="nombre_destacado" required>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_titulo" class="form-label">Título de la Oferta</label>
-                        <input type="text" class="form-control" id="edit_titulo" name="titulo" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_descripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="edit_descripcion" name="descripcion" rows="3"></textarea>
+                        <label for="edit_precio_destacado" class="form-label">Precio</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="edit_precio_destacado" name="precio_destacado" min="0" required>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Imagen Actual</label>
                         <div id="imagen_actual" class="mb-2"></div>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_imagen" class="form-label">Nueva Imagen (opcional)</label>
-                        <input type="file" class="form-control" id="edit_imagen" name="imagen" accept="image/*">
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_visible" class="form-label">Visible</label>
-                        <select class="form-select" id="edit_visible" name="visible">
-                            <option value="1">Sí</option>
-                            <option value="0">No</option>
-                        </select>
+                        <label for="edit_imagen_destacado" class="form-label">Nueva Imagen (opcional)</label>
+                        <input type="file" class="form-control" id="edit_imagen_destacado" name="imagen_destacado" accept="image/*">
+                        <small class="form-text text-muted">Recomendado: Imagen con fondo transparente (PNG) para mejor visualización.</small>
                     </div>
                     <div class="text-end">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -236,14 +222,14 @@ include_once 'includes/inc.footer.php';
 <script>
     $(document).ready(function() {
         // Inicializar DataTable
-        $('#ofertasTable').DataTable({
+        $('#destacadosTable').DataTable({
             "responsive": true,
             "autoWidth": false,
             "language": {
                 "url": "js/dataTables.es-ES.json"
             },
             "order": [
-                [1, 'asc']
+                [0, 'asc']
             ],
             "pageLength": 10,
             "lengthMenu": [
@@ -252,33 +238,34 @@ include_once 'includes/inc.footer.php';
             ],
             "columnDefs": [{
                     "orderable": false,
-                    "targets": [0, 4]
+                    "targets": [2, 3]
                 },
                 {
-                    "width": "80px",
+                    "width": "150px",
                     "targets": 0
                 },
                 {
-                    "width": "150px",
+                    "width": "100px",
                     "targets": 1
                 },
                 {
-                    "width": "200px",
+                    "width": "150px",
                     "targets": 2
                 },
                 {
-                    "width": "300px",
+                    "width": "100px",
                     "targets": 3
-                },
-                {
-                    "width": "150px",
-                    "targets": 4
                 }
             ]
         });
 
-        // Manejar envío del formulario para agregar oferta
-        $('#agregarOfertaForm').on('submit', function(e) {
+        // Formatear precio
+        function formatearPrecio(precio) {
+            return '$' + new Intl.NumberFormat('es-CL').format(precio);
+        }
+
+        // Manejar envío del formulario para agregar producto destacado
+        $('#agregarDestacadoForm').on('submit', function(e) {
             e.preventDefault(); // Prevenir el envío normal del formulario
             
             var formData = new FormData(this);
@@ -286,7 +273,7 @@ include_once 'includes/inc.footer.php';
             // Mostrar indicador de carga
             Swal.fire({
                 title: 'Procesando...',
-                text: 'Guardando la nueva oferta',
+                text: 'Guardando el nuevo producto destacado',
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 didOpen: () => {
@@ -306,25 +293,25 @@ include_once 'includes/inc.footer.php';
                         var result = JSON.parse(response);
                         if (result.success) {
                             // Cerrar el modal primero
-                            $('#agregarOfertaModal').modal('hide');
+                            $('#agregarDestacadoModal').modal('hide');
                             
                             // Mostrar mensaje de éxito
                             Swal.fire({
                                 icon: 'success',
-                                title: '¡Oferta agregada con éxito!',
-                                text: 'La oferta ha sido agregada correctamente.',
+                                title: '¡Producto destacado agregado con éxito!',
+                                text: 'El producto ha sido agregado correctamente a la sección destacada.',
                                 showConfirmButton: true,
                                 confirmButtonText: 'Aceptar',
                                 confirmButtonColor: '#104D43'
                             }).then(() => {
-                                // Recargar la página para mostrar la nueva oferta
+                                // Recargar la página para mostrar el nuevo producto destacado
                                 location.reload();
                             });
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: result.message || 'Ocurrió un error al agregar la oferta.',
+                                text: result.message || 'Ocurrió un error al agregar el producto destacado.',
                                 confirmButtonColor: '#104D43'
                             });
                         }
@@ -351,13 +338,13 @@ include_once 'includes/inc.footer.php';
         });
 
         // Manejar clic en botón editar
-        $(document).on('click', '.editar-oferta', function() {
+        $(document).on('click', '.editar-destacado', function() {
             var id = $(this).data('id');
 
             // Mostrar indicador de carga
             Swal.fire({
                 title: 'Cargando...',
-                text: 'Obteniendo información de la oferta',
+                text: 'Obteniendo información del producto destacado',
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 didOpen: () => {
@@ -365,8 +352,8 @@ include_once 'includes/inc.footer.php';
                 }
             });
 
-            // Obtener datos de la oferta
-            $.get('controllers/obtener_oferta.php', {
+            // Obtener datos del producto destacado
+            $.get('controllers/obtener_destacado.php', {
                 id: id
             }, function(response) {
                 // Cerrar el indicador de carga
@@ -375,29 +362,27 @@ include_once 'includes/inc.footer.php';
                 try {
                     var data = JSON.parse(response);
                     if (data.success) {
-                        var oferta = data.oferta;
+                        var destacado = data.destacado;
 
                         // Llenar el formulario
-                        $('#edit_id').val(oferta.id);
-                        $('#edit_dia_semana').val(oferta.dia_semana);
-                        $('#edit_titulo').val(oferta.titulo);
-                        $('#edit_descripcion').val(oferta.descripcion);
-                        $('#edit_visible').val(oferta.visible);
+                        $('#edit_id_destacado').val(destacado.id_destacado);
+                        $('#edit_nombre_destacado').val(destacado.nombre_destacado);
+                        $('#edit_precio_destacado').val(destacado.precio_destacado);
 
                         // Mostrar imagen actual
                         var imagenHtml = `
-                            <img src="${oferta.imagen}" alt="${oferta.titulo}" 
-                                 style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px;">
+                            <img src="${destacado.imagen_destacado}" alt="${destacado.nombre_destacado}" 
+                                 style="width: 100px; height: 100px; object-fit: contain; border-radius: 4px;">
                         `;
                         $('#imagen_actual').html(imagenHtml);
 
                         // Mostrar el modal
-                        $('#editarOfertaModal').modal('show');
+                        $('#editarDestacadoModal').modal('show');
                     } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: data.message || 'No se pudo obtener la información de la oferta.',
+                            text: data.message || 'No se pudo obtener la información del producto destacado.',
                             confirmButtonColor: '#104D43'
                         });
                     }
@@ -413,8 +398,8 @@ include_once 'includes/inc.footer.php';
             });
         });
 
-        // Manejar el envío del formulario de editar oferta
-        $('#editarOfertaForm').on('submit', function(e) {
+        // Manejar el envío del formulario de editar producto destacado
+        $('#editarDestacadoForm').on('submit', function(e) {
             e.preventDefault();
             
             var formData = new FormData(this);
@@ -422,7 +407,7 @@ include_once 'includes/inc.footer.php';
             // Mostrar indicador de carga
             Swal.fire({
                 title: 'Procesando...',
-                text: 'Actualizando la oferta',
+                text: 'Actualizando el producto destacado',
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 didOpen: () => {
@@ -442,13 +427,13 @@ include_once 'includes/inc.footer.php';
                         var result = JSON.parse(response);
                         if (result.success) {
                             // Cerrar el modal primero
-                            $('#editarOfertaModal').modal('hide');
+                            $('#editarDestacadoModal').modal('hide');
                             
                             // Mostrar mensaje de éxito
                             Swal.fire({
                                 icon: 'success',
-                                title: '¡Oferta actualizada con éxito!',
-                                text: 'La oferta ha sido actualizada correctamente.',
+                                title: '¡Producto destacado actualizado con éxito!',
+                                text: 'El producto destacado ha sido actualizado correctamente.',
                                 showConfirmButton: true,
                                 confirmButtonText: 'Aceptar',
                                 confirmButtonColor: '#104D43'
@@ -460,7 +445,7 @@ include_once 'includes/inc.footer.php';
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: result.message || 'Ocurrió un error al actualizar la oferta.',
+                                text: result.message || 'Ocurrió un error al actualizar el producto destacado.',
                                 confirmButtonColor: '#104D43'
                             });
                         }
@@ -487,13 +472,13 @@ include_once 'includes/inc.footer.php';
         });
         
         // Manejar clic en botón eliminar
-        $(document).on('click', '.eliminar-oferta', function() {
+        $(document).on('click', '.eliminar-destacado', function() {
             var id = $(this).data('id');
-            var titulo = $(this).data('titulo');
+            var nombre = $(this).data('nombre');
             
             Swal.fire({
                 title: '¿Estás seguro?',
-                text: `¿Deseas eliminar la oferta "${titulo}"?`,
+                text: `¿Deseas eliminar el producto destacado "${nombre}"?`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -505,7 +490,7 @@ include_once 'includes/inc.footer.php';
                     // Mostrar indicador de carga
                     Swal.fire({
                         title: 'Procesando...',
-                        text: 'Eliminando la oferta',
+                        text: 'Eliminando el producto destacado',
                         allowOutsideClick: false,
                         allowEscapeKey: false,
                         didOpen: () => {
@@ -513,7 +498,7 @@ include_once 'includes/inc.footer.php';
                         }
                     });
                     
-                    $.post('controllers/procesar_eliminar_oferta.php', {
+                    $.post('controllers/eliminar_destacado.php', {
                         id: id
                     }, function(response) {
                         try {
@@ -522,7 +507,7 @@ include_once 'includes/inc.footer.php';
                                 Swal.fire({
                                     icon: 'success',
                                     title: '¡Eliminado!',
-                                    text: 'La oferta ha sido eliminada correctamente.',
+                                    text: 'El producto destacado ha sido eliminado correctamente.',
                                     showConfirmButton: true,
                                     confirmButtonText: 'Aceptar',
                                     confirmButtonColor: '#104D43'
@@ -533,7 +518,7 @@ include_once 'includes/inc.footer.php';
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error',
-                                    text: data.message || 'No se pudo eliminar la oferta.',
+                                    text: data.message || 'No se pudo eliminar el producto destacado.',
                                     confirmButtonColor: '#104D43'
                                 });
                             }

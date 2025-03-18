@@ -36,7 +36,7 @@
     $current_page = basename($_SERVER['PHP_SELF']);
     
     // Verificar si NO estamos en las páginas de administración y si no es una navegación interna
-    if ($current_page !== 'admin.php' && $current_page !== 'admin-ofertas.php' && $current_page !== 'admin-categorias.php' && !isset($_GET['no_preload'])):
+    if ($current_page !== 'admin.php' && $current_page !== 'admin-destacados.php' && $current_page !== 'admin-ofertas.php' && $current_page !== 'admin-categorias.php' && !isset($_GET['no_preload'])):
     ?>
     <div id="preloader">
       <div class="line"></div>
