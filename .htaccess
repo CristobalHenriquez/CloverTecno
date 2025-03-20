@@ -19,6 +19,7 @@ RewriteRule ^Administrador$ admin.php [L]
 RewriteRule ^AdministradorCategorias$ admin-categorias.php [L]
 RewriteRule ^AdministradorOfertas$ admin-ofertas.php [L]
 RewriteRule ^AdministradorDestacados$ admin-destacados.php [L]
+RewriteRule ^AdministradorStock$ admin-stock.php [L]
 
 # Nueva regla para categorías
 RewriteRule ^Categorias_([^/]+)$ categorias.php?nombre=$1 [L,QSA]

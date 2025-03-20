@@ -1,0 +1,17 @@
+{
+    "name": "giuli/clover-tecno",
+    "autoload": {
+        "psr-4": {
+            "Giuli\\CloverTecno\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "giugerlo",
+            "email": "ggiuliano526@gmail.com"
+        }
+    ],
+    "require": {
+        "phpoffice/phpspreadsheet": "^4.1"
+    }
+}

@@ -147,16 +147,15 @@ include_once 'db_connection.php';
                 $current_page = basename($_SERVER['REQUEST_URI'], ".php");
                 ?>
                 <ul>
-                    <li><a href="Administrador" class="<?= ($current_page == 'Inicio' || $current_page == '') ? 'active' : '' ?>">Productos</a></li>
-                    <li><a href="AdministradorCategorias" class="<?= ($current_page == 'Nosotros') ? 'active' : '' ?>">Categorias</a></li>
-                    <li><a href="AdministradorOfertas" class="<?= ($current_page == 'Servicios') ? 'active' : '' ?>">Ofertas</a></li>
-                    <li><a href="AdministradorDestacados" class="<?= ($current_page == 'Contacto') ? 'active' : '' ?>">Destacados</a></li>
-                    <li><a href="Inicio" class="<?= ($current_page == 'Contacto') ? 'active' : '' ?>">Web</a></li>
+                    <li><a href="Administrador">Productos</a></li>
+                    <li><a href="AdministradorCategorias">Categorias</a></li>
+                    <li><a href="AdministradorOfertas">Ofertas</a></li>
+                    <li><a href="AdministradorDestacados">Destacados</a></li>
+                    <li><a href="AdministradorStock">Stock</a></li>
+                    <li><a href="Inicio">Web</a></li>
                 </ul>
                 <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
             </nav>
-
-
 
         </div>
         <div class="header-border"></div>
