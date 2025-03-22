@@ -27,7 +27,7 @@ if (!$result) {
     <div class="row align-items-center">
         <div class="col-md-4 mb-3">
             <div class="form-group">
-                <label for="filtroCategoria" class="form-label">Filtrar por categoría:</label>
+                <label for="filtroCategoria" class="form-label"><h6>Filtrar por categoría:</h6></label>
                 <select id="filtroCategoria" class="form-select">
                     <option value="">Todas las categorías</option>
                     <?php while ($categoria = $resultCategorias->fetch_assoc()): ?>
@@ -40,7 +40,7 @@ if (!$result) {
         </div>
         <div class="col-md-4 mb-3">
             <div class="form-group">
-                <label for="filtroStock" class="form-label">Filtrar por nivel de stock:</label>
+                <label for="filtroStock" class="form-label"><h6>Filtrar por nivel de stock:</h6></label>
                 <select id="filtroStock" class="form-select">
                     <option value="">Todos los niveles</option>
                     <option value="alto">Alto (más de 10 unidades)</option>
