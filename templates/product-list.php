@@ -60,11 +60,11 @@ $result_productos = $db->query($sql_productos);
                 <div class="product-filters mb-5 d-flex justify-content-center" data-aos="fade-up">
                     <ul class="d-flex flex-wrap gap-2 list-unstyled" id="category-filters">
                         <li class="<?php echo $categoria_filter == 0 ? 'filter-active' : ''; ?>">
-                            <a href="?categoria=0&no_preload=1" class="filter-link">Todos</a>
+                            <a href="javascript:void(0);" data-categoria="0" class="filter-link category-link">Todos</a>
                         </li>
                         <?php foreach ($categorias as $categoria): ?>
                             <li class="<?php echo $categoria_filter == $categoria['id_categoria'] ? 'filter-active' : ''; ?>">
-                                <a href="?categoria=<?php echo $categoria['id_categoria']; ?>&no_preload=1" class="filter-link">
+                                <a href="javascript:void(0);" data-categoria="<?php echo $categoria['id_categoria']; ?>" class="filter-link category-link">
                                     <?php echo htmlspecialchars($categoria['nombre_categoria']); ?>
                                 </a>
                             </li>
@@ -99,14 +99,14 @@ $result_productos = $db->query($sql_productos);
                                     class="img-fluid hover-img">
 
                                 <div class="product-overlay">
-                                    <a href="detalle-producto.php?id=<?php echo $producto['id_producto']; ?>" class="btn-cart">
+                                    <a href="DetalleProducto_<?php echo $producto['id_producto']; ?>" class="btn-cart">
                                         <i class="bi bi-eye"></i> Ver Detalles
                                     </a>
                                 </div>
                             </div>
                             <div class="product-info">
                                 <h5 class="product-title">
-                                    <a href="detalle-producto.php?id=<?php echo $producto['id_producto']; ?>">
+                                    <a href="DetalleProducto_<?php echo $producto['id_producto']; ?>">
                                         <?php echo htmlspecialchars($producto['nombre_producto']); ?>
                                     </a>
                                 </h5>
@@ -140,7 +140,7 @@ $result_productos = $db->query($sql_productos);
                     <ul class="pagination">
                         <?php if ($page > 1): ?>
                             <li class="page-item">
-                                <a class="page-link" href="?page=<?php echo ($page - 1); ?>&categoria=<?php echo $categoria_filter; ?>&no_preload=1">
+                                <a class="page-link pagination-link" href="javascript:void(0);" data-page="<?php echo ($page - 1); ?>" data-categoria="<?php echo $categoria_filter; ?>">
                                     <i class="bi bi-chevron-left"></i>
                                 </a>
                             </li>
@@ -148,7 +148,7 @@ $result_productos = $db->query($sql_productos);
 
                         <?php for ($i = 1; $i <= $total_pages; $i++): ?>
                             <li class="page-item <?php echo $page === $i ? 'active' : ''; ?>">
-                                <a class="page-link" href="?page=<?php echo $i; ?>&categoria=<?php echo $categoria_filter; ?>&no_preload=1">
+                                <a class="page-link pagination-link" href="javascript:void(0);" data-page="<?php echo $i; ?>" data-categoria="<?php echo $categoria_filter; ?>">
                                     <?php echo $i; ?>
                                 </a>
                             </li>
@@ -156,7 +156,7 @@ $result_productos = $db->query($sql_productos);
 
                         <?php if ($page < $total_pages): ?>
                             <li class="page-item">
-                                <a class="page-link" href="?page=<?php echo ($page + 1); ?>&categoria=<?php echo $categoria_filter; ?>&no_preload=1">
+                                <a class="page-link pagination-link" href="javascript:void(0);" data-page="<?php echo ($page + 1); ?>" data-categoria="<?php echo $categoria_filter; ?>">
                                     <i class="bi bi-chevron-right"></i>
                                 </a>
                             </li>
@@ -168,24 +168,48 @@ $result_productos = $db->query($sql_productos);
     </div>
 </section>
 
-<!-- Script para resaltar la categoría activa -->
+<!-- Script para manejar la navegación sin recargar la página -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Obtener la categoría actual de la URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const currentCategoria = parseInt(urlParams.get('categoria') || 0);
-
-        // Resaltar la categoría activa
-        const categoryLinks = document.querySelectorAll('#category-filters li');
-        categoryLinks.forEach(li => {
-            const link = li.querySelector('a');
-            const linkCategoria = parseInt(new URLSearchParams(link.href.split('?')[1]).get('categoria'));
-
-            if (linkCategoria === currentCategoria) {
-                li.classList.add('filter-active');
-            } else {
-                li.classList.remove('filter-active');
-            }
+        // Manejar clics en los enlaces de categoría
+        document.querySelectorAll('.category-link').forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const categoria = this.getAttribute('data-categoria');
+                loadProducts(categoria, 1);
+            });
         });
+
+        // Manejar clics en los enlaces de paginación
+        document.querySelectorAll('.pagination-link').forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = this.getAttribute('data-page');
+                const categoria = this.getAttribute('data-categoria');
+                loadProducts(categoria, page);
+            });
+        });
+
+        // Función para cargar productos
+        function loadProducts(categoria, page) {
+            // Construir la URL con los parámetros
+            let url = 'Productos?';
+            if (categoria && categoria !== '0') {
+                url += 'categoria=' + categoria + '&';
+            }
+            if (page && page !== '1') {
+                url += 'page=' + page + '&';
+            }
+            url += 'no_preload=1';
+
+            // Navegar a la URL
+            window.location.href = url;
+        }
+
+        // Ocultar parámetros de URL sin cambiar la página
+        if (window.history && window.history.replaceState) {
+            var cleanUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+        }
     });
 </script>

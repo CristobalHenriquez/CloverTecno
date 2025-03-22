@@ -100,8 +100,8 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
                     <!-- Product Meta -->
                     <div class="product-meta">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <!-- Enlace a la categoría -->
-                            <a href="productos.php?categoria=<?php echo $producto['id_categoria']; ?>" class="product-category">
+                            <!-- Enlace a la categoría con URL amigable -->
+                            <a href="Productos?categoria=<?php echo $producto['id_categoria']; ?>" class="product-category">
                                 <?php echo htmlspecialchars($producto['nombre_categoria']); ?>
                             </a>
                             <div class="product-share">

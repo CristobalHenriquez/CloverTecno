@@ -9,10 +9,18 @@ RewriteRule ^(.+)$ $1.php [L,QSA]
 # Redirigir la raíz del sitio a index.php
 RewriteRule ^$ index.php [L]
 
+# URLs amigables para detalles de producto
+RewriteRule ^DetalleProducto_([0-9]+)$ detalle-producto.php?id=$1 [L,QSA]
+
+# URLs amigables para categorías de productos
+RewriteRule ^Productos/([a-zA-Z0-9_-]+)$ productos.php?categoria_slug=$1 [L,QSA]
+RewriteRule ^Productos/([a-zA-Z0-9_-]+)/pagina/([0-9]+)$ productos.php?categoria_slug=$1&page=$2 [L,QSA]
+
 # Redirigir URLs amigables
 RewriteRule ^Nosotros$ about.php [L]
 RewriteRule ^Contacto$ contact.php [L]
 RewriteRule ^Servicios$ services.php [L]
+RewriteRule ^Productos$ productos.php [L]
 RewriteRule ^Inicio$ index.php [L]
 RewriteRule ^InicioDeSesion$ login.php [L]
 RewriteRule ^Administrador$ admin.php [L]
@@ -21,6 +29,3 @@ RewriteRule ^AdministradorOfertas$ admin-ofertas.php [L]
 RewriteRule ^AdministradorDestacados$ admin-destacados.php [L]
 RewriteRule ^AdministradorStock$ admin-stock.php [L]
 RewriteRule ^AdministradorVentas$ admin-ventas.php [L]
-
-# Nueva regla para categorías
-RewriteRule ^Categorias_([^/]+)$ categorias.php?nombre=$1 [L,QSA]

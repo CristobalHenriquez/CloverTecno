@@ -78,7 +78,9 @@ function obtenerImagenAleatoria($db, $id_categoria)
                         // Si imagen_categoria está vacía, obtener una imagen aleatoria como respaldo
                         $imagen = !empty($categoria['imagen_categoria']) ? $categoria['imagen_categoria'] : obtenerImagenAleatoria($db, $categoria['id_categoria']);
                         $delay = $index * 100;
-                        $categoria_url = "Categorias_" . urlencode(str_replace(' ', '_', $categoria['nombre_categoria']));
+                        
+                        // Crear URL para la categoría usando el enfoque de parámetros ocultos
+                        $categoria_url = "Productos?categoria=" . $categoria['id_categoria'];
                         
                         // Limitar la descripción a 100 caracteres y agregar puntos suspensivos
                         $descripcion = !empty($categoria['descripcion_categoria']) ? $categoria['descripcion_categoria'] : 'Sin descripción disponible';
@@ -114,4 +116,3 @@ function obtenerImagenAleatoria($db, $id_categoria)
         </div>
     </div>
 </section>
-
