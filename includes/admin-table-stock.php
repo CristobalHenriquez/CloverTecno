@@ -28,6 +28,7 @@ if (!$result) {
         <div class="col-md-4 mb-3">
             <div class="form-group">
                 <label for="filtroCategoria" class="form-label" style="color: #fff;">Filtrar por categoría:</label>
+                <label for="filtroCategoria" class="form-label"><h6>Filtrar por categoría:</h6></label>
                 <select id="filtroCategoria" class="form-select">
                     <option value="">Todas las categorías</option>
                     <?php while ($categoria = $resultCategorias->fetch_assoc()): ?>
