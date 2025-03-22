@@ -125,6 +125,11 @@ include_once 'includes/inc.head.admin.php';
                         <i class=" bi bi-box2"></i>  Stock
                         </button>
                     </a>
+                    <a href="AdministradorVentas">
+                        <button type="button" class="btn btn-success mb-3"">
+                        <i class=" bi bi-cart-plus"></i>  Ventas
+                        </button>
+                    </a>
                 </div>
 
                 <?php include_once 'includes/admin-table.php'; ?>

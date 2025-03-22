@@ -152,6 +152,7 @@ include_once 'db_connection.php';
                     <li><a href="AdministradorOfertas">Ofertas</a></li>
                     <li><a href="AdministradorDestacados">Destacados</a></li>
                     <li><a href="AdministradorStock">Stock</a></li>
+                    <li><a href="AdministradorVentas">Ventas</a></li>
                     <li><a href="Inicio">Web</a></li>
                 </ul>
                 <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
