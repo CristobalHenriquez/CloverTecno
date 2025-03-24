@@ -156,6 +156,7 @@ $categorias = mysqli_fetch_all($result, MYSQLI_ASSOC);
           <li><a href="Nosotros" class="<?= ($current_page == 'Nosotros') ? 'active' : '' ?>">Nosotros</a></li>
           <li><a href="Productos" class="<?= ($current_page == 'Productos') ? 'active' : '' ?>">Productos</a></li>
           <li><a href="Contacto" class="<?= ($current_page == 'Contacto') ? 'active' : '' ?>">Contacto</a></li>
+          <li><a href="Registro" class="<?= ($current_page == 'Registro') ? 'active' : '' ?>">Iniciar Sesión</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
