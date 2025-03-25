@@ -31,3 +31,8 @@ RewriteRule ^AdministradorStock$ admin-stock.php [L]
 RewriteRule ^AdministradorVentas$ admin-ventas.php [L]
 RewriteRule ^Cliente$ cliente.php [L]
 RewriteRule ^Registro$ login-clientes.php [L]
+
+# Agregar la regla para contraseña
+RewriteRule ^CambiarContraseña$ cambiar-contraseña.php [L]
+RewriteRule ^RecuperarContraseña$ recuperar-contraseña.php [L]
+RewriteRule ^CambiarContraseña/(.*)$ cambiar-contraseña.php?token=$1 [L,QSA]

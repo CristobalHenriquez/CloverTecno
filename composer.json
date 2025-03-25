@@ -12,6 +12,8 @@
         }
     ],
     "require": {
-        "phpoffice/phpspreadsheet": "^4.1"
+        "phpoffice/phpspreadsheet": "^4.1",
+        "phpmailer/phpmailer": "^6.9",
+        "psr/log": "^3.0"
     }
 }

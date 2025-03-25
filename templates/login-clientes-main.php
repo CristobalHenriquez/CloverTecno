@@ -258,7 +258,7 @@ $register_success = isset($register_success) ? $register_success : '';
 
 <!-- Login Register Section -->
 <section id="login-register" class="login-register section">
-    <div class="container" data-aos="fade-up" data-aos-delay="100"> 
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
         <div class="row justify-content-center">
             <div class="col-lg-6">
                 <div class="login-register-wrapper">
@@ -331,7 +331,14 @@ $register_success = isset($register_success) ? $register_success : '';
                                     </div>
 
                                     <div class="d-flex justify-content-between align-items-center mb-4">
-                                        <a href="#" class="forgot-password" style="color: #fff;">¿Olvidó su contraseña?</a>
+                                        <div class="form-check">
+                                            <input type="checkbox"
+                                                class="form-check-input"
+                                                id="login-register-remember-me"
+                                                name="remember_me">
+                                            <label class="form-check-label" for="login-register-remember-me">Recordarme</label>
+                                        </div>
+                                        <a href="RecuperarContraseña" class="forgot-password">¿Olvidó su contraseña?</a>
                                     </div>
 
                                     <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
@@ -422,144 +429,144 @@ $register_success = isset($register_success) ? $register_success : '';
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Formulario de inicio de sesión
-    const loginForm = document.getElementById('login-form');
-    if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Mostrar indicador de carga
-            Swal.fire({
-                title: 'Procesando...',
-                text: 'Por favor espere',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-            
-            // Crear FormData
-            const formData = new FormData(loginForm);
-            formData.append('login', '1'); // Agregar campo para identificar la acción
-            
-            // Enviar solicitud AJAX
-            fetch('controllers/procesar_login_clientes.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Éxito - Mostrar mensaje y redirigir
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Bienvenido!',
-                        text: data.message,
-                        timer: 1500,
-                        showConfirmButton: false
-                    }).then(() => {
-                        window.location.href = data.redirect;
-                    });
-                } else {
-                    // Error - Mostrar mensaje de error
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: data.message
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+    document.addEventListener('DOMContentLoaded', function() {
+        // Formulario de inicio de sesión
+        const loginForm = document.getElementById('login-form');
+        if (loginForm) {
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Mostrar indicador de carga
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Ha ocurrido un error. Por favor, inténtelo de nuevo.'
+                    title: 'Procesando...',
+                    text: 'Por favor espere',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
                 });
-            });
-        });
-    }
-    
-    // Formulario de registro
-    const registerForm = document.getElementById('register-form');
-    if (registerForm) {
-        registerForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Validar contraseñas
-            const password = document.getElementById('login-register-reg-password').value;
-            const confirmPassword = document.getElementById('login-register-reg-confirm-password').value;
-            
-            if (password !== confirmPassword) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Las contraseñas no coinciden'
-                });
-                return;
-            }
-            
-            if (password.length < 6) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'La contraseña debe tener al menos 6 caracteres'
-                });
-                return;
-            }
-            
-            // Mostrar indicador de carga
-            Swal.fire({
-                title: 'Procesando...',
-                text: 'Por favor espere',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-            
-            // Crear FormData
-            const formData = new FormData(registerForm);
-            formData.append('register', '1'); // Agregar campo para identificar la acción
-            
-            // Enviar solicitud AJAX
-            fetch('controllers/procesar_registro.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Éxito - Mostrar mensaje y cambiar a la pestaña de inicio de sesión
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Registro exitoso!',
-                        text: data.message
-                    }).then(() => {
-                        // Cambiar a la pestaña de inicio de sesión
-                        document.querySelector('.auth-tab-btn[data-bs-target="#login-register-login-form"]').click();
-                        // Limpiar el formulario
-                        registerForm.reset();
+
+                // Crear FormData
+                const formData = new FormData(loginForm);
+                formData.append('login', '1'); // Agregar campo para identificar la acción
+
+                // Enviar solicitud AJAX
+                fetch('controllers/procesar_login_clientes.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Éxito - Mostrar mensaje y redirigir
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Bienvenido!',
+                                text: data.message,
+                                timer: 1500,
+                                showConfirmButton: false
+                            }).then(() => {
+                                window.location.href = data.redirect;
+                            });
+                        } else {
+                            // Error - Mostrar mensaje de error
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Ha ocurrido un error. Por favor, inténtelo de nuevo.'
+                        });
                     });
-                } else {
-                    // Error - Mostrar mensaje de error
+            });
+        }
+
+        // Formulario de registro
+        const registerForm = document.getElementById('register-form');
+        if (registerForm) {
+            registerForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Validar contraseñas
+                const password = document.getElementById('login-register-reg-password').value;
+                const confirmPassword = document.getElementById('login-register-reg-confirm-password').value;
+
+                if (password !== confirmPassword) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: data.message
+                        text: 'Las contraseñas no coinciden'
                     });
+                    return;
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+
+                if (password.length < 6) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'La contraseña debe tener al menos 6 caracteres'
+                    });
+                    return;
+                }
+
+                // Mostrar indicador de carga
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Ha ocurrido un error. Por favor, inténtelo de nuevo.'
+                    title: 'Procesando...',
+                    text: 'Por favor espere',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
                 });
+
+                // Crear FormData
+                const formData = new FormData(registerForm);
+                formData.append('register', '1'); // Agregar campo para identificar la acción
+
+                // Enviar solicitud AJAX
+                fetch('controllers/procesar_registro.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Éxito - Mostrar mensaje y cambiar a la pestaña de inicio de sesión
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Registro exitoso!',
+                                text: data.message
+                            }).then(() => {
+                                // Cambiar a la pestaña de inicio de sesión
+                                document.querySelector('.auth-tab-btn[data-bs-target="#login-register-login-form"]').click();
+                                // Limpiar el formulario
+                                registerForm.reset();
+                            });
+                        } else {
+                            // Error - Mostrar mensaje de error
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: data.message
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Ha ocurrido un error. Por favor, inténtelo de nuevo.'
+                        });
+                    });
             });
-        });
-    }
-});
+        }
+    });
 </script>
