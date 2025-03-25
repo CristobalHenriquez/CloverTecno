@@ -1,6 +1,17 @@
 <?php
 include_once 'db_connection.php';
 
+// Verificar si hay una sesión activa
+if (session_status() == PHP_SESSION_NONE) {
+  session_start();
+}
+
+// Función para verificar si el usuario está logueado
+function esta_logueado()
+{
+  return isset($_SESSION['cliente_id']);
+}
+
 // Consulta para obtener las categorías
 $query = "SELECT id_categoria, nombre_categoria FROM categorias";
 $result = mysqli_query($db, $query);
@@ -136,6 +147,46 @@ $categorias = mysqli_fetch_all($result, MYSQLI_ASSOC);
         background-position: -100% 0;
       }
     }
+
+    /* Estilos para el botón de cerrar sesión */
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      background: linear-gradient(135deg, #104D43, #187766);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+
+    .logout-btn:hover {
+      background: linear-gradient(135deg, #0E443B, #156658);
+      transform: translateY(-2px);
+    }
+
+    .logout-btn i {
+      font-size: 16px;
+    }
+
+    .user-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .logout-btn span {
+        display: none;
+      }
+
+      .logout-btn {
+        padding: 6px;
+      }
+    }
   </style>
 </head>
 
@@ -156,15 +207,56 @@ $categorias = mysqli_fetch_all($result, MYSQLI_ASSOC);
           <li><a href="Nosotros" class="<?= ($current_page == 'Nosotros') ? 'active' : '' ?>">Nosotros</a></li>
           <li><a href="Productos" class="<?= ($current_page == 'Productos') ? 'active' : '' ?>">Productos</a></li>
           <li><a href="Contacto" class="<?= ($current_page == 'Contacto') ? 'active' : '' ?>">Contacto</a></li>
-          <li><a href="Registro" class="<?= ($current_page == 'Registro') ? 'active' : '' ?>">Iniciar Sesión</a></li>
+          <?php if (!esta_logueado()): ?>
+            <li><a href="Registro" class="<?= ($current_page == 'Registro') ? 'active' : '' ?>">Iniciar Sesión</a></li>
+          <?php endif; ?>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
-      <div class="header-social-links">
-        <a href="https://www.instagram.com/clovertecno" class="instagram"><i class="bi bi-instagram"></i></a>
+      <div class="user-actions">
+        <div class="header-social-links">
+          <a href="https://www.instagram.com/clovertecno" class="instagram"><i class="bi bi-instagram"></i></a>
+        </div>
+        <?php if (esta_logueado()): ?>
+          <button id="logout-btn" class="logout-btn">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Cerrar Sesión</span>
+          </button>
+        <?php endif; ?>
       </div>
 
     </div>
     <div class="header-border"></div>
   </header>
+
+  <!-- INCLUYO CARRITO -->
+  <?php include_once 'includes/carrito.php'; ?>
+
+  <!-- Script para cerrar sesión -->
+  <?php if (esta_logueado()): ?>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const logoutBtn = document.getElementById('logout-btn');
+
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', function() {
+            Swal.fire({
+              title: '¿Cerrar sesión?',
+              text: '¿Estás seguro que deseas cerrar tu sesión?',
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonColor: '#104D43',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Sí, cerrar sesión',
+              cancelButtonText: 'Cancelar'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                window.location.href = 'logout.php';
+              }
+            });
+          });
+        }
+      });
+    </script>
+  <?php endif; ?>

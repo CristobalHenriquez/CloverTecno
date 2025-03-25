@@ -148,11 +148,22 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
 
                     <!-- Action Buttons -->
                     <div class="product-actions">
-                        <a href="https://wa.me/+5493416578661?text=Hola, me interesa el producto: <?php echo urlencode($producto['nombre_producto']); ?> (<?php echo formatear_precio($producto['valor_producto']); ?>)"
-                            class="btn btn-primary whatsapp-btn"
-                            target="_blank">
-                            <i class="bi bi-whatsapp"></i> Consultar por WhatsApp
-                        </a>
+                        <?php if ($tiene_stock): ?>
+                            <div class="quantity-selector">
+                                <button class="quantity-btn decrease-quantity" type="button">-</button>
+                                <input type="number" id="product-quantity" class="quantity-input" value="1" min="1" max="<?php echo $producto['stock']; ?>" readonly>
+                                <button class="quantity-btn increase-quantity" type="button">+</button>
+                            </div>
+                            <button id="add-to-cart-btn" class="btn btn-primary add-to-cart-btn">
+                                <i class="bi bi-cart-plus"></i> Agregar al Carrito
+                            </button>
+                        <?php else: ?>
+                            <a href="https://wa.me/+5493416578661?text=Hola, me interesa el producto: <?php echo urlencode($producto['nombre_producto']); ?> (<?php echo formatear_precio($producto['valor_producto']); ?>). ¿Cuándo tendrán stock disponible?"
+                                class="btn btn-success consultar-btn w-100"
+                                target="_blank">
+                                <i class="bi bi-whatsapp"></i> Consultar Disponibilidad
+                            </a>
+                        <?php endif; ?>
                     </div>
 
                     <!-- Delivery Options -->
@@ -353,6 +364,132 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
     .zoomable-image {
         cursor: zoom-in;
     }
+
+    /* Estilos para el selector de cantidad */
+    .product-actions {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        overflow: hidden;
+        height: 45px;
+    }
+
+    .quantity-btn {
+        width: 40px;
+        height: 45px;
+        background-color: #f9fafb;
+        border: none;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .quantity-btn:hover {
+        background-color: #f3f4f6;
+    }
+
+    .quantity-btn:disabled {
+        color: #d1d5db;
+        cursor: not-allowed;
+    }
+
+    .quantity-input {
+        width: 50px;
+        height: 45px;
+        border: none;
+        text-align: center;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .quantity-input::-webkit-outer-spin-button,
+    .quantity-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .add-to-cart-btn {
+        flex: 1;
+        height: 45px;
+        background: linear-gradient(135deg, #104D43, #187766);
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .add-to-cart-btn:hover {
+        background: linear-gradient(135deg, #0E443B, #156658);
+        transform: translateY(-2px);
+    }
+
+    .add-to-cart-btn:active {
+        transform: translateY(0);
+    }
+
+    .add-to-cart-btn i {
+        margin-right: 8px;
+    }
+
+    /* Estilos para el indicador de stock */
+    .stock-info {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 8px;
+        font-size: 0.9rem;
+    }
+
+    .stock-available {
+        color: #10b981;
+    }
+
+    .stock-unavailable {
+        color: #ef4444;
+        font-weight: 500;
+    }
+
+    .stock-count {
+        color: #6b7280;
+        font-size: 0.85rem;
+    }
+
+    /* Estilos para el botón de consultar disponibilidad */
+    .consultar-btn {
+        height: 45px;
+        background-color: #25D366 !important;
+        border: none;
+        color: white;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .consultar-btn:hover {
+        background-color: #128C7E !important;
+        transform: translateY(-2px);
+    }
+
+    .consultar-btn:active {
+        transform: translateY(0);
+    }
+
+    .consultar-btn i {
+        font-size: 1.1rem;
+    }
 </style>
 
 <script>
@@ -369,6 +506,12 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
         const zoomClose = document.querySelector('.zoom-close');
         const zoomPrev = document.querySelector('.zoom-prev');
         const zoomNext = document.querySelector('.zoom-next');
+
+        // Elementos del selector de cantidad
+        const quantityInput = document.getElementById('product-quantity');
+        const decreaseBtn = document.querySelector('.decrease-quantity');
+        const increaseBtn = document.querySelector('.increase-quantity');
+        const addToCartBtn = document.getElementById('add-to-cart-btn');
 
         // Índice de la imagen actual
         let currentIndex = 0;
@@ -452,9 +595,9 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
         // Zoom de imagen con doble clic
         mainImage.addEventListener('click', function(e) {
             e.preventDefault();
-            
+
             clickCount++;
-            
+
             if (clickCount === 1) {
                 clickTimer = setTimeout(function() {
                     clickCount = 0;
@@ -463,7 +606,7 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
             } else if (clickCount === 2) {
                 clearTimeout(clickTimer);
                 clickCount = 0;
-                
+
                 // Acción para doble clic (abrir zoom)
                 zoomImage.src = this.src;
                 zoomImage.alt = this.alt;
@@ -597,5 +740,82 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
                 }
             }
         });
+
+        // Funcionalidad del selector de cantidad
+        if (quantityInput) {
+            const maxStock = parseInt(quantityInput.getAttribute('max'));
+
+            // Actualizar estado de los botones
+            function updateQuantityButtons() {
+                const currentValue = parseInt(quantityInput.value);
+                decreaseBtn.disabled = currentValue <= 1;
+                increaseBtn.disabled = currentValue >= maxStock;
+            }
+
+            // Inicializar
+            updateQuantityButtons();
+
+            // Evento para disminuir cantidad
+            decreaseBtn.addEventListener('click', () => {
+                const currentValue = parseInt(quantityInput.value);
+                if (currentValue > 1) {
+                    quantityInput.value = currentValue - 1;
+                    updateQuantityButtons();
+                }
+            });
+
+            // Evento para aumentar cantidad
+            increaseBtn.addEventListener('click', () => {
+                const currentValue = parseInt(quantityInput.value);
+                if (currentValue < maxStock) {
+                    quantityInput.value = currentValue + 1;
+                    updateQuantityButtons();
+                }
+            });
+
+            // Evento para agregar al carrito
+            if (addToCartBtn) {
+                addToCartBtn.addEventListener('click', () => {
+                    const quantity = parseInt(quantityInput.value);
+
+                    // Verificar stock disponible
+                    if (quantity > maxStock) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Stock insuficiente',
+                            text: `Solo hay ${maxStock} unidades disponibles.`,
+                            confirmButtonColor: '#104D43'
+                        });
+                        return;
+                    }
+
+                    // Obtener datos del producto
+                    const productData = {
+                        id: <?php echo $id_producto; ?>,
+                        name: '<?php echo addslashes(htmlspecialchars($producto['nombre_producto'])); ?>',
+                        price: <?php echo floatval($producto['valor_producto']); ?>,
+                        image: '<?php echo !empty($imagenes) ? addslashes(htmlspecialchars($imagenes[0])) : 'assets/img/no-image.jpg'; ?>',
+                        maxStock: maxStock
+                    };
+
+                    // Llamar a la función global addToCart con la cantidad seleccionada
+                    if (typeof window.addToCart === 'function') {
+                        // Agregar la cantidad seleccionada al objeto del producto
+                        productData.quantity = quantity;
+
+                        // Llamar a la función de agregar al carrito
+                        window.addToCart(productData);
+                    } else {
+                        console.error('La función addToCart no está disponible');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No se pudo agregar el producto al carrito.',
+                            confirmButtonColor: '#104D43'
+                        });
+                    }
+                });
+            }
+        }
     });
 </script>
