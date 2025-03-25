@@ -57,13 +57,13 @@ function formatear_precio($precio) {
                         En Clover Tecno, nos apasiona la tecnología y nos dedicamos a ofrecerte los mejores accesorios para tu dispositivo móvil. Desde fundas protectoras hasta cargadores de alta velocidad, contamos con una amplia gama de productos diseñados para mejorar tu experiencia digital.
                     </p>
                     <div class="hero-cta">
-                        <a href="Productos" class="btn btn-shop">Ver Colección<i class="bi bi-arrow-right"></i></a>
+                        <a href="Productos" class="btn btn-shop">Ver Productos<i class="bi bi-arrow-right"></i></a>
                         <!-- <a href="categorias.php" class="btn btn-collection"></a> -->
                     </div>
                     <div class="hero-features">
                         <div class="feature-item">
                             <i class="bi bi-truck"></i>
-                            <span>Envío Gratis</span>
+                            <span>Envío a todo el pais</span>
                         </div>
                         <div class="feature-item">
                             <i class="bi bi-shield-check"></i>
