@@ -7,6 +7,7 @@ include_once 'includes/inc.head.php';
 ?>
 
 <main class="main">
+    <?php include_once 'templates/account-main.php';?>
 </main>
 
 <?php include_once 'includes/inc.footer.php'; ?>

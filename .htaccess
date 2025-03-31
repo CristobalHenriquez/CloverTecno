@@ -29,7 +29,7 @@ RewriteRule ^AdministradorOfertas$ admin-ofertas.php [L]
 RewriteRule ^AdministradorDestacados$ admin-destacados.php [L]
 RewriteRule ^AdministradorStock$ admin-stock.php [L]
 RewriteRule ^AdministradorVentas$ admin-ventas.php [L]
-RewriteRule ^Cliente$ cliente.php [L]
+RewriteRule ^Cliente$ account.php [L]
 RewriteRule ^Registro$ login-clientes.php [L]
 
 # Agregar la regla para contraseña
