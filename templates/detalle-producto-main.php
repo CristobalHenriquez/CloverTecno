@@ -149,6 +149,7 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
                     <!-- Action Buttons -->
                     <div class="product-actions">
                         <?php if ($tiene_stock): ?>
+                            <?php /* COMENTADO: Funcionalidad de carrito de compras
                             <div class="quantity-selector">
                                 <button class="quantity-btn decrease-quantity" type="button">-</button>
                                 <input type="number" id="product-quantity" class="quantity-input" value="1" min="1" max="<?php echo $producto['stock']; ?>" readonly>
@@ -157,6 +158,13 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
                             <button id="add-to-cart-btn" class="btn btn-primary add-to-cart-btn">
                                 <i class="bi bi-cart-plus"></i> Agregar al Carrito
                             </button>
+                            */ ?>
+                            <!-- Reemplazo: Botón de WhatsApp para consultar sobre el producto -->
+                            <a href="https://wa.me/+5493416578661?text=Hola, me interesa el producto: <?php echo urlencode($producto['nombre_producto']); ?> (<?php echo formatear_precio($producto['valor_producto']); ?>). ¿Podría darme más información?"
+                                class="btn btn-success consultar-btn w-100"
+                                target="_blank">
+                                <i class="bi bi-whatsapp"></i> Consultar por WhatsApp
+                            </a>
                         <?php else: ?>
                             <a href="https://wa.me/+5493416578661?text=Hola, me interesa el producto: <?php echo urlencode($producto['nombre_producto']); ?> (<?php echo formatear_precio($producto['valor_producto']); ?>). ¿Cuándo tendrán stock disponible?"
                                 class="btn btn-success consultar-btn w-100"
@@ -168,13 +176,13 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
 
                     <!-- Delivery Options -->
                     <div class="delivery-options">
-                        <div class="delivery-option">
+                        <!-- <div class="delivery-option">
                             <i class="bi bi-truck"></i>
                             <div>
                                 <h6>Envío Gratis</h6>
                                 <p>En compras mayores a $50.000</p>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="delivery-option">
                             <i class="bi bi-arrow-repeat"></i>
                             <div>
@@ -373,6 +381,7 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
         margin-bottom: 20px;
     }
 
+    <?php /* COMENTADO: Estilos para el selector de cantidad
     .quantity-selector {
         display: flex;
         align-items: center;
@@ -440,6 +449,7 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
     .add-to-cart-btn i {
         margin-right: 8px;
     }
+    */ ?>
 
     /* Estilos para el indicador de stock */
     .stock-info {
@@ -464,7 +474,7 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
         font-size: 0.85rem;
     }
 
-    /* Estilos para el botón de consultar disponibilidad */
+    /* Estilos para el botón de consultar por WhatsApp */
     .consultar-btn {
         height: 45px;
         background-color: #25D366 !important;
@@ -507,11 +517,13 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
         const zoomPrev = document.querySelector('.zoom-prev');
         const zoomNext = document.querySelector('.zoom-next');
 
+        <?php /* COMENTADO: Variables para el selector de cantidad
         // Elementos del selector de cantidad
         const quantityInput = document.getElementById('product-quantity');
         const decreaseBtn = document.querySelector('.decrease-quantity');
         const increaseBtn = document.querySelector('.increase-quantity');
         const addToCartBtn = document.getElementById('add-to-cart-btn');
+        */ ?>
 
         // Índice de la imagen actual
         let currentIndex = 0;
@@ -741,6 +753,7 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
             }
         });
 
+        <?php /* COMENTADO: Funcionalidad del selector de cantidad y agregar al carrito
         // Funcionalidad del selector de cantidad
         if (quantityInput) {
             const maxStock = parseInt(quantityInput.getAttribute('max'));
@@ -817,5 +830,6 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
                 });
             }
         }
+        */ ?>
     });
 </script>

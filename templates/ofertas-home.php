@@ -25,14 +25,9 @@ if (!$result) {
                     "loop": true,
                     "speed": 600,
                     "autoplay": {
-                        "delay": 5000
+                        "delay": 7000
                     },
                     "slidesPerView": "auto",
-                    "pagination": {
-                        "el": ".swiper-pagination",
-                        "type": "bullets",
-                        "clickable": true
-                    },
                     "breakpoints": {
                         "320": {
                             "slidesPerView": 2,
