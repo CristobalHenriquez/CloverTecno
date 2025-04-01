@@ -513,7 +513,7 @@ include_once 'includes/inc.footer.php';
                         }
                     });
                     
-                    $.post('controllers/procesar_eliminar_oferta.php', {
+                    $.post('controllers/eliminar_oferta.php', {
                         id: id
                     }, function(response) {
                         try {
