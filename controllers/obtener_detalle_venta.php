@@ -1,6 +1,6 @@
 <?php
 include_once '../includes/auth.php';
-requireAuth();
+requireAdmin();
 include_once '../includes/db_connection.php';
 
 // Verificar si se recibió el ID

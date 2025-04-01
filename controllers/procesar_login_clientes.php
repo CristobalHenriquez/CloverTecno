@@ -2,8 +2,9 @@
 // Iniciar sesión
 session_start();
 
-// Incluir conexión a la base de datos
+// Incluir conexión a la base de datos y funciones de autenticación
 require_once '../includes/db_connection.php';
+require_once '../includes/auth.php';
 
 // Preparar respuesta
 $response = [
@@ -37,10 +38,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                 $_SESSION['cliente_nombre'] = $user['nombre_apellido'];
                 $_SESSION['cliente_correo'] = $user['correo'];
                 
+                // Redirigir a la página después del login o a la página principal
+                $redirect = $_SESSION['redirect_after_login'] ?? 'Cliente';
+                unset($_SESSION['redirect_after_login']); // Limpiar la variable de sesión
+                
                 // Preparar respuesta exitosa
                 $response['success'] = true;
                 $response['message'] = '¡Inicio de sesión exitoso!';
-                $response['redirect'] = 'Cliente';
+                $response['redirect'] = $redirect;
             } else {
                 $response['message'] = 'Correo electrónico o contraseña incorrectos.';
             }

@@ -1,5 +1,10 @@
 <?php
+// Iniciar sesión
+session_start();
+
+// Incluir la conexión a la base de datos y funciones de autenticación
 require_once '../includes/db_connection.php';
+require_once '../includes/auth.php';
 
 header('Content-Type: application/json');
 
@@ -26,9 +31,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_email'] = $user['email'];
         
+        // Redirigir a la página después del login o a la página principal
+        $redirect = $_SESSION['redirect_after_login'] ?? 'Administrador';
+        unset($_SESSION['redirect_after_login']); // Limpiar la variable de sesión
+        
         echo json_encode([
             'success' => true,
-            'message' => '¡Inicio de sesión exitoso!'
+            'message' => '¡Inicio de sesión exitoso!',
+            'redirect' => $redirect
         ]);
     } else {
         echo json_encode([
@@ -42,4 +52,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'message' => 'Método no permitido'
     ]);
 }
-
