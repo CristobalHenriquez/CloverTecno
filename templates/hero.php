@@ -79,7 +79,7 @@ function formatear_precio($precio) {
             <div class="col-lg-6 image-col" data-aos="fade-left" data-aos-delay="200">
                 <div class="hero-image">
                     <!-- Imagen principal (dispositivo) -->
-                    <img src="assets/img/iphone.png" alt="iPhone" class="main-product" loading="lazy">
+                    <img src="assets/img/HomeClover.png" alt="iPhone" class="main-product" loading="lazy">
                     
                     <?php 
                     // Posiciones para los productos destacados

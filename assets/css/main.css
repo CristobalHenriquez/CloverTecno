@@ -1480,7 +1480,7 @@ section,
 }
 
 .product-info {
-  padding: 1.5rem;
+  padding: 0.5rem; /* Espaciado interno 1.5rem*/
 }
 
 .product-title {
@@ -1984,12 +1984,12 @@ section,
 .product-list .product-info .product-category {
   margin-bottom: 10px;
   font-size: 14px;
-  color: #888888;
+  color: #e1cc45;
 }
 
 .product-list .product-info .product-description {
   font-size: 14px;
-  color: #888888;
+  color: #ffffff;
   line-height: 1.5;
   margin: 0;
   display: -webkit-box;
@@ -2224,7 +2224,7 @@ section,
 
 .hero .image-col .hero-image .floating-product {
   position: absolute;
-  background-color: #1a1a1a; /* Color oscuro para los productos flotantes */
+  background-color: #1a1a1a4b; /* Color oscuro para los productos flotantes */
   border-radius: 0.75rem;
   padding: 0.75rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
@@ -2233,7 +2233,9 @@ section,
   gap: 0.75rem;
   z-index: 3; /* Mayor que la imagen principal */
   transition: transform 0.3s ease;
-  max-width: 180px; /* Limitar ancho */
+  max-width: 320px; /* más ancho */
+  padding: 1.25rem 1.5rem;
+  gap: 1rem;
 }
 
 .hero .image-col .hero-image .floating-product:hover {
@@ -2242,23 +2244,23 @@ section,
 }
 
 .hero .image-col .hero-image .floating-product img {
-  width: 3rem;
-  height: 3rem;
+  width: 5rem;
+  height: 5rem;
   object-fit: contain;
   border-radius: 0.5rem;
 }
 
 .hero .image-col .hero-image .floating-product .product-info h4 {
-  font-size: 0.875rem;
+  font-size: 1rem;
   margin-bottom: 0.25rem;
   font-weight: 600;
   color: #fff;
 }
 
 .hero .image-col .hero-image .floating-product .product-info .price {
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 700;
-  color: #104D43; /* Color similar al de la imagen */
+  color: #198754; /* Color similar al de la imagen */
 }
 
 /* Posiciones mejoradas para los productos flotantes */
@@ -2819,7 +2821,7 @@ section,
 .current-price {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--accent-color);
+  color: #ffffff;
 }
 
 @media (max-width: 768px) {
@@ -2867,7 +2869,7 @@ section,
 }
 
 .product-short-description p {
-  color: var(--t-color);
+  color: #ffffff;
   line-height: 1.8;
   font-size: 1rem;
 }

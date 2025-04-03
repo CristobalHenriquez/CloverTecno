@@ -13,9 +13,11 @@ if (!$result) {
 <!-- Ofertas Section -->
 <section id="clients" class="clients section" style="font-family: Poppins;">
     <!-- Section Title -->
-    <div class="container section-title" data-aos="fade-up">
-        <h2>Ofertas de la Semana</h2>
-        <p>Descubre nuestras increíbles ofertas para cada día de la semana</p>
+    <div class="container" data-aos="fade-up">
+        <div class="section-title">
+            <h2>Ofertas</h2>
+            <p>De la semana</p>
+        </div>
     </div>
 
     <div class="container">
@@ -93,26 +95,16 @@ if (!$result) {
     /* Estilos para la sección de ofertas - Tema Oscuro */
     .clients {
         padding: 60px 0;
-        background-color: #1a1a1a; /* Fondo oscuro */
+        background-color:#000000; /* Fondo oscuro */
     }
 
-    .clients .section-title h2 {
-        color: #0D3D35; /* Rojo para el título, como en la imagen */
-        font-weight: 700;
-        margin-bottom: 20px;
-    }
-
-    .clients .section-title p {
-        color: #e0e0e0; /* Texto claro para contraste */
-        margin-bottom: 40px;
-    }
 
     .clients .swiper-slide img {
         max-width: 150px;
         opacity: 0.8;
         transition: 0.3s;
         cursor: pointer;
-        background-color: #ffffff; /* Fondo blanco para los logos */
+       
         padding: 10px;
         border-radius: 8px;
     }

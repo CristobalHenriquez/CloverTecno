@@ -176,13 +176,13 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
 
                     <!-- Delivery Options -->
                     <div class="delivery-options">
-                        <!-- <div class="delivery-option">
+                        <div class="delivery-option">
                             <i class="bi bi-truck"></i>
                             <div>
                                 <h6>Envío Gratis</h6>
                                 <p>En compras mayores a $50.000</p>
                             </div>
-                        </div> -->
+                        </div> 
                         <div class="delivery-option">
                             <i class="bi bi-arrow-repeat"></i>
                             <div>
