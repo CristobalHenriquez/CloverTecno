@@ -207,6 +207,9 @@ $categorias = mysqli_fetch_all($result, MYSQLI_ASSOC);
           <li><a href="Nosotros" class="<?= ($current_page == 'Nosotros') ? 'active' : '' ?>">Nosotros</a></li>
           <li><a href="Productos" class="<?= ($current_page == 'Productos') ? 'active' : '' ?>">Productos</a></li>
           <li><a href="Contacto" class="<?= ($current_page == 'Contacto') ? 'active' : '' ?>">Contacto</a></li>
+          <?php if (esta_logueado()): ?>
+            <li><a href="Cliente" class="<?= ($current_page == 'Cliente') ? 'active' : '' ?>">Mi Cuenta</a></li>
+          <?php endif; ?>
           <?php if (!esta_logueado()): ?>
             <li><a href="Registro" class="<?= ($current_page == 'Registro') ? 'active' : '' ?>">Iniciar Sesión</a></li>
           <?php endif; ?>

@@ -206,7 +206,7 @@ $total_ordenes = $result->num_rows;
                                             <!-- Order Tracking -->
                                             <?php if ($orden['estado'] == 'Pendiente' || $orden['estado'] == 'En Proceso' || $orden['estado'] == 'Enviado'): ?>
                                                 <div class="collapse tracking-info" id="tracking<?php echo $orden['id_venta']; ?>">
-                                                    <div class="tracking-timeline">
+                                                    <div class="tracking-timeline" style="background-color: black;">
                                                         <div class="timeline-item <?php echo ($orden['estado'] != 'Pendiente') ? 'completed' : 'active'; ?>">
                                                             <div class="timeline-icon">
                                                                 <i class="bi bi-<?php echo ($orden['estado'] != 'Pendiente') ? 'check-circle-fill' : 'hourglass-split'; ?>"></i>
@@ -279,8 +279,8 @@ $total_ordenes = $result->num_rows;
 
                                             <!-- Order Details -->
                                             <div class="collapse order-details" id="details<?php echo $orden['id_venta']; ?>">
-                                                <div class="details-content">
-                                                    <div class="detail-section">
+                                                <div class="details-content" style="background-color: black;">
+                                                    <div class="detail-section" >
                                                         <h5>Información de la Orden</h5>
                                                         <div class="info-grid">
                                                             <div class="info-item">
@@ -294,9 +294,9 @@ $total_ordenes = $result->num_rows;
                                                         </div>
                                                     </div>
 
-                                                    <div class="detail-section">
+                                                    <div class="detail-section" >
                                                         <h5>Productos (<?php echo $total_productos; ?>)</h5>
-                                                        <div class="order-items">
+                                                        <div class="order-items ">
                                                             <?php
                                                             // Obtener detalles completos de los productos
                                                             $query_detalles = "SELECT dv.*, p.nombre_producto, ip.imagen_path 
@@ -316,7 +316,7 @@ $total_ordenes = $result->num_rows;
                                                             while ($detalle = $result_detalles->fetch_assoc()):
                                                                 $imagen = !empty($detalle['imagen_path']) ? $detalle['imagen_path'] : 'assets/img/no-image.jpg';
                                                             ?>
-                                                                <div class="item">
+                                                                <div class="item" style="background-color: black;">
                                                                     <img src="<?php echo htmlspecialchars($imagen); ?>" alt="<?php echo htmlspecialchars($detalle['nombre_producto']); ?>" loading="lazy">
                                                                     <div class="item-info">
                                                                         <h6><?php echo htmlspecialchars($detalle['nombre_producto']); ?></h6>
@@ -333,7 +333,7 @@ $total_ordenes = $result->num_rows;
 
                                                     <div class="detail-section">
                                                         <h5>Detalles de Precio</h5>
-                                                        <div class="price-breakdown">
+                                                        <div class="price-breakdown" style="background-color: black;">
                                                             <div class="price-row">
                                                                 <span>Subtotal</span>
                                                                 <span>$<?php echo number_format($orden['total_venta'], 2, ',', '.'); ?></span>
@@ -348,7 +348,7 @@ $total_ordenes = $result->num_rows;
                                                     <?php if (!empty($orden['domicilio_cliente'])): ?>
                                                         <div class="detail-section">
                                                             <h5>Dirección de Envío</h5>
-                                                            <div class="address-info">
+                                                            <div class="address-info" style="background-color: black;">
                                                                 <p><?php echo htmlspecialchars($orden['nombreyapellido_cliente']); ?><br>
                                                                     <?php echo htmlspecialchars($orden['domicilio_cliente']); ?></p>
                                                                 <?php if (!empty($orden['telefono_cliente'])): ?>
