@@ -16,7 +16,7 @@ if (!$result) {
     <div class="container" data-aos="fade-up">
         <div class="section-title">
             <h2>Ofertas</h2>
-            <p>De la semana</p>
+            <p>Todos los dias de la semana</p>
         </div>
     </div>
 
@@ -29,27 +29,34 @@ if (!$result) {
                     "autoplay": {
                         "delay": 7000
                     },
-                    "slidesPerView": "auto",
+                    "slidesPerView": 2,
+                    "spaceBetween": 20,
                     "breakpoints": {
                         "320": {
                             "slidesPerView": 2,
-                            "spaceBetween": 40
+                            "spaceBetween": 10
                         },
-                        "480": {
+                        "576": {
                             "slidesPerView": 3,
-                            "spaceBetween": 60
+                            "spaceBetween": 15
                         },
-                        "640": {
+                        "768": {
                             "slidesPerView": 4,
-                            "spaceBetween": 80
+                            "spaceBetween": 20
                         },
                         "992": {
+                            "slidesPerView": 5,
+                            "spaceBetween": 30
+                        },
+                        "1200": {
                             "slidesPerView": 6,
-                            "spaceBetween": 120
+                            "spaceBetween": 30
                         }
                     }
                 }
             </script>
+
+
             <div class="swiper-wrapper align-items-center">
                 <?php while ($oferta = mysqli_fetch_assoc($result)): ?>
                     <div class="swiper-slide">
@@ -92,107 +99,103 @@ if (!$result) {
 </div>
 
 <style>
-    /* Estilos para la sección de ofertas - Tema Oscuro */
-    .clients {
-        padding: 60px 0;
-        background-color:#000000; /* Fondo oscuro */
-    }
+.clients {
+  padding: 60px 0;
+  background-color: #000000;
+}
+
+.clients .swiper-slide {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clients .swiper-slide img.oferta-imagen {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* ⬅️ que se vea completa */
+  border-radius: 10px;
+  transition: 0.3s;
+  cursor: pointer;
+  background-color: transparent;
+}
 
 
-    .clients .swiper-slide img {
-        max-width: 150px;
-        opacity: 0.8;
-        transition: 0.3s;
-        cursor: pointer;
-       
-        padding: 10px;
-        border-radius: 8px;
-    }
+.clients .swiper-slide img.oferta-imagen:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
 
-    .clients .swiper-slide img:hover {
-        opacity: 1;
-        transform: scale(1.1);
-    }
+/* Swiper pagination */
+.clients .swiper-pagination-bullet {
+  background-color: #b0b0b0;
+}
+.clients .swiper-pagination-bullet-active {
+  background-color: #0D3D35;
+}
 
-    /* Estilos para la paginación */
-    .clients .swiper-pagination-bullet {
-        background-color: #b0b0b0; /* Gris claro */
-    }
+/* Modal */
+.modal-content {
+  background-color: #2a2a2a;
+  border-radius: 15px;
+  border: none;
+}
+.modal-header {
+  background-color: #333333;
+  color: white;
+  padding: 1.5rem;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+.modal-header h5 {
+  color: #ffffff;
+  font-weight: 600;
+}
+.modal-body {
+  padding: 2rem;
+  color: #e0e0e0;
+}
+.oferta-modal-imagen {
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+.oferta-detalles .dia-semana {
+  display: inline-block;
+  padding: 5px 15px;
+  background-color: #0D3D35;
+  color: white;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+.oferta-detalles .titulo {
+  font-size: 1.5rem;
+  color: #e0e0e0;
+  margin-bottom: 15px;
+}
+.oferta-detalles .descripcion {
+  color: #b0b0b0;
+  line-height: 1.6;
+}
+.btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
 
-    .clients .swiper-pagination-bullet-active {
-        background-color: #0D3D35; /* Rojo para el bullet activo */
-    }
-
-    /* Estilos para el modal */
-    .modal-content {
-        background-color: #2a2a2a; /* Fondo oscuro */
-        border: none;
-        border-radius: 15px;
-    }
-
-    .modal-header {
-        background-color: #333333; /* Gris oscuro */
-        color: white;
-        border-top-left-radius: 15px;
-        border-top-right-radius: 15px;
-        padding: 1.5rem;
-    }
-
-    .modal-header h5 {
-        color: #ffffff; /* Rojo para el título del modal */
-        font-weight: 600;
-    }
-
-    .modal-body {
-        padding: 2rem;
-        color: #e0e0e0; /* Texto claro */
-    }
-
-    .oferta-modal-imagen {
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    }
-
-    .oferta-detalles .dia-semana {
-        display: inline-block;
-        padding: 5px 15px;
-        background-color: #0D3D35; /* Rojo para el día de la semana */
-        color: white;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        margin-bottom: 15px;
-    }
-
-    .oferta-detalles .titulo {
-        color: #e0e0e0; /* Texto claro */
-        font-size: 1.5rem;
-        margin-bottom: 15px;
-    }
-
-    .oferta-detalles .descripcion {
-        color: #b0b0b0; /* Texto gris claro */
-        line-height: 1.6;
-    }
-
-    /* Ajuste para el botón de cierre del modal */
-    .btn-close {
-        filter: invert(1) grayscale(100%) brightness(200%); /* Hacer el botón de cierre visible en fondo oscuro */
-    }
-
-    @media (max-width: 768px) {
-        .modal-dialog {
-            margin: 1rem;
-        }
-
-        .modal-body {
-            padding: 1rem;
-        }
-
-        .oferta-modal-imagen {
-            margin-bottom: 1rem;
-        }
-    }
+@media (max-width: 768px) {
+  .modal-dialog {
+    margin: 1rem;
+  }
+  .modal-body {
+    padding: 1rem;
+  }
+  .oferta-modal-imagen {
+    margin-bottom: 1rem;
+  }
+}
 </style>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

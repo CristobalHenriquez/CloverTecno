@@ -141,6 +141,7 @@ include_once 'includes/inc.head.admin.php';
                             <option value="Viernes">Viernes</option>
                             <option value="Sábado">Sábado</option>
                             <option value="Domingo">Domingo</option>
+                            <option value="Todos los días">Todos los días</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -194,6 +195,7 @@ include_once 'includes/inc.head.admin.php';
                             <option value="Viernes">Viernes</option>
                             <option value="Sábado">Sábado</option>
                             <option value="Domingo">Domingo</option>
+                            <option value="Todos los días">Todos los días</option>
                         </select>
                     </div>
                     <div class="mb-3">
