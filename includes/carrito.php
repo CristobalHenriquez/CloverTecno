@@ -12,7 +12,7 @@ if (session_status() == PHP_SESSION_NONE) {
 <style>
     .cart-icon {
         position: fixed;
-        bottom: 80px;
+        bottom: 100px;
         right: 20px;
         background: linear-gradient(135deg, #104D43, #187766);
         color: white;
@@ -28,6 +28,10 @@ if (session_status() == PHP_SESSION_NONE) {
         transition: all 0.3s ease;
     }
 
+    .cart-icon i {
+    font-size: 1.8rem; /* o 2rem si querés más */
+    }
+    
     .cart-icon:hover {
         transform: scale(1.1);
         box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
