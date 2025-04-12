@@ -98,7 +98,7 @@ $register_success = isset($register_success) ? $register_success : '';
         background-color: transparent;
         border: none;
         color: color-mix(in srgb, var(--default-color), transparent 50%);
-        padding-right: 0;
+        padding-right: 10px;
     }
 
     .login-register .input-group .input-group-text i {

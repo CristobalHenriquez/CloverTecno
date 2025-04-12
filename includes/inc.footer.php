@@ -9,10 +9,10 @@
       <div class="container">
         <!-- Redes sociales -->
         <div class="social-links d-flex justify-content-center mb-3">
-          <!-- <a href=""><i class="bi bi-twitter-x"></i></a>
+          <a href=""><i class="bi bi-twitter-x"></i></a>
           <a href=""><i class="bi bi-facebook"></i></a>
           <a href="#"><i class="bi bi-instagram"></i></a>
-          <a href=""><i class="bi bi-linkedin"></i></a> -->
+          <a href=""><i class="bi bi-linkedin"></i></a>
         </div>
 
         <!-- Logo con enlace -->

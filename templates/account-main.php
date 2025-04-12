@@ -1,8 +1,32 @@
+<?php
+// Incluir la conexión a la base de datos
+include_once 'includes/db_connection.php';
+
+// Obtener información del cliente actual
+$cliente_id = getClienteId();
+$cliente_nombre = getClienteNombre();
+$cliente_email = getClienteEmail();
+
+// Consultar las órdenes del cliente
+$query = "SELECT v.*, COUNT(dv.id_detalle) as cantidad_items 
+          FROM ventas v 
+          LEFT JOIN detalle_ventas dv ON v.id_venta = dv.id_venta 
+          WHERE v.id_cliente = ? 
+          GROUP BY v.id_venta 
+          ORDER BY v.fecha_venta DESC";
+
+$stmt = $db->prepare($query);
+$stmt->bind_param("i", $cliente_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Contar el número total de órdenes
+$total_ordenes = $result->num_rows;
+?>
+
 <!-- Account Section -->
 <section id="account" class="account section">
-
     <div class="container" data-aos="fade-up" data-aos-delay="100">
-
         <!-- Mobile Menu Toggle -->
         <div class="mobile-menu d-lg-none mb-4">
             <button class="mobile-menu-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#profileMenu">
@@ -17,10 +41,10 @@
                 <div class="profile-menu collapse d-lg-block" id="profileMenu">
                     <!-- User Info -->
                     <div class="user-info" data-aos="fade-right">
-                        <h4>Nombre de users_clientes</h4>
+                        <h4><?php echo htmlspecialchars($cliente_nombre); ?></h4>
                         <div class="user-status">
-                            <i class="bi bi-award"></i>
-                            <span>Correo de users_clientes</span>
+                            <i class="bi bi-envelope"></i>
+                            <span><?php echo htmlspecialchars($cliente_email); ?></span>
                         </div>
                     </div>
 
@@ -30,20 +54,10 @@
                             <li class="nav-item">
                                 <a class="nav-link active" data-bs-toggle="tab" href="#orders">
                                     <i class="bi bi-box-seam"></i>
-                                    <span>Mis Ordenes</span>
-                                    <span class="badge">3</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#addresses">
-                                    <i class="bi bi-geo-alt"></i>
-                                    <span>Direccion</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-bs-toggle="tab" href="#settings">
-                                    <i class="bi bi-gear"></i>
-                                    <span>Ajustes de la cuenta</span>
+                                    <span>Mis Órdenes</span>
+                                    <?php if ($total_ordenes > 0): ?>
+                                        <span class="badge"><?php echo $total_ordenes; ?></span>
+                                    <?php endif; ?>
                                 </a>
                             </li>
                         </ul>
@@ -65,664 +79,367 @@
                         <!-- Orders Tab -->
                         <div class="tab-pane fade show active" id="orders">
                             <div class="section-header" data-aos="fade-up">
-                                <h2>My Orders</h2>
+                                <h2>Mis Órdenes</h2>
                                 <div class="header-actions">
                                     <div class="search-box">
                                         <i class="bi bi-search"></i>
-                                        <input type="text" placeholder="Search orders...">
+                                        <input type="text" id="searchOrders" placeholder="Buscar órdenes...">
                                     </div>
                                     <div class="dropdown">
                                         <button class="filter-btn" data-bs-toggle="dropdown">
                                             <i class="bi bi-funnel"></i>
-                                            <span>Filter</span>
+                                            <span>Filtrar</span>
                                         </button>
                                         <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#">All Orders</a></li>
-                                            <li><a class="dropdown-item" href="#">Processing</a></li>
-                                            <li><a class="dropdown-item" href="#">Shipped</a></li>
-                                            <li><a class="dropdown-item" href="#">Delivered</a></li>
-                                            <li><a class="dropdown-item" href="#">Cancelled</a></li>
+                                            <li><a class="dropdown-item" href="#" data-filter="all">Todas las Órdenes</a></li>
+                                            <li><a class="dropdown-item" href="#" data-filter="Pendiente">Pendiente</a></li>
+                                            <li><a class="dropdown-item" href="#" data-filter="En Proceso">En Proceso</a></li>
+                                            <li><a class="dropdown-item" href="#" data-filter="Enviado">Enviado</a></li>
+                                            <li><a class="dropdown-item" href="#" data-filter="Entregado">Entregado</a></li>
+                                            <li><a class="dropdown-item" href="#" data-filter="Cancelado">Cancelado</a></li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="orders-grid">
-                                <!-- Order Card 1 -->
-                                <div class="order-card" data-aos="fade-up" data-aos-delay="100">
-                                    <div class="order-header">
-                                        <div class="order-id">
-                                            <span class="label">Order ID:</span>
-                                            <span class="value">#ORD-2024-1278</span>
-                                        </div>
-                                        <div class="order-date">Feb 20, 2025</div>
-                                    </div>
-                                    <div class="order-content">
-                                        <div class="product-grid">
-                                            <img src="assets/img/product/product-1.webp" alt="Product" loading="lazy">
-                                            <img src="assets/img/product/product-2.webp" alt="Product" loading="lazy">
-                                            <img src="assets/img/product/product-3.webp" alt="Product" loading="lazy">
-                                        </div>
-                                        <div class="order-info">
-                                            <div class="info-row">
-                                                <span>Status</span>
-                                                <span class="status processing">Processing</span>
-                                            </div>
-                                            <div class="info-row">
-                                                <span>Items</span>
-                                                <span>3 items</span>
-                                            </div>
-                                            <div class="info-row">
-                                                <span>Total</span>
-                                                <span class="price">$789.99</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="order-footer">
-                                        <button type="button" class="btn-track" data-bs-toggle="collapse" data-bs-target="#tracking1" aria-expanded="false">Track Order</button>
-                                        <button type="button" class="btn-details" data-bs-toggle="collapse" data-bs-target="#details1" aria-expanded="false">View Details</button>
-                                    </div>
+                                <?php
+                                if ($result->num_rows > 0):
+                                    $delay = 100;
+                                    while ($orden = $result->fetch_assoc()):
+                                        // Formatear fecha
+                                        $fecha = new DateTime($orden['fecha_venta']);
+                                        $fechaFormateada = $fecha->format('d M, Y');
 
-                                    <!-- Order Tracking -->
-                                    <div class="collapse tracking-info" id="tracking1">
-                                        <div class="tracking-timeline">
-                                            <div class="timeline-item completed">
-                                                <div class="timeline-icon">
-                                                    <i class="bi bi-check-circle-fill"></i>
-                                                </div>
-                                                <div class="timeline-content">
-                                                    <h5>Order Confirmed</h5>
-                                                    <p>Your order has been received and confirmed</p>
-                                                    <span class="timeline-date">Feb 20, 2025 - 10:30 AM</span>
-                                                </div>
-                                            </div>
+                                        // Determinar clase de estado
+                                        $estadoClass = '';
+                                        switch ($orden['estado']) {
+                                            case 'Pendiente':
+                                                $estadoClass = 'pending';
+                                                break;
+                                            case 'En Proceso':
+                                                $estadoClass = 'processing';
+                                                break;
+                                            case 'Enviado':
+                                                $estadoClass = 'shipped';
+                                                break;
+                                            case 'Entregado':
+                                                $estadoClass = 'delivered';
+                                                break;
+                                            case 'Cancelado':
+                                                $estadoClass = 'cancelled';
+                                                break;
+                                            default:
+                                                $estadoClass = 'pending';
+                                                break;
+                                        }
 
-                                            <div class="timeline-item completed">
-                                                <div class="timeline-icon">
-                                                    <i class="bi bi-check-circle-fill"></i>
-                                                </div>
-                                                <div class="timeline-content">
-                                                    <h5>Processing</h5>
-                                                    <p>Your order is being prepared for shipment</p>
-                                                    <span class="timeline-date">Feb 20, 2025 - 2:45 PM</span>
-                                                </div>
-                                            </div>
+                                        // Obtener productos de la orden
+                                        $query_productos = "SELECT p.id_producto, p.nombre_producto, ip.imagen_path 
+                                                          FROM detalle_ventas dv 
+                                                          JOIN productos p ON dv.id_producto = p.id_producto 
+                                                          LEFT JOIN (
+                                                              SELECT id_producto, MIN(imagen_path) as imagen_path 
+                                                              FROM imagenes_productos 
+                                                              GROUP BY id_producto
+                                                          ) ip ON p.id_producto = ip.id_producto 
+                                                          WHERE dv.id_venta = ? 
+                                                          LIMIT 3";
+                                        $stmt_productos = $db->prepare($query_productos);
+                                        $stmt_productos->bind_param("i", $orden['id_venta']);
+                                        $stmt_productos->execute();
+                                        $result_productos = $stmt_productos->get_result();
 
-                                            <div class="timeline-item active">
-                                                <div class="timeline-icon">
-                                                    <i class="bi bi-box-seam"></i>
+                                        // Contar total de productos
+                                        $total_productos = $orden['cantidad_items'];
+                                ?>
+                                        <!-- Order Card -->
+                                        <div class="order-card" data-aos="fade-up" data-aos-delay="<?php echo $delay; ?>" data-status="<?php echo $orden['estado']; ?>">
+                                            <div class="order-header">
+                                                <div class="order-id">
+                                                    <span class="label">Orden ID:</span>
+                                                    <span class="value">#ORD-<?php echo $orden['id_venta']; ?></span>
                                                 </div>
-                                                <div class="timeline-content">
-                                                    <h5>Packaging</h5>
-                                                    <p>Your items are being packaged for shipping</p>
-                                                    <span class="timeline-date">Feb 20, 2025 - 4:15 PM</span>
-                                                </div>
+                                                <div class="order-date"><?php echo $fechaFormateada; ?></div>
                                             </div>
+                                            <div class="order-content">
+                                                <div class="product-grid">
+                                                    <?php
+                                                    $count = 0;
+                                                    while ($producto = $result_productos->fetch_assoc()):
+                                                        $imagen = !empty($producto['imagen_path']) ? $producto['imagen_path'] : 'assets/img/no-image.jpg';
+                                                        $count++;
+                                                    ?>
+                                                        <img src="<?php echo htmlspecialchars($imagen); ?>" alt="<?php echo htmlspecialchars($producto['nombre_producto']); ?>" loading="lazy">
+                                                    <?php endwhile; ?>
 
-                                            <div class="timeline-item">
-                                                <div class="timeline-icon">
-                                                    <i class="bi bi-truck"></i>
+                                                    <?php if ($total_productos > 3): ?>
+                                                        <span class="more-items">+<?php echo $total_productos - 3; ?></span>
+                                                    <?php endif; ?>
                                                 </div>
-                                                <div class="timeline-content">
-                                                    <h5>In Transit</h5>
-                                                    <p>Expected to ship within 24 hours</p>
-                                                </div>
-                                            </div>
-
-                                            <div class="timeline-item">
-                                                <div class="timeline-icon">
-                                                    <i class="bi bi-house-door"></i>
-                                                </div>
-                                                <div class="timeline-content">
-                                                    <h5>Delivery</h5>
-                                                    <p>Estimated delivery: Feb 22, 2025</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Order Details -->
-                                    <div class="collapse order-details" id="details1">
-                                        <div class="details-content">
-                                            <div class="detail-section">
-                                                <h5>Order Information</h5>
-                                                <div class="info-grid">
-                                                    <div class="info-item">
-                                                        <span class="label">Payment Method</span>
-                                                        <span class="value">Credit Card (**** 4589)</span>
+                                                <div class="order-info">
+                                                    <div class="info-row">
+                                                        <span>Estado</span>
+                                                        <span class="status <?php echo $estadoClass; ?>"><?php echo $orden['estado']; ?></span>
                                                     </div>
-                                                    <div class="info-item">
-                                                        <span class="label">Shipping Method</span>
-                                                        <span class="value">Express Delivery (2-3 days)</span>
+                                                    <div class="info-row">
+                                                        <span>Productos</span>
+                                                        <span><?php echo $total_productos; ?> item<?php echo $total_productos != 1 ? 's' : ''; ?></span>
                                                     </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="detail-section">
-                                                <h5>Items (3)</h5>
-                                                <div class="order-items">
-                                                    <div class="item">
-                                                        <img src="assets/img/product/product-1.webp" alt="Product" loading="lazy">
-                                                        <div class="item-info">
-                                                            <h6>Lorem ipsum dolor sit amet</h6>
-                                                            <div class="item-meta">
-                                                                <span class="sku">SKU: PRD-001</span>
-                                                                <span class="qty">Qty: 1</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="item-price">$899.99</div>
-                                                    </div>
-
-                                                    <div class="item">
-                                                        <img src="assets/img/product/product-2.webp" alt="Product" loading="lazy">
-                                                        <div class="item-info">
-                                                            <h6>Consectetur adipiscing elit</h6>
-                                                            <div class="item-meta">
-                                                                <span class="sku">SKU: PRD-002</span>
-                                                                <span class="qty">Qty: 2</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="item-price">$599.95</div>
-                                                    </div>
-
-                                                    <div class="item">
-                                                        <img src="assets/img/product/product-3.webp" alt="Product" loading="lazy">
-                                                        <div class="item-info">
-                                                            <h6>Sed do eiusmod tempor</h6>
-                                                            <div class="item-meta">
-                                                                <span class="sku">SKU: PRD-003</span>
-                                                                <span class="qty">Qty: 1</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="item-price">$129.99</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="detail-section">
-                                                <h5>Price Details</h5>
-                                                <div class="price-breakdown">
-                                                    <div class="price-row">
-                                                        <span>Subtotal</span>
-                                                        <span>$1,929.93</span>
-                                                    </div>
-                                                    <div class="price-row">
-                                                        <span>Shipping</span>
-                                                        <span>$15.99</span>
-                                                    </div>
-                                                    <div class="price-row">
-                                                        <span>Tax</span>
-                                                        <span>$159.98</span>
-                                                    </div>
-                                                    <div class="price-row total">
+                                                    <div class="info-row">
                                                         <span>Total</span>
-                                                        <span>$2,105.90</span>
+                                                        <span class="price">$<?php echo number_format($orden['total_venta'], 2, ',', '.'); ?></span>
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            <div class="detail-section">
-                                                <h5>Shipping Address</h5>
-                                                <div class="address-info">
-                                                    <p>Sarah Anderson<br>123 Main Street<br>Apt 4B<br>New York, NY 10001<br>United States</p>
-                                                    <p class="contact">+1 (555) 123-4567</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Order Card 2 -->
-                                <div class="order-card" data-aos="fade-up" data-aos-delay="200">
-                                    <div class="order-header">
-                                        <div class="order-id">
-                                            <span class="label">Order ID:</span>
-                                            <span class="value">#ORD-2024-1265</span>
-                                        </div>
-                                        <div class="order-date">Feb 15, 2025</div>
-                                    </div>
-                                    <div class="order-content">
-                                        <div class="product-grid">
-                                            <img src="assets/img/product/product-4.webp" alt="Product" loading="lazy">
-                                            <img src="assets/img/product/product-5.webp" alt="Product" loading="lazy">
-                                        </div>
-                                        <div class="order-info">
-                                            <div class="info-row">
-                                                <span>Status</span>
-                                                <span class="status shipped">Shipped</span>
-                                            </div>
-                                            <div class="info-row">
-                                                <span>Items</span>
-                                                <span>2 items</span>
-                                            </div>
-                                            <div class="info-row">
-                                                <span>Total</span>
-                                                <span class="price">$459.99</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="order-footer">
-                                        <button type="button" class="btn-track" data-bs-toggle="collapse" data-bs-target="#tracking2" aria-expanded="false">Track Order</button>
-                                        <button type="button" class="btn-details" data-bs-toggle="collapse" data-bs-target="#details2" aria-expanded="false">View Details</button>
-                                    </div>
-
-                                    <!-- Order Tracking -->
-                                    <div class="collapse tracking-info" id="tracking2">
-                                        <div class="tracking-timeline">
-                                            <div class="timeline-item completed">
-                                                <div class="timeline-icon">
-                                                    <i class="bi bi-check-circle-fill"></i>
-                                                </div>
-                                                <div class="timeline-content">
-                                                    <h5>Order Confirmed</h5>
-                                                    <p>Your order has been received and confirmed</p>
-                                                    <span class="timeline-date">Feb 15, 2025 - 9:15 AM</span>
-                                                </div>
+                                            <div class="order-footer">
+                                                <?php if ($orden['estado'] == 'Pendiente' || $orden['estado'] == 'En Proceso' || $orden['estado'] == 'Enviado'): ?>
+                                                    <button type="button" class="btn-track" data-bs-toggle="collapse" data-bs-target="#tracking<?php echo $orden['id_venta']; ?>" aria-expanded="false">Seguir Orden</button>
+                                                <?php elseif ($orden['estado'] == 'Entregado'): ?>
+                                                    <button type="button" class="btn-review">Escribir Reseña</button>
+                                                <?php elseif ($orden['estado'] == 'Cancelado'): ?>
+                                                    <button type="button" class="btn-reorder">Reordenar</button>
+                                                <?php endif; ?>
+                                                <button type="button" class="btn-details" data-bs-toggle="collapse" data-bs-target="#details<?php echo $orden['id_venta']; ?>" aria-expanded="false">Ver Detalles</button>
                                             </div>
 
-                                            <div class="timeline-item completed">
-                                                <div class="timeline-icon">
-                                                    <i class="bi bi-check-circle-fill"></i>
-                                                </div>
-                                                <div class="timeline-content">
-                                                    <h5>Processing</h5>
-                                                    <p>Your order is being prepared for shipment</p>
-                                                    <span class="timeline-date">Feb 15, 2025 - 11:30 AM</span>
-                                                </div>
-                                            </div>
-
-                                            <div class="timeline-item completed">
-                                                <div class="timeline-icon">
-                                                    <i class="bi bi-check-circle-fill"></i>
-                                                </div>
-                                                <div class="timeline-content">
-                                                    <h5>Packaging</h5>
-                                                    <p>Your items have been packaged for shipping</p>
-                                                    <span class="timeline-date">Feb 15, 2025 - 2:45 PM</span>
-                                                </div>
-                                            </div>
-
-                                            <div class="timeline-item active">
-                                                <div class="timeline-icon">
-                                                    <i class="bi bi-truck"></i>
-                                                </div>
-                                                <div class="timeline-content">
-                                                    <h5>In Transit</h5>
-                                                    <p>Package in transit with carrier</p>
-                                                    <span class="timeline-date">Feb 16, 2025 - 10:20 AM</span>
-                                                    <div class="shipping-info">
-                                                        <span>Tracking Number: </span>
-                                                        <span class="tracking-number">1Z999AA1234567890</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="timeline-item">
-                                                <div class="timeline-icon">
-                                                    <i class="bi bi-house-door"></i>
-                                                </div>
-                                                <div class="timeline-content">
-                                                    <h5>Delivery</h5>
-                                                    <p>Estimated delivery: Feb 18, 2025</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Order Details -->
-                                    <div class="collapse order-details" id="details2">
-                                        <div class="details-content">
-                                            <div class="detail-section">
-                                                <h5>Order Information</h5>
-                                                <div class="info-grid">
-                                                    <div class="info-item">
-                                                        <span class="label">Payment Method</span>
-                                                        <span class="value">Credit Card (**** 7821)</span>
-                                                    </div>
-                                                    <div class="info-item">
-                                                        <span class="label">Shipping Method</span>
-                                                        <span class="value">Standard Shipping (3-5 days)</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="detail-section">
-                                                <h5>Items (2)</h5>
-                                                <div class="order-items">
-                                                    <div class="item">
-                                                        <img src="assets/img/product/product-4.webp" alt="Product" loading="lazy">
-                                                        <div class="item-info">
-                                                            <h6>Ut enim ad minim veniam</h6>
-                                                            <div class="item-meta">
-                                                                <span class="sku">SKU: PRD-004</span>
-                                                                <span class="qty">Qty: 1</span>
+                                            <!-- Order Tracking -->
+                                            <?php if ($orden['estado'] == 'Pendiente' || $orden['estado'] == 'En Proceso' || $orden['estado'] == 'Enviado'): ?>
+                                                <div class="collapse tracking-info" id="tracking<?php echo $orden['id_venta']; ?>">
+                                                    <div class="tracking-timeline">
+                                                        <div class="timeline-item <?php echo ($orden['estado'] != 'Pendiente') ? 'completed' : 'active'; ?>">
+                                                            <div class="timeline-icon">
+                                                                <i class="bi bi-<?php echo ($orden['estado'] != 'Pendiente') ? 'check-circle-fill' : 'hourglass-split'; ?>"></i>
+                                                            </div>
+                                                            <div class="timeline-content">
+                                                                <h5>Orden Confirmada</h5>
+                                                                <p>Tu orden ha sido recibida y confirmada</p>
+                                                                <span class="timeline-date"><?php echo $fechaFormateada; ?></span>
                                                             </div>
                                                         </div>
-                                                        <div class="item-price">$299.99</div>
-                                                    </div>
 
-                                                    <div class="item">
-                                                        <img src="assets/img/product/product-5.webp" alt="Product" loading="lazy">
-                                                        <div class="item-info">
-                                                            <h6>Quis nostrud exercitation</h6>
-                                                            <div class="item-meta">
-                                                                <span class="sku">SKU: PRD-005</span>
-                                                                <span class="qty">Qty: 1</span>
+                                                        <div class="timeline-item <?php echo ($orden['estado'] == 'En Proceso' || $orden['estado'] == 'Enviado') ? 'completed' : ($orden['estado'] == 'Pendiente' ? '' : 'active'); ?>">
+                                                            <div class="timeline-icon">
+                                                                <i class="bi bi-<?php echo ($orden['estado'] == 'En Proceso' || $orden['estado'] == 'Enviado') ? 'check-circle-fill' : 'gear'; ?>"></i>
+                                                            </div>
+                                                            <div class="timeline-content">
+                                                                <h5>Procesando</h5>
+                                                                <p>Tu orden está siendo preparada para envío</p>
+                                                                <?php if ($orden['estado'] == 'En Proceso' || $orden['estado'] == 'Enviado'): ?>
+                                                                    <span class="timeline-date"><?php echo $fechaFormateada; ?></span>
+                                                                <?php endif; ?>
                                                             </div>
                                                         </div>
-                                                        <div class="item-price">$159.99</div>
+
+                                                        <div class="timeline-item <?php echo ($orden['estado'] == 'Enviado') ? 'completed' : ($orden['estado'] == 'En Proceso' ? 'active' : ''); ?>">
+                                                            <div class="timeline-icon">
+                                                                <i class="bi bi-<?php echo ($orden['estado'] == 'Enviado') ? 'check-circle-fill' : 'box-seam'; ?>"></i>
+                                                            </div>
+                                                            <div class="timeline-content">
+                                                                <h5>Empaquetado</h5>
+                                                                <p>Tus productos están siendo empaquetados para envío</p>
+                                                                <?php if ($orden['estado'] == 'Enviado'): ?>
+                                                                    <span class="timeline-date"><?php echo $fechaFormateada; ?></span>
+                                                                <?php endif; ?>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="timeline-item <?php echo ($orden['estado'] == 'Enviado') ? 'active' : ''; ?>">
+                                                            <div class="timeline-icon">
+                                                                <i class="bi bi-truck"></i>
+                                                            </div>
+                                                            <div class="timeline-content">
+                                                                <h5>En Tránsito</h5>
+                                                                <p><?php echo ($orden['estado'] == 'Enviado') ? 'Paquete en tránsito con el transportista' : 'Se espera enviar en las próximas 24 horas'; ?></p>
+                                                                <?php if ($orden['estado'] == 'Enviado' && !empty($orden['numero_seguimiento'])): ?>
+                                                                    <div class="shipping-info">
+                                                                        <span>Número de Seguimiento: </span>
+                                                                        <span class="tracking-number"><?php echo $orden['numero_seguimiento']; ?></span>
+                                                                    </div>
+                                                                <?php endif; ?>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="timeline-item">
+                                                            <div class="timeline-icon">
+                                                                <i class="bi bi-house-door"></i>
+                                                            </div>
+                                                            <div class="timeline-content">
+                                                                <h5>Entrega</h5>
+                                                                <p>Entrega estimada: <?php
+                                                                                        $fechaEntrega = clone $fecha;
+                                                                                        $fechaEntrega->modify('+3 days');
+                                                                                        echo $fechaEntrega->format('d M, Y');
+                                                                                        ?></p>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            <?php endif; ?>
 
-                                            <div class="detail-section">
-                                                <h5>Price Details</h5>
-                                                <div class="price-breakdown">
-                                                    <div class="price-row">
-                                                        <span>Subtotal</span>
-                                                        <span>$459.98</span>
+                                            <!-- Order Details -->
+                                            <div class="collapse order-details" id="details<?php echo $orden['id_venta']; ?>">
+                                                <div class="details-content">
+                                                    <div class="detail-section">
+                                                        <h5>Información de la Orden</h5>
+                                                        <div class="info-grid">
+                                                            <div class="info-item">
+                                                                <span class="label">Método de Pago</span>
+                                                                <span class="value"><?php echo !empty($orden['metodo_pago']) ? $orden['metodo_pago'] : 'No especificado'; ?></span>
+                                                            </div>
+                                                            <div class="info-item">
+                                                                <span class="label">Notas</span>
+                                                                <span class="value"><?php echo !empty($orden['notas']) ? $orden['notas'] : 'Sin notas'; ?></span>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div class="price-row">
-                                                        <span>Shipping</span>
-                                                        <span>$9.99</span>
+
+                                                    <div class="detail-section">
+                                                        <h5>Productos (<?php echo $total_productos; ?>)</h5>
+                                                        <div class="order-items">
+                                                            <?php
+                                                            // Obtener detalles completos de los productos
+                                                            $query_detalles = "SELECT dv.*, p.nombre_producto, ip.imagen_path 
+                                                                      FROM detalle_ventas dv 
+                                                                      JOIN productos p ON dv.id_producto = p.id_producto 
+                                                                      LEFT JOIN (
+                                                                          SELECT id_producto, MIN(imagen_path) as imagen_path 
+                                                                          FROM imagenes_productos 
+                                                                          GROUP BY id_producto
+                                                                      ) ip ON p.id_producto = ip.id_producto 
+                                                                      WHERE dv.id_venta = ?";
+                                                            $stmt_detalles = $db->prepare($query_detalles);
+                                                            $stmt_detalles->bind_param("i", $orden['id_venta']);
+                                                            $stmt_detalles->execute();
+                                                            $result_detalles = $stmt_detalles->get_result();
+
+                                                            while ($detalle = $result_detalles->fetch_assoc()):
+                                                                $imagen = !empty($detalle['imagen_path']) ? $detalle['imagen_path'] : 'assets/img/no-image.jpg';
+                                                            ?>
+                                                                <div class="item">
+                                                                    <img src="<?php echo htmlspecialchars($imagen); ?>" alt="<?php echo htmlspecialchars($detalle['nombre_producto']); ?>" loading="lazy">
+                                                                    <div class="item-info">
+                                                                        <h6><?php echo htmlspecialchars($detalle['nombre_producto']); ?></h6>
+                                                                        <div class="item-meta">
+                                                                            <span class="sku">SKU: PRD-<?php echo $detalle['id_producto']; ?></span>
+                                                                            <span class="qty">Cant: <?php echo $detalle['cantidad']; ?></span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="item-price">$<?php echo number_format($detalle['precio_unitario'], 2, ',', '.'); ?></div>
+                                                                </div>
+                                                            <?php endwhile; ?>
+                                                        </div>
                                                     </div>
-                                                    <div class="price-row">
-                                                        <span>Tax</span>
-                                                        <span>$38.02</span>
+
+                                                    <div class="detail-section">
+                                                        <h5>Detalles de Precio</h5>
+                                                        <div class="price-breakdown">
+                                                            <div class="price-row">
+                                                                <span>Subtotal</span>
+                                                                <span>$<?php echo number_format($orden['total_venta'], 2, ',', '.'); ?></span>
+                                                            </div>
+                                                            <div class="price-row total">
+                                                                <span>Total</span>
+                                                                <span>$<?php echo number_format($orden['total_venta'], 2, ',', '.'); ?></span>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div class="price-row total">
-                                                        <span>Total</span>
-                                                        <span>$459.99</span>
-                                                    </div>
+
+                                                    <?php if (!empty($orden['domicilio_cliente'])): ?>
+                                                        <div class="detail-section">
+                                                            <h5>Dirección de Envío</h5>
+                                                            <div class="address-info">
+                                                                <p><?php echo htmlspecialchars($orden['nombreyapellido_cliente']); ?><br>
+                                                                    <?php echo htmlspecialchars($orden['domicilio_cliente']); ?></p>
+                                                                <?php if (!empty($orden['telefono_cliente'])): ?>
+                                                                    <p class="contact"><?php echo htmlspecialchars($orden['telefono_cliente']); ?></p>
+                                                                <?php endif; ?>
+                                                            </div>
+                                                        </div>
+                                                    <?php endif; ?>
                                                 </div>
                                             </div>
-
-                                            <div class="detail-section">
-                                                <h5>Shipping Address</h5>
-                                                <div class="address-info">
-                                                    <p>Sarah Anderson<br>123 Main Street<br>Apt 4B<br>New York, NY 10001<br>United States</p>
-                                                    <p class="contact">+1 (555) 123-4567</p>
-                                                </div>
-                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <!-- Order Card 3 -->
-                                <div class="order-card" data-aos="fade-up" data-aos-delay="300">
-                                    <div class="order-header">
-                                        <div class="order-id">
-                                            <span class="label">Order ID:</span>
-                                            <span class="value">#ORD-2024-1252</span>
+                                    <?php
+                                        $delay += 100;
+                                    endwhile;
+                                else:
+                                    ?>
+                                    <div class="no-orders" data-aos="fade-up">
+                                        <div class="no-orders-icon">
+                                            <i class="bi bi-bag-x"></i>
                                         </div>
-                                        <div class="order-date">Feb 10, 2025</div>
+                                        <h3>No tienes órdenes todavía</h3>
+                                        <p>Explora nuestra tienda y realiza tu primera compra</p>
+                                        <a href="Productos" class="btn-shop-now">Ir a Comprar</a>
                                     </div>
-                                    <div class="order-content">
-                                        <div class="product-grid">
-                                            <img src="assets/img/product/product-6.webp" alt="Product" loading="lazy">
-                                        </div>
-                                        <div class="order-info">
-                                            <div class="info-row">
-                                                <span>Status</span>
-                                                <span class="status delivered">Delivered</span>
-                                            </div>
-                                            <div class="info-row">
-                                                <span>Items</span>
-                                                <span>1 item</span>
-                                            </div>
-                                            <div class="info-row">
-                                                <span>Total</span>
-                                                <span class="price">$129.99</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="order-footer">
-                                        <button type="button" class="btn-review">Write Review</button>
-                                        <button type="button" class="btn-details">View Details</button>
-                                    </div>
-                                </div>
-
-                                <!-- Order Card 4 -->
-                                <div class="order-card" data-aos="fade-up" data-aos-delay="400">
-                                    <div class="order-header">
-                                        <div class="order-id">
-                                            <span class="label">Order ID:</span>
-                                            <span class="value">#ORD-2024-1245</span>
-                                        </div>
-                                        <div class="order-date">Feb 5, 2025</div>
-                                    </div>
-                                    <div class="order-content">
-                                        <div class="product-grid">
-                                            <img src="assets/img/product/product-7.webp" alt="Product" loading="lazy">
-                                            <img src="assets/img/product/product-8.webp" alt="Product" loading="lazy">
-                                            <img src="assets/img/product/product-9.webp" alt="Product" loading="lazy">
-                                            <span class="more-items">+2</span>
-                                        </div>
-                                        <div class="order-info">
-                                            <div class="info-row">
-                                                <span>Status</span>
-                                                <span class="status cancelled">Cancelled</span>
-                                            </div>
-                                            <div class="info-row">
-                                                <span>Items</span>
-                                                <span>5 items</span>
-                                            </div>
-                                            <div class="info-row">
-                                                <span>Total</span>
-                                                <span class="price">$1,299.99</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="order-footer">
-                                        <button type="button" class="btn-reorder">Reorder</button>
-                                        <button type="button" class="btn-details">View Details</button>
-                                    </div>
-                                </div>
+                                <?php endif; ?>
                             </div>
 
-                            <!-- Pagination -->
-                            <div class="pagination-wrapper" data-aos="fade-up">
-                                <button type="button" class="btn-prev" disabled="">
-                                    <i class="bi bi-chevron-left"></i>
-                                </button>
-                                <div class="page-numbers">
-                                    <button type="button" class="active">1</button>
-                                    <button type="button">2</button>
-                                    <button type="button">3</button>
-                                    <span>...</span>
-                                    <button type="button">12</button>
-                                </div>
-                                <button type="button" class="btn-next">
-                                    <i class="bi bi-chevron-right"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Addresses Tab -->
-                        <div class="tab-pane fade" id="addresses">
-                            <div class="section-header" data-aos="fade-up">
-                                <h2>My Addresses</h2>
-                                <div class="header-actions">
-                                    <button type="button" class="btn-add-new">
-                                        <i class="bi bi-plus-lg"></i>
-                                        Add New Address
+                            <?php if ($total_ordenes > 10): ?>
+                                <!-- Pagination -->
+                                <div class="pagination-wrapper" data-aos="fade-up">
+                                    <button type="button" class="btn-prev" disabled>
+                                        <i class="bi bi-chevron-left"></i>
+                                    </button>
+                                    <div class="page-numbers">
+                                        <button type="button" class="active">1</button>
+                                        <button type="button">2</button>
+                                        <button type="button">3</button>
+                                        <?php if ($total_ordenes > 30): ?>
+                                            <span>...</span>
+                                            <button type="button"><?php echo ceil($total_ordenes / 10); ?></button>
+                                        <?php endif; ?>
+                                    </div>
+                                    <button type="button" class="btn-next">
+                                        <i class="bi bi-chevron-right"></i>
                                     </button>
                                 </div>
-                            </div>
-
-                            <div class="addresses-grid">
-                                <!-- Address Card 1 -->
-                                <div class="address-card default" data-aos="fade-up" data-aos-delay="100">
-                                    <div class="card-header">
-                                        <h4>Home</h4>
-                                        <span class="default-badge">Default</span>
-                                    </div>
-                                    <div class="card-body">
-                                        <p class="address-text">123 Main Street<br>Apt 4B<br>New York, NY 10001<br>United States</p>
-                                        <div class="contact-info">
-                                            <div><i class="bi bi-person"></i> Sarah Anderson</div>
-                                            <div><i class="bi bi-telephone"></i> +1 (555) 123-4567</div>
-                                        </div>
-                                    </div>
-                                    <div class="card-actions">
-                                        <button type="button" class="btn-edit">
-                                            <i class="bi bi-pencil"></i>
-                                            Edit
-                                        </button>
-                                        <button type="button" class="btn-remove">
-                                            <i class="bi bi-trash"></i>
-                                            Remove
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <!-- Address Card 2 -->
-                                <div class="address-card" data-aos="fade-up" data-aos-delay="200">
-                                    <div class="card-header">
-                                        <h4>Office</h4>
-                                    </div>
-                                    <div class="card-body">
-                                        <p class="address-text">456 Business Ave<br>Suite 200<br>San Francisco, CA 94107<br>United States</p>
-                                        <div class="contact-info">
-                                            <div><i class="bi bi-person"></i> Sarah Anderson</div>
-                                            <div><i class="bi bi-telephone"></i> +1 (555) 987-6543</div>
-                                        </div>
-                                    </div>
-                                    <div class="card-actions">
-                                        <button type="button" class="btn-edit">
-                                            <i class="bi bi-pencil"></i>
-                                            Edit
-                                        </button>
-                                        <button type="button" class="btn-remove">
-                                            <i class="bi bi-trash"></i>
-                                            Remove
-                                        </button>
-                                        <button type="button" class="btn-make-default">Make Default</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Settings Tab -->
-                        <div class="tab-pane fade" id="settings">
-                            <div class="section-header" data-aos="fade-up">
-                                <h2>Account Settings</h2>
-                            </div>
-
-                            <div class="settings-content">
-                                <!-- Personal Information -->
-                                <div class="settings-section" data-aos="fade-up">
-                                    <h3>Personal Information</h3>
-                                    <form class="php-email-form settings-form">
-                                        <div class="row g-3">
-                                            <div class="col-md-6">
-                                                <label for="firstName" class="form-label">First Name</label>
-                                                <input type="text" class="form-control" id="firstName" value="Sarah" required="">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label for="lastName" class="form-label">Last Name</label>
-                                                <input type="text" class="form-control" id="lastName" value="Anderson" required="">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label for="email" class="form-label">Email</label>
-                                                <input type="email" class="form-control" id="email" value="sarah@example.com" required="">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label for="phone" class="form-label">Phone</label>
-                                                <input type="tel" class="form-control" id="phone" value="+1 (555) 123-4567">
-                                            </div>
-                                        </div>
-
-                                        <div class="form-buttons">
-                                            <button type="submit" class="btn-save">Save Changes</button>
-                                        </div>
-
-                                        <div class="loading">Loading</div>
-                                        <div class="error-message"></div>
-                                        <div class="sent-message">Your changes have been saved successfully!</div>
-                                    </form>
-                                </div>
-
-                                <!-- Email Preferences -->
-                                <div class="settings-section" data-aos="fade-up" data-aos-delay="100">
-                                    <h3>Email Preferences</h3>
-                                    <div class="preferences-list">
-                                        <div class="preference-item">
-                                            <div class="preference-info">
-                                                <h4>Order Updates</h4>
-                                                <p>Receive notifications about your order status</p>
-                                            </div>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="orderUpdates" checked="">
-                                            </div>
-                                        </div>
-
-                                        <div class="preference-item">
-                                            <div class="preference-info">
-                                                <h4>Promotions</h4>
-                                                <p>Receive emails about new promotions and deals</p>
-                                            </div>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="promotions">
-                                            </div>
-                                        </div>
-
-                                        <div class="preference-item">
-                                            <div class="preference-info">
-                                                <h4>Newsletter</h4>
-                                                <p>Subscribe to our weekly newsletter</p>
-                                            </div>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="newsletter" checked="">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Security Settings -->
-                                <div class="settings-section" data-aos="fade-up" data-aos-delay="200">
-                                    <h3>Security</h3>
-                                    <form class="php-email-form settings-form">
-                                        <div class="row g-3">
-                                            <div class="col-md-12">
-                                                <label for="currentPassword" class="form-label">Current Password</label>
-                                                <input type="password" class="form-control" id="currentPassword" required="">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label for="newPassword" class="form-label">New Password</label>
-                                                <input type="password" class="form-control" id="newPassword" required="">
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label for="confirmPassword" class="form-label">Confirm Password</label>
-                                                <input type="password" class="form-control" id="confirmPassword" required="">
-                                            </div>
-                                        </div>
-
-                                        <div class="form-buttons">
-                                            <button type="submit" class="btn-save">Update Password</button>
-                                        </div>
-
-                                        <div class="loading">Loading</div>
-                                        <div class="error-message"></div>
-                                        <div class="sent-message">Your password has been updated successfully!</div>
-                                    </form>
-                                </div>
-
-                                <!-- Delete Account -->
-                                <div class="settings-section danger-zone" data-aos="fade-up" data-aos-delay="300">
-                                    <h3>Delete Account</h3>
-                                    <div class="danger-zone-content">
-                                        <p>Once you delete your account, there is no going back. Please be certain.</p>
-                                        <button type="button" class="btn-danger">Delete Account</button>
-                                    </div>
-                                </div>
-                            </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
-
 </section><!-- /Account Section -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Filtrado de órdenes
+        const filterLinks = document.querySelectorAll('.dropdown-item[data-filter]');
+        const orderCards = document.querySelectorAll('.order-card');
+
+        filterLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const filter = this.getAttribute('data-filter');
+
+                orderCards.forEach(card => {
+                    if (filter === 'all' || card.getAttribute('data-status') === filter) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Búsqueda de órdenes
+        const searchInput = document.getElementById('searchOrders');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+
+                orderCards.forEach(card => {
+                    const orderText = card.textContent.toLowerCase();
+                    if (orderText.includes(searchTerm)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+</script>

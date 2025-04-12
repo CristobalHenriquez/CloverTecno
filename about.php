@@ -60,7 +60,7 @@
 
   </section>
   <!-- /About Section -->
-<!-- include_once 'includes/testimonials.php'; ?> -->
-  
+  <?php include_once 'includes/testimonials.php'; ?>
+
 
   <?php include_once 'includes/inc.footer.php'; ?>
