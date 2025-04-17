@@ -237,6 +237,9 @@
                 const selectedMethod = this.closest('.payment-method');
                 selectedMethod.classList.add('active');
                 selectedMethod.querySelector('.payment-method-body').classList.remove('d-none');
+                
+                // Actualizar el resumen del pedido con el nuevo método de pago
+                updateOrderSummary();
             });
         });
         

@@ -20,6 +20,10 @@
                 <span>Envío</span>
                 <span id="order-shipping">Gratis</span>
             </div>
+            <div class="order-discount d-flex justify-content-between d-none">
+                <span>Descuento (20%)</span>
+                <span id="order-discount">-$0.00</span>
+            </div>
             <div class="order-total d-flex justify-content-between">
                 <span>Total</span>
                 <span id="order-total">$0.00</span>

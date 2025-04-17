@@ -40,7 +40,7 @@ function procesarCompra($db, $datos) {
         $total_original = $total_venta;
         
         if ($metodo_pago === 'Transferencia Bancaria') {
-            $descuento_valor = $total_venta * 0.10; // 10% de descuento
+            $descuento_valor = $total_venta * 0.20; // 20% de descuento
             $total_venta = $total_venta - $descuento_valor;
         } else {
             $descuento_valor = 0;
