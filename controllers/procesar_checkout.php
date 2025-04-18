@@ -10,6 +10,28 @@ function getClienteInfo($db, $cliente_id) {
     return $result->fetch_assoc();
 }
 
+// Obtener detalles completos del cliente (incluyendo dirección y datos personales)
+function getClienteDetalles($db, $cliente_id) {
+    // Primero obtenemos la información básica del cliente
+    $cliente_info = getClienteInfo($db, $cliente_id);
+    
+    // Luego obtenemos los detalles adicionales
+    $query = "SELECT * FROM detalle_users WHERE id_cliente = ?";
+    $stmt = $db->prepare($query);
+    $stmt->bind_param("i", $cliente_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    // Si existen detalles, los combinamos con la información básica
+    if ($result->num_rows > 0) {
+        $detalles = $result->fetch_assoc();
+        return array_merge($cliente_info, $detalles);
+    }
+    
+    // Si no hay detalles, devolvemos solo la información básica
+    return $cliente_info;
+}
+
 // Función para sanitizar texto (reemplazo de FILTER_SANITIZE_STRING)
 function sanitizeString($string) {
     // Eliminar etiquetas HTML y PHP
@@ -36,7 +58,7 @@ function procesarCompra($db, $datos) {
         $notas = $datos['notas'];
         $origen_venta = 'cliente'; // Definimos esto como variable
         
-        // Aplicar descuento del 10% si el método de pago es transferencia bancaria
+        // Aplicar descuento del 20% si el método de pago es transferencia bancaria
         $total_original = $total_venta;
         
         if ($metodo_pago === 'Transferencia Bancaria') {

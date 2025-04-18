@@ -15,12 +15,12 @@
             <input type="email" class="form-control" name="email" id="email" placeholder="Tu correo electrónico" value="<?php echo htmlspecialchars($cliente['correo'] ?? ''); ?>" required>
         </div>
         <div class="form-group mt-3">
-            <label for="dnicuit">DNI</label>
-            <input type="number" class="form-control" name="dnicuit" id="dnicuit" placeholder="Tu DNI" required>
+            <label for="dnicuit">DNI / CUIT</label>
+            <input type="text" class="form-control" name="dnicuit" id="dnicuit" placeholder="Tu DNI o CUIT" value="<?php echo htmlspecialchars($cliente['dni'] ?? ''); ?>" required>
         </div>
         <div class="form-group mt-3">
             <label for="telefono">Número de Teléfono</label>
-            <input type="tel" class="form-control" name="telefono" id="telefono" placeholder="Tu número de teléfono" required>
+            <input type="tel" class="form-control" name="telefono" id="telefono" placeholder="Tu número de teléfono" value="<?php echo htmlspecialchars($cliente['telefono'] ?? ''); ?>" required>
         </div>
         <div class="text-end mt-4">
             <button type="button" class="btn btn-primary next-step" data-next="2">Continuar a Envío</button>
@@ -35,24 +35,24 @@
     <form class="checkout-form-element">
         <div class="form-group">
             <label for="direccion">Dirección</label>
-            <input type="text" class="form-control" name="direccion" id="direccion" placeholder="Calle y número" required>
+            <input type="text" class="form-control" name="direccion" id="direccion" placeholder="Calle y número" value="<?php echo htmlspecialchars($cliente['direccion'] ?? ''); ?>" required>
         </div>
         <div class="form-group mt-3">
             <label for="apartamento">Apartamento, Suite, etc. (opcional)</label>
-            <input type="text" class="form-control" name="apartamento" id="apartamento" placeholder="Apartamento, Piso, etc.">
+            <input type="text" class="form-control" name="apartamento" id="apartamento" placeholder="Apartamento, Piso, etc." value="<?php echo htmlspecialchars($cliente['departamento'] ?? ''); ?>">
         </div>
         <div class="row mt-3">
             <div class="col-md-4 form-group">
                 <label for="ciudad">Ciudad</label>
-                <input type="text" name="ciudad" class="form-control" id="ciudad" placeholder="Ciudad" required>
+                <input type="text" name="ciudad" class="form-control" id="ciudad" placeholder="Ciudad" value="<?php echo htmlspecialchars($cliente['ciudad'] ?? ''); ?>" required>
             </div>
             <div class="col-md-4 form-group mt-3 mt-md-0">
                 <label for="provincia">Provincia</label>
-                <input type="text" name="provincia" class="form-control" id="provincia" placeholder="Provincia" required>
+                <input type="text" name="provincia" class="form-control" id="provincia" placeholder="Provincia" value="<?php echo htmlspecialchars($cliente['provincia'] ?? ''); ?>" required>
             </div>
             <div class="col-md-4 form-group mt-3 mt-md-0">
                 <label for="codigo_postal">Código Postal</label>
-                <input type="text" name="codigo_postal" class="form-control" id="codigo_postal" placeholder="Código Postal" required>
+                <input type="text" name="codigo_postal" class="form-control" id="codigo_postal" placeholder="Código Postal" value="<?php echo htmlspecialchars($cliente['codigo_postal'] ?? ''); ?>" required>
             </div>
         </div>
         <div class="d-flex justify-content-between mt-4">

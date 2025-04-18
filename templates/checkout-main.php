@@ -7,7 +7,7 @@ requireCliente();
 
 // Obtener información del cliente
 $cliente_id = $_SESSION['cliente_id'];
-$cliente = getClienteInfo($db, $cliente_id);
+$cliente = getClienteDetalles($db, $cliente_id); // Cambiado para obtener detalles completos
 
 // Variable para almacenar el resultado del procesamiento
 $resultado_compra = null;
