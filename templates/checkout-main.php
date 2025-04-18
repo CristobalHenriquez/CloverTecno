@@ -46,6 +46,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalizar_compra'])) 
         $productos_json = $_POST['productos_carrito'] ?? '[]';
         $productos = json_decode($productos_json, true);
 
+        // Asegurarse de que las indicaciones estén incluidas en cada producto
+        foreach ($productos as &$producto) {
+            // Si no existe la clave 'indications', agregarla como vacía
+            if (!isset($producto['indications'])) {
+                $producto['indications'] = '';
+            }
+        }
+
         // Preparar datos para procesar la compra
         $datos = [
             'cliente_id' => $cliente_id,

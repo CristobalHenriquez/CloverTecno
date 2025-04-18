@@ -26,11 +26,12 @@ try {
     $domicilio = isset($_POST['domicilio_cliente']) ? $db->real_escape_string($_POST['domicilio_cliente']) : null;
     $notas = isset($_POST['notas']) ? $db->real_escape_string($_POST['notas']) : null;
     $total_venta = floatval($_POST['total_venta']);
+    $metodo_pago = isset($_POST['metodo_pago']) ? $db->real_escape_string($_POST['metodo_pago']) : 'No especificado';
     
     // Insertar venta
-    $stmt = $db->prepare("INSERT INTO ventas (nombreyapellido_cliente, email_cliente, dnicuit_cliente, telefono_cliente, domicilio_cliente, total_venta, notas) 
-                          VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssds", $nombreyapellido, $email, $dnicuit, $telefono, $domicilio, $total_venta, $notas);
+    $stmt = $db->prepare("INSERT INTO ventas (nombreyapellido_cliente, email_cliente, dnicuit_cliente, telefono_cliente, domicilio_cliente, total_venta, notas, metodo_pago) 
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssds", $nombreyapellido, $email, $dnicuit, $telefono, $domicilio, $total_venta, $notas, $metodo_pago);
     
     if (!$stmt->execute()) {
         throw new Exception("Error al registrar la venta: " . $stmt->error);
@@ -47,6 +48,7 @@ try {
         $cantidad = intval($producto['cantidad']);
         $precio = floatval($producto['precio']);
         $subtotal = $precio * $cantidad;
+        $indicaciones = isset($producto['indicaciones']) ? $db->real_escape_string($producto['indicaciones']) : null;
         
         // Verificar stock antes de registrar
         $stmt = $db->prepare("SELECT stock FROM productos WHERE id_producto = ?");
@@ -77,10 +79,20 @@ try {
             }
         }
         
+        // Verificar si la columna indicaciones existe en la tabla
+        $check_column = $db->query("SHOW COLUMNS FROM detalle_ventas LIKE 'indicaciones'");
+        $has_indications_column = $check_column->num_rows > 0;
+        
         // Registrar detalle de venta
-        $stmt = $db->prepare("INSERT INTO detalle_ventas (id_venta, id_producto, cantidad, precio_unitario, subtotal) 
-                              VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("iiidi", $id_venta, $id_producto, $cantidad, $precio, $subtotal);
+        if ($has_indications_column) {
+            $stmt = $db->prepare("INSERT INTO detalle_ventas (id_venta, id_producto, cantidad, precio_unitario, subtotal, indicaciones) 
+                                VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("iiidds", $id_venta, $id_producto, $cantidad, $precio, $subtotal, $indicaciones);
+        } else {
+            $stmt = $db->prepare("INSERT INTO detalle_ventas (id_venta, id_producto, cantidad, precio_unitario, subtotal) 
+                                VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("iiidd", $id_venta, $id_producto, $cantidad, $precio, $subtotal);
+        }
         
         if (!$stmt->execute()) {
             throw new Exception("Error al registrar el detalle de la venta: " . $stmt->error);

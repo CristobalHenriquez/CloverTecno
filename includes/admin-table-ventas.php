@@ -4,7 +4,7 @@ include_once 'db_connection.php';
 
 // Consulta para obtener todas las ventas - Ordenadas por ID descendente
 $sql = "SELECT v.id_venta, v.nombreyapellido_cliente, v.email_cliente, v.telefono_cliente, 
-        v.fecha_venta, v.total_venta, v.estado, 
+        v.fecha_venta, v.total_venta, v.estado, v.metodo_pago,
         COUNT(dv.id_detalle) as cantidad_productos
         FROM ventas v
         LEFT JOIN detalle_ventas dv ON v.id_venta = dv.id_venta
@@ -28,6 +28,7 @@ if (!$result) {
                 <th>Contacto</th>
                 <th>Productos</th>
                 <th>Total</th>
+                <th>Método de Pago</th>
                 <th>Estado</th>
                 <th>Acciones</th>
             </tr>
@@ -77,6 +78,33 @@ if (!$result) {
                         </td>
                         <td class="text-center"><?php echo $row['cantidad_productos']; ?></td>
                         <td class="text-end">$<?php echo number_format($row['total_venta'], 0, ',', '.'); ?></td>
+                        <td>
+                            <?php if ($row['metodo_pago']): ?>
+                                <?php 
+                                    $iconClass = '';
+                                    switch ($row['metodo_pago']) {
+                                        case 'Transferencia Bancaria':
+                                            $iconClass = 'bi-bank';
+                                            break;
+                                        case 'Efectivo':
+                                            $iconClass = 'bi-cash';
+                                            break;
+                                        case 'Mercado Pago':
+                                            $iconClass = 'bi-credit-card-2-front';
+                                            break;
+                                        default:
+                                            $iconClass = 'bi-credit-card';
+                                            break;
+                                    }
+                                ?>
+                                <span class="badge bg-light text-dark">
+                                    <i class="bi <?php echo $iconClass; ?>"></i> 
+                                    <?php echo htmlspecialchars($row['metodo_pago']); ?>
+                                </span>
+                            <?php else: ?>
+                                <span class="text-muted">No especificado</span>
+                            <?php endif; ?>
+                        </td>
                         <td class="text-center">
                             <span class="estado-actual <?php echo $estadoClass; ?>"
                                 data-bs-toggle="tooltip"
@@ -98,7 +126,7 @@ if (!$result) {
             else:
                 ?>
                 <tr>
-                    <td colspan="8" class="text-center">No se encontraron ventas registradas.</td>
+                    <td colspan="9" class="text-center">No se encontraron ventas registradas.</td>
                 </tr>
             <?php
             endif;
