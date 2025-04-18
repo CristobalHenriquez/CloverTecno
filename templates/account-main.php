@@ -56,36 +56,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_account_detail
 }
 
 // Función para formatear fechas en español
-function formatearFechaEspanol($fecha) {
+function formatearFechaEspanol($fecha)
+{
     $meses = [
-        'Jan' => 'Ene', 'Feb' => 'Feb', 'Mar' => 'Mar', 'Apr' => 'Abr',
-        'May' => 'May', 'Jun' => 'Jun', 'Jul' => 'Jul', 'Aug' => 'Ago',
-        'Sep' => 'Sep', 'Oct' => 'Oct', 'Nov' => 'Nov', 'Dec' => 'Dic'
+        'Jan' => 'Ene',
+        'Feb' => 'Feb',
+        'Mar' => 'Mar',
+        'Apr' => 'Abr',
+        'May' => 'May',
+        'Jun' => 'Jun',
+        'Jul' => 'Jul',
+        'Aug' => 'Ago',
+        'Sep' => 'Sep',
+        'Oct' => 'Oct',
+        'Nov' => 'Nov',
+        'Dec' => 'Dic'
     ];
-    
+
     $fecha_formateada = date('d M, Y', strtotime($fecha));
-    
+
     foreach ($meses as $en => $es) {
         $fecha_formateada = str_replace($en, $es, $fecha_formateada);
     }
-    
+
     return $fecha_formateada;
 }
 
 // Función para calcular y mostrar el precio con descuento
-function mostrarPrecioConDescuento($precio, $metodo_pago) {
+function mostrarPrecioConDescuento($precio, $metodo_pago)
+{
     $precio_formateado = number_format($precio, 0, ',', '.');
-    
+
     if ($metodo_pago === 'Transferencia Bancaria') {
         $descuento = $precio * 0.2;
         $precio_con_descuento = $precio - $descuento;
         $precio_con_descuento_formateado = number_format($precio_con_descuento, 0, ',', '.');
-        
+
         return '<span class="precio-original">$' . $precio_formateado . '</span> 
                 <span class="precio-descuento">$' . $precio_con_descuento_formateado . '</span>
                 <span class="badge-descuento">-20%</span>';
     }
-    
+
     return '$' . $precio_formateado;
 }
 ?>
@@ -420,7 +431,7 @@ function mostrarPrecioConDescuento($precio, $metodo_pago) {
                                                         <div class="order-items">
                                                             <?php
                                                             // Obtener detalles completos de los productos
-                                                            $query_detalles = "SELECT dv.*, p.nombre_producto, ip.imagen_path 
+                                                            $query_detalles = "SELECT dv.*, p.nombre_producto, ip.imagen_path, dv.indicaciones 
                                                                       FROM detalle_ventas dv 
                                                                       JOIN productos p ON dv.id_producto = p.id_producto 
                                                                       LEFT JOIN (
@@ -445,6 +456,12 @@ function mostrarPrecioConDescuento($precio, $metodo_pago) {
                                                                             <span class="sku">SKU: PRD-<?php echo $detalle['id_producto']; ?></span>
                                                                             <span class="qty">Cant: <?php echo $detalle['cantidad']; ?></span>
                                                                         </div>
+                                                                        <?php if (!empty($detalle['indicaciones'])): ?>
+                                                                            <div class="item-indications">
+                                                                                <span class="indications-label">Indicaciones:</span>
+                                                                                <p class="indications-text"><?php echo htmlspecialchars($detalle['indicaciones']); ?></p>
+                                                                            </div>
+                                                                        <?php endif; ?>
                                                                     </div>
                                                                     <div class="item-price">$<?php echo number_format($detalle['precio_unitario'], 0, ',', '.'); ?></div>
                                                                 </div>
@@ -459,7 +476,7 @@ function mostrarPrecioConDescuento($precio, $metodo_pago) {
                                                                 <span>Subtotal</span>
                                                                 <span>$<?php echo number_format($orden['total_venta'], 0, ',', '.'); ?></span>
                                                             </div>
-                                                            
+
                                                             <?php if ($orden['metodo_pago'] === 'Transferencia Bancaria'): ?>
                                                                 <div class="price-row discount">
                                                                     <span>Descuento (20%)</span>
@@ -513,7 +530,6 @@ function mostrarPrecioConDescuento($precio, $metodo_pago) {
                                 <!-- Pagination -->
                                 <div class="pagination-wrapper" data-aos="fade-up">
                                     <button type="button" class="btn-prev" disabled>
-                                        <i class="bi bi-chevron-left  class="btn-prev" disabled>
                                         <i class="bi bi-chevron-left"></i>
                                     </button>
                                     <div class="page-numbers">
@@ -776,6 +792,30 @@ function mostrarPrecioConDescuento($precio, $metodo_pago) {
         color: #aaa;
     }
 
+    /* Estilos para las indicaciones de productos */
+    .item-indications {
+        margin-top: 8px;
+        padding: 8px;
+        background-color: rgba(16, 77, 67, 0.1);
+        border-left: 3px solid #104d43;
+        border-radius: 4px 4px 4px 4px;
+    }
+
+    .indications-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: #22c55e;
+        margin-bottom: 4px;
+    }
+
+    .indications-text {
+        font-size: 12px;
+        color: #ddd;
+        margin: 0;
+        line-height: 1.4;
+    }
+
     .order-items .item-price {
         font-weight: 600;
         color: #fff;
@@ -883,7 +923,10 @@ function mostrarPrecioConDescuento($precio, $metodo_pago) {
         box-shadow: 0 0 0 3px rgba(16, 77, 67, 0.5) !important;
     }
 
-    .btn-track, .btn-details, .btn-review, .btn-reorder {
+    .btn-track,
+    .btn-details,
+    .btn-review,
+    .btn-reorder {
         padding: 8px 16px;
         border-radius: 8px;
         font-size: 14px;
@@ -894,7 +937,10 @@ function mostrarPrecioConDescuento($precio, $metodo_pago) {
         border: none;
     }
 
-    .btn-track:hover, .btn-details:hover, .btn-review:hover, .btn-reorder:hover {
+    .btn-track:hover,
+    .btn-details:hover,
+    .btn-review:hover,
+    .btn-reorder:hover {
         background-color: #0e443b;
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);

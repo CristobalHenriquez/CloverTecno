@@ -3587,7 +3587,6 @@ section,
   margin-top: 4px;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   font-weight: 600;
-  color: var(--accent-color);
 }
 
 .account .content-area .orders-grid .order-card .order-details .details-content .detail-section .address-info {
