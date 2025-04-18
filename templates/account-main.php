@@ -3,6 +3,9 @@
 include_once 'includes/db_connection.php';
 include_once 'controllers/account_controller.php';
 
+// Configurar la zona horaria para Argentina
+date_default_timezone_set('America/Argentina/Buenos_Aires');
+
 // Obtener información del cliente actual
 $cliente_id = getClienteId();
 $cliente_nombre = getClienteNombre();
@@ -50,6 +53,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_account_detail
     if ($update_result['success']) {
         $user_details = getUserDetails($db, $cliente_id);
     }
+}
+
+// Función para formatear fechas en español
+function formatearFechaEspanol($fecha) {
+    $meses = [
+        'Jan' => 'Ene', 'Feb' => 'Feb', 'Mar' => 'Mar', 'Apr' => 'Abr',
+        'May' => 'May', 'Jun' => 'Jun', 'Jul' => 'Jul', 'Aug' => 'Ago',
+        'Sep' => 'Sep', 'Oct' => 'Oct', 'Nov' => 'Nov', 'Dec' => 'Dic'
+    ];
+    
+    $fecha_formateada = date('d M, Y', strtotime($fecha));
+    
+    foreach ($meses as $en => $es) {
+        $fecha_formateada = str_replace($en, $es, $fecha_formateada);
+    }
+    
+    return $fecha_formateada;
+}
+
+// Función para calcular y mostrar el precio con descuento
+function mostrarPrecioConDescuento($precio, $metodo_pago) {
+    $precio_formateado = number_format($precio, 0, ',', '.');
+    
+    if ($metodo_pago === 'Transferencia Bancaria') {
+        $descuento = $precio * 0.2;
+        $precio_con_descuento = $precio - $descuento;
+        $precio_con_descuento_formateado = number_format($precio_con_descuento, 0, ',', '.');
+        
+        return '<span class="precio-original">$' . $precio_formateado . '</span> 
+                <span class="precio-descuento">$' . $precio_con_descuento_formateado . '</span>
+                <span class="badge-descuento">-20%</span>';
+    }
+    
+    return '$' . $precio_formateado;
 }
 ?>
 
@@ -194,9 +231,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_account_detail
                                 if ($result->num_rows > 0):
                                     $delay = 100;
                                     while ($orden = $result->fetch_assoc()):
-                                        // Formatear fecha
-                                        $fecha = new DateTime($orden['fecha_venta']);
-                                        $fechaFormateada = $fecha->format('d M, Y');
+                                        // Formatear fecha en español
+                                        $fechaFormateada = formatearFechaEspanol($orden['fecha_venta']);
 
                                         // Determinar clase de estado
                                         $estadoClass = '';
@@ -275,7 +311,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_account_detail
                                                     </div>
                                                     <div class="info-row">
                                                         <span>Total</span>
-                                                        <span class="price">$<?php echo number_format($orden['total_venta'], 0, ',', '.'); ?></span>
+                                                        <div class="price">
+                                                            <?php echo mostrarPrecioConDescuento($orden['total_venta'], $orden['metodo_pago']); ?>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -293,7 +331,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_account_detail
                                             <!-- Order Tracking -->
                                             <?php if ($orden['estado'] == 'Pendiente' || $orden['estado'] == 'En Proceso' || $orden['estado'] == 'Enviado'): ?>
                                                 <div class="collapse tracking-info" id="tracking<?php echo $orden['id_venta']; ?>">
-                                                    <div class="tracking-timeline" style="background-color: black;">
+                                                    <div class="tracking-timeline">
                                                         <div class="timeline-item <?php echo ($orden['estado'] != 'Pendiente') ? 'completed' : 'active'; ?>">
                                                             <div class="timeline-icon">
                                                                 <i class="bi bi-<?php echo ($orden['estado'] != 'Pendiente') ? 'check-circle-fill' : 'hourglass-split'; ?>"></i>
@@ -354,9 +392,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_account_detail
                                                             <div class="timeline-content">
                                                                 <h5>Entrega</h5>
                                                                 <p>Entrega estimada: <?php
-                                                                                        $fechaEntrega = clone $fecha;
+                                                                                        $fechaEntrega = new DateTime($orden['fecha_venta']);
                                                                                         $fechaEntrega->modify('+3 days');
-                                                                                        echo $fechaEntrega->format('d M, Y');
+                                                                                        echo formatearFechaEspanol($fechaEntrega->format('Y-m-d'));
                                                                                         ?></p>
                                                             </div>
                                                         </div>
@@ -366,7 +404,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_account_detail
 
                                             <!-- Order Details -->
                                             <div class="collapse order-details" id="details<?php echo $orden['id_venta']; ?>">
-                                                <div class="details-content" style="background-color: black;">
+                                                <div class="details-content">
                                                     <div class="detail-section">
                                                         <h5>Información de la Orden</h5>
                                                         <div class="info-grid">
@@ -383,7 +421,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_account_detail
 
                                                     <div class="detail-section">
                                                         <h5>Productos (<?php echo $total_productos; ?>)</h5>
-                                                        <div class="order-items ">
+                                                        <div class="order-items">
                                                             <?php
                                                             // Obtener detalles completos de los productos
                                                             $query_detalles = "SELECT dv.*, p.nombre_producto, ip.imagen_path 
@@ -403,7 +441,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_account_detail
                                                             while ($detalle = $result_detalles->fetch_assoc()):
                                                                 $imagen = !empty($detalle['imagen_path']) ? $detalle['imagen_path'] : 'assets/img/no-image.jpg';
                                                             ?>
-                                                                <div class="item" style="background-color: black;">
+                                                                <div class="item">
                                                                     <img src="<?php echo htmlspecialchars($imagen); ?>" alt="<?php echo htmlspecialchars($detalle['nombre_producto']); ?>" loading="lazy">
                                                                     <div class="item-info">
                                                                         <h6><?php echo htmlspecialchars($detalle['nombre_producto']); ?></h6>
@@ -420,22 +458,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_account_detail
 
                                                     <div class="detail-section">
                                                         <h5>Detalles de Precio</h5>
-                                                        <div class="price-breakdown" style="background-color: black;">
+                                                        <div class="price-breakdown">
                                                             <div class="price-row">
                                                                 <span>Subtotal</span>
                                                                 <span>$<?php echo number_format($orden['total_venta'], 0, ',', '.'); ?></span>
                                                             </div>
-                                                            <div class="price-row total">
-                                                                <span>Total</span>
-                                                                <span>$<?php echo number_format($orden['total_venta'], 0, ',', '.'); ?></span>
-                                                            </div>
+                                                            
+                                                            <?php if ($orden['metodo_pago'] === 'Transferencia Bancaria'): ?>
+                                                                <div class="price-row discount">
+                                                                    <span>Descuento (20%)</span>
+                                                                    <span>-$<?php echo number_format($orden['total_venta'] * 0.2, 0, ',', '.'); ?></span>
+                                                                </div>
+                                                                <div class="price-row total">
+                                                                    <span>Total</span>
+                                                                    <span>$<?php echo number_format($orden['total_venta'] * 0.8, 0, ',', '.'); ?></span>
+                                                                </div>
+                                                            <?php else: ?>
+                                                                <div class="price-row total">
+                                                                    <span>Total</span>
+                                                                    <span>$<?php echo number_format($orden['total_venta'], 0, ',', '.'); ?></span>
+                                                                </div>
+                                                            <?php endif; ?>
                                                         </div>
                                                     </div>
 
                                                     <?php if (!empty($orden['domicilio_cliente'])): ?>
                                                         <div class="detail-section">
                                                             <h5>Dirección de Envío</h5>
-                                                            <div class="address-info" style="background-color: black;">
+                                                            <div class="address-info">
                                                                 <p><?php echo htmlspecialchars($orden['nombreyapellido_cliente']); ?><br>
                                                                     <?php echo htmlspecialchars($orden['domicilio_cliente']); ?></p>
                                                                 <?php if (!empty($orden['telefono_cliente'])): ?>
@@ -573,6 +623,233 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_account_detail
         margin-top: 5px;
     }
 
+    /* Estilos mejorados para el seguimiento de órdenes */
+    .tracking-timeline {
+        background-color: #3D3D3D;
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-left: 40px;
+        margin-bottom: 25px;
+        color: #aaa;
+    }
+
+    .timeline-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 30px;
+        bottom: -25px;
+        width: 2px;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .timeline-item:last-child::before {
+        display: none;
+    }
+
+    .timeline-icon {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 30px;
+        height: 30px;
+        background-color: #333;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        z-index: 1;
+    }
+
+    .timeline-item.active .timeline-icon {
+        background-color: #104d43;
+        border-color: rgba(16, 77, 67, 0.5);
+    }
+
+    .timeline-item.completed .timeline-icon {
+        background-color: #22c55e;
+        border-color: rgba(34, 197, 94, 0.5);
+    }
+
+    .timeline-content h5 {
+        color: #fff;
+        margin-bottom: 5px;
+        font-size: 16px;
+    }
+
+    .timeline-content p {
+        margin-bottom: 5px;
+        font-size: 14px;
+    }
+
+    .timeline-date {
+        display: block;
+        font-size: 13px;
+        color: #22c55e;
+        margin-top: 5px;
+    }
+
+    /* Estilos mejorados para los detalles de la orden */
+    .details-content {
+        background-color: #3D3D3D;
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .detail-section {
+        margin-bottom: 25px;
+    }
+
+    .detail-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .detail-section h5 {
+        color: #fff;
+        margin-bottom: 15px;
+        font-size: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 8px;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .info-item .label {
+        display: block;
+        color: #aaa;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .info-item .value {
+        color: #fff;
+        font-weight: 500;
+    }
+
+    .order-items .item {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        background-color: #3D3D3D;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    .order-items .item:last-child {
+        margin-bottom: 0;
+    }
+
+    .order-items .item img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .order-items .item-info {
+        flex: 1;
+        margin-left: 15px;
+    }
+
+    .order-items .item-info h6 {
+        color: #fff;
+        margin-bottom: 5px;
+        font-size: 14px;
+    }
+
+    .order-items .item-meta {
+        display: flex;
+        gap: 10px;
+        font-size: 12px;
+        color: #aaa;
+    }
+
+    .order-items .item-price {
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .price-breakdown {
+        background-color: #3D3D3D;
+        border-radius: 10px;
+        padding: 15px;
+    }
+
+    .price-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        color: #aaa;
+    }
+
+    .price-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .price-row.total {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 10px;
+        margin-top: 10px;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .price-row.discount {
+        color: #22c55e;
+    }
+
+    .address-info {
+        background-color: #3D3D3D;
+        border-radius: 10px;
+        padding: 15px;
+    }
+
+    .address-info p {
+        margin-bottom: 5px;
+        color: #fff;
+    }
+
+    .address-info .contact {
+        color: #aaa;
+    }
+
+    /* Estilos para precios con descuento */
+    .precio-original {
+        text-decoration: line-through;
+        color: #aaa;
+        margin-right: 8px;
+        font-size: 0.9em;
+    }
+
+    .precio-descuento {
+        color: #22c55e;
+        font-weight: 600;
+    }
+
+    .badge-descuento {
+        background-color: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+        font-size: 0.75em;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-left: 5px;
+    }
+
     /* Animaciones para los mensajes de alerta */
     @keyframes fadeIn {
         from {
@@ -607,6 +884,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_account_detail
 
     .swal2-styled.swal2-confirm:focus {
         box-shadow: 0 0 0 3px rgba(16, 77, 67, 0.5) !important;
+    }
+
+    .btn-track, .btn-details, .btn-review, .btn-reorder {
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        background-color: #104d43;
+        color: #fff;
+        border: none;
+    }
+
+    .btn-track:hover, .btn-details:hover, .btn-review:hover, .btn-reorder:hover {
+        background-color: #0e443b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-details {
+        background-color: #333;
+    }
+
+    .btn-details:hover {
+        background-color: #444;
     }
 </style>
 
