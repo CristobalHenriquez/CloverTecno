@@ -320,10 +320,6 @@ function mostrarPrecioConDescuento($precio, $metodo_pago) {
                                             <div class="order-footer">
                                                 <?php if ($orden['estado'] == 'Pendiente' || $orden['estado'] == 'En Proceso' || $orden['estado'] == 'Enviado'): ?>
                                                     <button type="button" class="btn-track" data-bs-toggle="collapse" data-bs-target="#tracking<?php echo $orden['id_venta']; ?>" aria-expanded="false">Seguir Orden</button>
-                                                <?php elseif ($orden['estado'] == 'Entregado'): ?>
-                                                    <button type="button" class="btn-review">Escribir Reseña</button>
-                                                <?php elseif ($orden['estado'] == 'Cancelado'): ?>
-                                                    <button type="button" class="btn-reorder">Reordenar</button>
                                                 <?php endif; ?>
                                                 <button type="button" class="btn-details" data-bs-toggle="collapse" data-bs-target="#details<?php echo $orden['id_venta']; ?>" aria-expanded="false">Ver Detalles</button>
                                             </div>
@@ -517,6 +513,7 @@ function mostrarPrecioConDescuento($precio, $metodo_pago) {
                                 <!-- Pagination -->
                                 <div class="pagination-wrapper" data-aos="fade-up">
                                     <button type="button" class="btn-prev" disabled>
+                                        <i class="bi bi-chevron-left  class="btn-prev" disabled>
                                         <i class="bi bi-chevron-left"></i>
                                     </button>
                                     <div class="page-numbers">
@@ -909,6 +906,12 @@ function mostrarPrecioConDescuento($precio, $metodo_pago) {
 
     .btn-details:hover {
         background-color: #444;
+    }
+
+    /* Estilo para órdenes completadas o canceladas */
+    .order-card[data-status="Entregado"] .order-footer,
+    .order-card[data-status="Cancelado"] .order-footer {
+        justify-content: flex-end;
     }
 </style>
 
