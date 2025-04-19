@@ -41,8 +41,8 @@
     }
 
     .success-message .btn-outline-secondary {
-        color: #104D43 !important;
-        border-color: #104D43 !important;
+        color: #ffffff !important;
+        border-color: #ffffff !important;
         background-color: transparent !important;
         transition: all 0.3s ease;
     }

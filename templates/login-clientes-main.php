@@ -205,7 +205,7 @@ $register_success = isset($register_success) ? $register_success : '';
     }
 
     .login-register .forgot-password {
-        color: var(--accent-color);
+        color: #ffffff;
         font-size: 0.9rem;
         font-weight: 500;
         text-decoration: none;
