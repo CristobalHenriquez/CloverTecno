@@ -602,6 +602,11 @@
         color: #ccc;
     }
 
+    .order-summary .order-summary-content .order-totals .order-discount {
+        color: #28a745;
+        font-weight: 500;
+    }
+
     .order-summary .order-summary-content .order-totals>div:last-child {
         margin-bottom: 0;
         margin-top: 15px;

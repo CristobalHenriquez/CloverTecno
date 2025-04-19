@@ -1,6 +1,10 @@
 <?php
-// Incluir la conexión a la base de datos
+// Incluir la conexión a la base de datos y el controlador de cuenta
 include_once 'includes/db_connection.php';
+include_once 'controllers/account_controller.php';
+
+// Configurar la zona horaria para Argentina
+date_default_timezone_set('America/Argentina/Buenos_Aires');
 
 // Obtener información del cliente actual
 $cliente_id = getClienteId();
@@ -22,6 +26,79 @@ $result = $stmt->get_result();
 
 // Contar el número total de órdenes
 $total_ordenes = $result->num_rows;
+
+// Obtener los detalles del usuario
+$user_details = getUserDetails($db, $cliente_id);
+
+// Variable para almacenar el resultado de la actualización
+$update_result = null;
+
+// Procesar el formulario de actualización de datos
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_account_details'])) {
+    // Sanitizar los datos recibidos
+    $datos = [
+        'dni' => sanitizeString($_POST['dni'] ?? ''),
+        'telefono' => sanitizeString($_POST['telefono'] ?? ''),
+        'direccion' => sanitizeString($_POST['direccion'] ?? ''),
+        'departamento' => sanitizeString($_POST['departamento'] ?? ''),
+        'ciudad' => sanitizeString($_POST['ciudad'] ?? ''),
+        'provincia' => sanitizeString($_POST['provincia'] ?? ''),
+        'codigo_postal' => sanitizeString($_POST['codigo_postal'] ?? '')
+    ];
+
+    // Actualizar los datos del usuario
+    $update_result = updateUserDetails($db, $cliente_id, $datos);
+
+    // Si la actualización fue exitosa, actualizar los detalles del usuario
+    if ($update_result['success']) {
+        $user_details = getUserDetails($db, $cliente_id);
+    }
+}
+
+// Función para formatear fechas en español
+function formatearFechaEspanol($fecha)
+{
+    $meses = [
+        'Jan' => 'Ene',
+        'Feb' => 'Feb',
+        'Mar' => 'Mar',
+        'Apr' => 'Abr',
+        'May' => 'May',
+        'Jun' => 'Jun',
+        'Jul' => 'Jul',
+        'Aug' => 'Ago',
+        'Sep' => 'Sep',
+        'Oct' => 'Oct',
+        'Nov' => 'Nov',
+        'Dec' => 'Dic'
+    ];
+
+    $fecha_formateada = date('d M, Y', strtotime($fecha));
+
+    foreach ($meses as $en => $es) {
+        $fecha_formateada = str_replace($en, $es, $fecha_formateada);
+    }
+
+    return $fecha_formateada;
+}
+
+// Función para calcular y mostrar el precio con descuento
+function mostrarPrecioConDescuento($precio, $metodo_pago)
+{
+    $precio_formateado = number_format($precio, 0, ',', '.');
+
+    if ($metodo_pago === 'Transferencia Bancaria') {
+        $descuento = $precio * 0.2;
+        $precio_con_descuento = $precio - $descuento;
+        $precio_con_descuento_formateado = number_format($precio_con_descuento, 0, ',', '.');
+
+        return '<span class="precio-original">$' . $precio_formateado . '</span> 
+                <span class="precio-descuento">$' . $precio_con_descuento_formateado . '</span>
+                <span class="badge-descuento">-20%</span>';
+    }
+
+    return '$' . $precio_formateado;
+}
 ?>
 
 <!-- Account Section -->
@@ -52,7 +129,13 @@ $total_ordenes = $result->num_rows;
                     <nav class="menu-nav">
                         <ul class="nav flex-column" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link active" data-bs-toggle="tab" href="#orders">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#account-details">
+                                    <i class="bi bi-person"></i>
+                                    <span>Datos de Cuenta</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#orders">
                                     <i class="bi bi-box-seam"></i>
                                     <span>Mis Órdenes</span>
                                     <?php if ($total_ordenes > 0): ?>
@@ -76,8 +159,60 @@ $total_ordenes = $result->num_rows;
             <div class="col-lg-9">
                 <div class="content-area">
                     <div class="tab-content">
+                        <!-- Account Details Tab (Ahora es la pestaña activa por defecto) -->
+                        <div class="tab-pane fade show active" id="account-details">
+                            <div class="section-header" data-aos="fade-up">
+                                <h2>Datos de Cuenta</h2>
+                                <p>Actualiza tu información personal y dirección de envío</p>
+                            </div>
+
+                            <form class="account-details-form" method="POST" action="" id="accountDetailsForm" data-aos="fade-up">
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <label for="dni">DNI / CUIT <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="dni" name="dni" placeholder="Ingresa tu DNI o CUIT" value="<?php echo htmlspecialchars($user_details['dni']); ?>" required>
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label for="telefono">Número de Teléfono <span class="text-danger">*</span></label>
+                                        <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="Ingresa tu número de teléfono" value="<?php echo htmlspecialchars($user_details['telefono']); ?>" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mt-3">
+                                    <label for="direccion">Dirección <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Calle y número" value="<?php echo htmlspecialchars($user_details['direccion']); ?>" required>
+                                </div>
+
+                                <div class="form-group mt-3">
+                                    <label for="departamento">Departamento/Casa (opcional)</label>
+                                    <input type="text" class="form-control" id="departamento" name="departamento" placeholder="Apartamento, Piso, etc." value="<?php echo htmlspecialchars($user_details['departamento']); ?>">
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col-md-4 form-group">
+                                        <label for="ciudad">Ciudad <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="ciudad" name="ciudad" placeholder="Ciudad" value="<?php echo htmlspecialchars($user_details['ciudad']); ?>" required>
+                                    </div>
+                                    <div class="col-md-4 form-group mt-3 mt-md-0">
+                                        <label for="provincia">Provincia <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="provincia" name="provincia" placeholder="Provincia" value="<?php echo htmlspecialchars($user_details['provincia']); ?>" required>
+                                    </div>
+                                    <div class="col-md-4 form-group mt-3 mt-md-0">
+                                        <label for="codigo_postal">Código Postal <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" placeholder="Código Postal" value="<?php echo htmlspecialchars($user_details['codigo_postal']); ?>" required>
+                                    </div>
+                                </div>
+
+                                <div class="text-end mt-4">
+                                    <button type="submit" name="update_account_details" class="btn btn-primary">
+                                        <i class="bi bi-save"></i> Guardar Cambios
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
                         <!-- Orders Tab -->
-                        <div class="tab-pane fade show active" id="orders">
+                        <div class="tab-pane fade" id="orders">
                             <div class="section-header" data-aos="fade-up">
                                 <h2>Mis Órdenes</h2>
                                 <div class="header-actions">
@@ -107,9 +242,8 @@ $total_ordenes = $result->num_rows;
                                 if ($result->num_rows > 0):
                                     $delay = 100;
                                     while ($orden = $result->fetch_assoc()):
-                                        // Formatear fecha
-                                        $fecha = new DateTime($orden['fecha_venta']);
-                                        $fechaFormateada = $fecha->format('d M, Y');
+                                        // Formatear fecha en español
+                                        $fechaFormateada = formatearFechaEspanol($orden['fecha_venta']);
 
                                         // Determinar clase de estado
                                         $estadoClass = '';
@@ -188,17 +322,15 @@ $total_ordenes = $result->num_rows;
                                                     </div>
                                                     <div class="info-row">
                                                         <span>Total</span>
-                                                        <span class="price">$<?php echo number_format($orden['total_venta'], 2, ',', '.'); ?></span>
+                                                        <div class="price">
+                                                            <?php echo mostrarPrecioConDescuento($orden['total_venta'], $orden['metodo_pago']); ?>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="order-footer">
                                                 <?php if ($orden['estado'] == 'Pendiente' || $orden['estado'] == 'En Proceso' || $orden['estado'] == 'Enviado'): ?>
                                                     <button type="button" class="btn-track" data-bs-toggle="collapse" data-bs-target="#tracking<?php echo $orden['id_venta']; ?>" aria-expanded="false">Seguir Orden</button>
-                                                <?php elseif ($orden['estado'] == 'Entregado'): ?>
-                                                    <button type="button" class="btn-review">Escribir Reseña</button>
-                                                <?php elseif ($orden['estado'] == 'Cancelado'): ?>
-                                                    <button type="button" class="btn-reorder">Reordenar</button>
                                                 <?php endif; ?>
                                                 <button type="button" class="btn-details" data-bs-toggle="collapse" data-bs-target="#details<?php echo $orden['id_venta']; ?>" aria-expanded="false">Ver Detalles</button>
                                             </div>
@@ -206,7 +338,7 @@ $total_ordenes = $result->num_rows;
                                             <!-- Order Tracking -->
                                             <?php if ($orden['estado'] == 'Pendiente' || $orden['estado'] == 'En Proceso' || $orden['estado'] == 'Enviado'): ?>
                                                 <div class="collapse tracking-info" id="tracking<?php echo $orden['id_venta']; ?>">
-                                                    <div class="tracking-timeline" style="background-color: black;">
+                                                    <div class="tracking-timeline">
                                                         <div class="timeline-item <?php echo ($orden['estado'] != 'Pendiente') ? 'completed' : 'active'; ?>">
                                                             <div class="timeline-icon">
                                                                 <i class="bi bi-<?php echo ($orden['estado'] != 'Pendiente') ? 'check-circle-fill' : 'hourglass-split'; ?>"></i>
@@ -267,9 +399,9 @@ $total_ordenes = $result->num_rows;
                                                             <div class="timeline-content">
                                                                 <h5>Entrega</h5>
                                                                 <p>Entrega estimada: <?php
-                                                                                        $fechaEntrega = clone $fecha;
+                                                                                        $fechaEntrega = new DateTime($orden['fecha_venta']);
                                                                                         $fechaEntrega->modify('+3 days');
-                                                                                        echo $fechaEntrega->format('d M, Y');
+                                                                                        echo formatearFechaEspanol($fechaEntrega->format('Y-m-d'));
                                                                                         ?></p>
                                                             </div>
                                                         </div>
@@ -279,8 +411,8 @@ $total_ordenes = $result->num_rows;
 
                                             <!-- Order Details -->
                                             <div class="collapse order-details" id="details<?php echo $orden['id_venta']; ?>">
-                                                <div class="details-content" style="background-color: black;">
-                                                    <div class="detail-section" >
+                                                <div class="details-content">
+                                                    <div class="detail-section">
                                                         <h5>Información de la Orden</h5>
                                                         <div class="info-grid">
                                                             <div class="info-item">
@@ -294,12 +426,12 @@ $total_ordenes = $result->num_rows;
                                                         </div>
                                                     </div>
 
-                                                    <div class="detail-section" >
+                                                    <div class="detail-section">
                                                         <h5>Productos (<?php echo $total_productos; ?>)</h5>
-                                                        <div class="order-items ">
+                                                        <div class="order-items">
                                                             <?php
                                                             // Obtener detalles completos de los productos
-                                                            $query_detalles = "SELECT dv.*, p.nombre_producto, ip.imagen_path 
+                                                            $query_detalles = "SELECT dv.*, p.nombre_producto, ip.imagen_path, dv.indicaciones 
                                                                       FROM detalle_ventas dv 
                                                                       JOIN productos p ON dv.id_producto = p.id_producto 
                                                                       LEFT JOIN (
@@ -316,7 +448,7 @@ $total_ordenes = $result->num_rows;
                                                             while ($detalle = $result_detalles->fetch_assoc()):
                                                                 $imagen = !empty($detalle['imagen_path']) ? $detalle['imagen_path'] : 'assets/img/no-image.jpg';
                                                             ?>
-                                                                <div class="item" style="background-color: black;">
+                                                                <div class="item">
                                                                     <img src="<?php echo htmlspecialchars($imagen); ?>" alt="<?php echo htmlspecialchars($detalle['nombre_producto']); ?>" loading="lazy">
                                                                     <div class="item-info">
                                                                         <h6><?php echo htmlspecialchars($detalle['nombre_producto']); ?></h6>
@@ -324,8 +456,14 @@ $total_ordenes = $result->num_rows;
                                                                             <span class="sku">SKU: PRD-<?php echo $detalle['id_producto']; ?></span>
                                                                             <span class="qty">Cant: <?php echo $detalle['cantidad']; ?></span>
                                                                         </div>
+                                                                        <?php if (!empty($detalle['indicaciones'])): ?>
+                                                                            <div class="item-indications">
+                                                                                <span class="indications-label">Indicaciones:</span>
+                                                                                <p class="indications-text"><?php echo htmlspecialchars($detalle['indicaciones']); ?></p>
+                                                                            </div>
+                                                                        <?php endif; ?>
                                                                     </div>
-                                                                    <div class="item-price">$<?php echo number_format($detalle['precio_unitario'], 2, ',', '.'); ?></div>
+                                                                    <div class="item-price">$<?php echo number_format($detalle['precio_unitario'], 0, ',', '.'); ?></div>
                                                                 </div>
                                                             <?php endwhile; ?>
                                                         </div>
@@ -333,22 +471,34 @@ $total_ordenes = $result->num_rows;
 
                                                     <div class="detail-section">
                                                         <h5>Detalles de Precio</h5>
-                                                        <div class="price-breakdown" style="background-color: black;">
+                                                        <div class="price-breakdown">
                                                             <div class="price-row">
                                                                 <span>Subtotal</span>
-                                                                <span>$<?php echo number_format($orden['total_venta'], 2, ',', '.'); ?></span>
+                                                                <span>$<?php echo number_format($orden['total_venta'], 0, ',', '.'); ?></span>
                                                             </div>
-                                                            <div class="price-row total">
-                                                                <span>Total</span>
-                                                                <span>$<?php echo number_format($orden['total_venta'], 2, ',', '.'); ?></span>
-                                                            </div>
+
+                                                            <?php if ($orden['metodo_pago'] === 'Transferencia Bancaria'): ?>
+                                                                <div class="price-row discount">
+                                                                    <span>Descuento (20%)</span>
+                                                                    <span>-$<?php echo number_format($orden['total_venta'] * 0.2, 0, ',', '.'); ?></span>
+                                                                </div>
+                                                                <div class="price-row total">
+                                                                    <span>Total</span>
+                                                                    <span>$<?php echo number_format($orden['total_venta'] * 0.8, 0, ',', '.'); ?></span>
+                                                                </div>
+                                                            <?php else: ?>
+                                                                <div class="price-row total">
+                                                                    <span>Total</span>
+                                                                    <span>$<?php echo number_format($orden['total_venta'], 0, ',', '.'); ?></span>
+                                                                </div>
+                                                            <?php endif; ?>
                                                         </div>
                                                     </div>
 
                                                     <?php if (!empty($orden['domicilio_cliente'])): ?>
                                                         <div class="detail-section">
                                                             <h5>Dirección de Envío</h5>
-                                                            <div class="address-info" style="background-color: black;">
+                                                            <div class="address-info">
                                                                 <p><?php echo htmlspecialchars($orden['nombreyapellido_cliente']); ?><br>
                                                                     <?php echo htmlspecialchars($orden['domicilio_cliente']); ?></p>
                                                                 <?php if (!empty($orden['telefono_cliente'])): ?>
@@ -404,8 +554,438 @@ $total_ordenes = $result->num_rows;
     </div>
 </section><!-- /Account Section -->
 
+<style>
+    /* Estilos para la pestaña de Datos de Cuenta */
+    .account-details-form {
+        background-color: #222;
+        border-radius: 16px;
+        padding: 24px;
+        margin-top: 20px;
+    }
+
+    .account-details-form .form-group {
+        margin-bottom: 20px;
+    }
+
+    .account-details-form label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #fff;
+    }
+
+    .account-details-form label .text-danger {
+        color: #ef4444;
+    }
+
+    .account-details-form .form-control {
+        background-color: #333;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        color: #fff;
+        padding: 12px 16px;
+        height: auto;
+        transition: all 0.3s ease;
+    }
+
+    .account-details-form .form-control:focus {
+        border-color: #104d43;
+        box-shadow: 0 0 0 3px rgba(16, 77, 67, 0.2);
+        outline: none;
+    }
+
+    .account-details-form .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .account-details-form .form-control.is-invalid {
+        border-color: #ef4444;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23ef4444'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23ef4444' stroke='none'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 24px 24px;
+        padding-right: 40px;
+    }
+
+    .account-details-form .btn-primary {
+        background-color: #104d43;
+        border-color: #104d43;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .account-details-form .btn-primary:hover {
+        background-color: #0e443b;
+        border-color: #0e443b;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(16, 77, 67, 0.2);
+    }
+
+    .account-details-form .btn-primary:active {
+        transform: translateY(0);
+    }
+
+    .account-details-form .btn-primary i {
+        margin-right: 8px;
+    }
+
+    .account .section-header p {
+        color: #aaa;
+        margin-top: 5px;
+    }
+
+    /* Estilos mejorados para el seguimiento de órdenes */
+    .tracking-timeline {
+        background-color: #3D3D3D;
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-left: 40px;
+        margin-bottom: 25px;
+        color: #aaa;
+    }
+
+    .timeline-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 30px;
+        bottom: -25px;
+        width: 2px;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .timeline-item:last-child::before {
+        display: none;
+    }
+
+    .timeline-icon {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 30px;
+        height: 30px;
+        background-color: #333;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        z-index: 1;
+    }
+
+    .timeline-item.active .timeline-icon {
+        background-color: #104d43;
+        border-color: rgba(16, 77, 67, 0.5);
+    }
+
+    .timeline-item.completed .timeline-icon {
+        background-color: #22c55e;
+        border-color: rgba(34, 197, 94, 0.5);
+    }
+
+    .timeline-content h5 {
+        color: #fff;
+        margin-bottom: 5px;
+        font-size: 16px;
+    }
+
+    .timeline-content p {
+        margin-bottom: 5px;
+        font-size: 14px;
+    }
+
+    .timeline-date {
+        display: block;
+        font-size: 13px;
+        color: #22c55e;
+        margin-top: 5px;
+    }
+
+    /* Estilos mejorados para los detalles de la orden */
+    .details-content {
+        background-color: #3D3D3D;
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .detail-section {
+        margin-bottom: 25px;
+    }
+
+    .detail-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .detail-section h5 {
+        color: #fff;
+        margin-bottom: 15px;
+        font-size: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 8px;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .info-item .label {
+        display: block;
+        color: #aaa;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .info-item .value {
+        color: #fff;
+        font-weight: 500;
+    }
+
+    .order-items .item {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        background-color: #3D3D3D;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    .order-items .item:last-child {
+        margin-bottom: 0;
+    }
+
+    .order-items .item img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .order-items .item-info {
+        flex: 1;
+        margin-left: 15px;
+    }
+
+    .order-items .item-info h6 {
+        color: #fff;
+        margin-bottom: 5px;
+        font-size: 14px;
+    }
+
+    .order-items .item-meta {
+        display: flex;
+        gap: 10px;
+        font-size: 12px;
+        color: #aaa;
+    }
+
+    /* Estilos para las indicaciones de productos */
+    .item-indications {
+        margin-top: 8px;
+        padding: 8px;
+        background-color: rgba(16, 77, 67, 0.1);
+        border-left: 3px solid #104d43;
+        border-radius: 4px 4px 4px 4px;
+    }
+
+    .indications-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: #22c55e;
+        margin-bottom: 4px;
+    }
+
+    .indications-text {
+        font-size: 12px;
+        color: #ddd;
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    .order-items .item-price {
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .price-breakdown {
+        background-color: #3D3D3D;
+        border-radius: 10px;
+        padding: 15px;
+    }
+
+    .price-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        color: #aaa;
+    }
+
+    .price-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .price-row.total {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 10px;
+        margin-top: 10px;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .price-row.discount {
+        color: #22c55e;
+    }
+
+    .address-info {
+        background-color: #3D3D3D;
+        border-radius: 10px;
+        padding: 15px;
+    }
+
+    .address-info p {
+        margin-bottom: 5px;
+        color: #fff;
+    }
+
+    .address-info .contact {
+        color: #aaa;
+    }
+
+    /* Estilos para precios con descuento */
+    .precio-original {
+        text-decoration: line-through;
+        color: #aaa;
+        margin-right: 8px;
+        font-size: 0.9em;
+    }
+
+    .precio-descuento {
+        color: #22c55e;
+        font-weight: 600;
+    }
+
+    .badge-descuento {
+        background-color: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+        font-size: 0.75em;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-left: 5px;
+    }
+
+    /* Animaciones para los mensajes de alerta */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Estilos para SweetAlert personalizado */
+    .swal2-popup {
+        background-color: #222 !important;
+        border-radius: 16px !important;
+        color: #fff !important;
+    }
+
+    .swal2-title {
+        color: #fff !important;
+    }
+
+    .swal2-html-container {
+        color: #ccc !important;
+    }
+
+    .swal2-confirm {
+        background-color: #104d43 !important;
+    }
+
+    .swal2-styled.swal2-confirm:focus {
+        box-shadow: 0 0 0 3px rgba(16, 77, 67, 0.5) !important;
+    }
+
+    .btn-track,
+    .btn-details,
+    .btn-review,
+    .btn-reorder {
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        background-color: #104d43;
+        color: #fff;
+        border: none;
+    }
+
+    .btn-track:hover,
+    .btn-details:hover,
+    .btn-review:hover,
+    .btn-reorder:hover {
+        background-color: #0e443b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-details {
+        background-color: #333;
+    }
+
+    .btn-details:hover {
+        background-color: #444;
+    }
+
+    /* Estilo para órdenes completadas o canceladas */
+    .order-card[data-status="Entregado"] .order-footer,
+    .order-card[data-status="Cancelado"] .order-footer {
+        justify-content: flex-end;
+    }
+</style>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Verificar si hay un resultado de actualización para mostrar notificación
+        <?php if ($update_result): ?>
+            <?php if ($update_result['success']): ?>
+                // Mostrar SweetAlert de éxito
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Datos actualizados!',
+                    text: '<?php echo $update_result['message']; ?>',
+                    confirmButtonText: 'Aceptar',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            <?php else: ?>
+                // Mostrar SweetAlert de error
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '<?php echo $update_result['message']; ?>',
+                    confirmButtonText: 'Entendido'
+                });
+            <?php endif; ?>
+        <?php endif; ?>
+
         // Filtrado de órdenes
         const filterLinks = document.querySelectorAll('.dropdown-item[data-filter]');
         const orderCards = document.querySelectorAll('.order-card');
@@ -439,6 +1019,74 @@ $total_ordenes = $result->num_rows;
                         card.style.display = 'none';
                     }
                 });
+            });
+        }
+
+        // Manejo de pestañas
+        const tabLinks = document.querySelectorAll('.nav-link[data-bs-toggle="tab"]');
+        const tabContents = document.querySelectorAll('.tab-pane');
+
+        tabLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Remover clase active de todos los enlaces
+                tabLinks.forEach(l => l.classList.remove('active'));
+
+                // Añadir clase active al enlace actual
+                this.classList.add('active');
+
+                // Obtener el id del contenido de la pestaña
+                const tabId = this.getAttribute('href');
+
+                // Ocultar todos los contenidos de pestañas
+                tabContents.forEach(content => {
+                    content.classList.remove('show', 'active');
+                });
+
+                // Mostrar el contenido de la pestaña seleccionada
+                document.querySelector(tabId).classList.add('show', 'active');
+            });
+        });
+
+        // Validación de formulario
+        const accountForm = document.getElementById('accountDetailsForm');
+        if (accountForm) {
+            accountForm.addEventListener('submit', function(e) {
+                let isValid = true;
+                const requiredFields = ['dni', 'telefono', 'direccion', 'ciudad', 'provincia', 'codigo_postal'];
+
+                requiredFields.forEach(field => {
+                    const input = document.getElementById(field);
+                    if (!input.value.trim()) {
+                        input.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        input.classList.remove('is-invalid');
+                    }
+                });
+
+                if (!isValid) {
+                    e.preventDefault();
+
+                    // Mostrar SweetAlert de error de validación
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Campos incompletos',
+                        text: 'Por favor, completa todos los campos obligatorios marcados con *',
+                        confirmButtonText: 'Entendido'
+                    });
+                } else {
+                    // Mostrar indicador de carga mientras se procesa el formulario
+                    Swal.fire({
+                        title: 'Guardando cambios...',
+                        text: 'Por favor espera mientras actualizamos tus datos',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                }
             });
         }
     });

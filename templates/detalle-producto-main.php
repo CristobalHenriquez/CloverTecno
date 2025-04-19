@@ -165,7 +165,17 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
                             </a>
                         <?php endif; ?>
                     </div>
-
+                    <!-- Campo de Indicaciones Personalizadas -->
+                    <div class="product-indications mb-4">
+                        <label for="product-indications" class="form-label fw-medium">Indicaciones especiales:</label>
+                        <textarea
+                            id="product-indications"
+                            class="form-control"
+                            placeholder="Especifica detalles como color, tamaño o cualquier otra preferencia (Ej: Funda color negra)"
+                            rows="2"
+                            maxlength="200"></textarea>
+                        <small class="text-muted">Máximo 200 caracteres</small>
+                    </div>
                     <!-- Delivery Options -->
                     <div class="delivery-options">
                         <div class="delivery-option">
@@ -490,6 +500,31 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
     .consultar-btn i {
         font-size: 1.1rem;
     }
+
+    /* Estilos para el campo de indicaciones */
+    .product-indications {
+        margin-top: 15px;
+    }
+
+    .product-indications textarea {
+        resize: none;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        transition: border-color 0.3s ease;
+    }
+
+    .product-indications textarea:focus {
+        border-color: #104D43;
+        box-shadow: 0 0 0 2px rgba(16, 77, 67, 0.2);
+        outline: none;
+    }
+
+    .cart-item-indications {
+        margin-top: 5px;
+        font-size: 0.85rem;
+        color: #6b7280;
+        word-break: break-word;
+    }
 </style>
 
 <script>
@@ -777,6 +812,7 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
             if (addToCartBtn) {
                 addToCartBtn.addEventListener('click', () => {
                     const quantity = parseInt(quantityInput.value);
+                    const indications = document.getElementById('product-indications').value.trim();
 
                     // Verificar stock disponible
                     if (quantity > maxStock) {
@@ -795,7 +831,8 @@ $tiene_stock = isset($producto['stock']) && $producto['stock'] > 0;
                         name: '<?php echo addslashes(htmlspecialchars($producto['nombre_producto'])); ?>',
                         price: <?php echo floatval($producto['valor_producto']); ?>,
                         image: '<?php echo !empty($imagenes) ? addslashes(htmlspecialchars($imagenes[0])) : 'assets/img/no-image.jpg'; ?>',
-                        maxStock: maxStock
+                        maxStock: maxStock,
+                        indications: indications // Agregar las indicaciones
                     };
 
                     // Llamar a la función global addToCart con la cantidad seleccionada

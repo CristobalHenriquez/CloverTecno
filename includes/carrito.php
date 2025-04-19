@@ -29,9 +29,10 @@ if (session_status() == PHP_SESSION_NONE) {
     }
 
     .cart-icon i {
-    font-size: 1.8rem; /* o 2rem si querés más */
+        font-size: 1.8rem;
+        /* o 2rem si querés más */
     }
-    
+
     .cart-icon:hover {
         transform: scale(1.1);
         box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
@@ -265,7 +266,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
         // Estado del carrito
         let cart = [];
-        
+
         // Cargar carrito desde localStorage
         function loadCart() {
             const savedCart = localStorage.getItem('carrito');
@@ -274,18 +275,18 @@ if (session_status() == PHP_SESSION_NONE) {
                 updateCartUI();
             }
         }
-        
+
         // Guardar carrito en localStorage
         function saveCart() {
             localStorage.setItem('carrito', JSON.stringify(cart));
             updateCartUI();
         }
-        
+
         // Actualizar la interfaz del carrito
         function updateCartUI() {
             // Actualizar contador
             cartCount.textContent = cart.reduce((total, item) => total + item.quantity, 0);
-            
+
             // Actualizar lista de items
             if (cart.length === 0) {
                 cartItems.innerHTML = `
@@ -299,11 +300,11 @@ if (session_status() == PHP_SESSION_NONE) {
             } else {
                 cartItems.innerHTML = '';
                 let total = 0;
-                
+
                 cart.forEach((item, index) => {
                     const itemTotal = item.price * item.quantity;
                     total += itemTotal;
-                    
+
                     const itemElement = document.createElement('div');
                     itemElement.className = 'cart-item';
                     itemElement.innerHTML = `
@@ -311,6 +312,7 @@ if (session_status() == PHP_SESSION_NONE) {
                         <div class="cart-item-details">
                             <div class="cart-item-title">${item.name}</div>
                             <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+                            ${item.indications ? `<div class="cart-item-indications"><small><strong>Indicaciones:</strong> ${item.indications}</small></div>` : ''}
                             <div class="cart-item-actions">
                                 <button class="quantity-btn decrease-btn" data-index="${index}">-</button>
                                 <input type="number" class="quantity-input" value="${item.quantity}" min="1" max="${item.maxStock || 99}" data-index="${index}" readonly>
@@ -321,12 +323,13 @@ if (session_status() == PHP_SESSION_NONE) {
                     `;
                     cartItems.appendChild(itemElement);
                 });
-                
+
                 // Actualizar total
                 cartTotal.textContent = `$${total.toFixed(2)}`;
                 checkoutBtn.disabled = false;
             }
-            
+
+
             // Agregar event listeners a los botones
             document.querySelectorAll('.decrease-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -337,12 +340,12 @@ if (session_status() == PHP_SESSION_NONE) {
                     }
                 });
             });
-            
+
             document.querySelectorAll('.increase-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const index = parseInt(this.getAttribute('data-index'));
                     const maxStock = cart[index].maxStock || 99;
-                    
+
                     if (cart[index].quantity < maxStock) {
                         cart[index].quantity++;
                         saveCart();
@@ -356,7 +359,7 @@ if (session_status() == PHP_SESSION_NONE) {
                     }
                 });
             });
-            
+
             document.querySelectorAll('.remove-item').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const index = parseInt(this.getAttribute('data-index'));
@@ -365,7 +368,7 @@ if (session_status() == PHP_SESSION_NONE) {
                 });
             });
         }
-        
+
         // Abrir carrito
         cartIcon.addEventListener('click', function() {
             cartModal.style.display = 'block';
@@ -373,7 +376,7 @@ if (session_status() == PHP_SESSION_NONE) {
                 cartContent.style.right = '0';
             }, 10);
         });
-        
+
         // Cerrar carrito
         closeCart.addEventListener('click', function() {
             cartContent.style.right = '-400px';
@@ -381,7 +384,7 @@ if (session_status() == PHP_SESSION_NONE) {
                 cartModal.style.display = 'none';
             }, 300);
         });
-        
+
         // Cerrar carrito al hacer clic fuera
         cartModal.addEventListener('click', function(e) {
             if (e.target === cartModal) {
@@ -391,11 +394,11 @@ if (session_status() == PHP_SESSION_NONE) {
                 }, 300);
             }
         });
-        
+
         // Proceder al pago
         checkoutBtn.addEventListener('click', function() {
             const isLoggedIn = <?php echo esta_logueado() ? 'true' : 'false'; ?>;
-            
+
             if (!isLoggedIn) {
                 Swal.fire({
                     title: 'Inicia sesión',
@@ -415,7 +418,7 @@ if (session_status() == PHP_SESSION_NONE) {
                 window.location.href = 'checkout.php';
             }
         });
-        
+
         // Función para agregar productos al carrito (para usar desde otras páginas)
         window.addToCart = function(product) {
             // Verificar que el producto tenga todos los datos necesarios
@@ -423,17 +426,17 @@ if (session_status() == PHP_SESSION_NONE) {
                 console.error('Datos de producto incompletos', product);
                 return;
             }
-            
+
             // Asegurarse de que maxStock esté definido
             const maxStock = product.maxStock || 99;
-            
+
             // Buscar si el producto ya está en el carrito
             const existingItemIndex = cart.findIndex(item => item.id === product.id);
-            
+
             if (existingItemIndex !== -1) {
                 // El producto ya está en el carrito
                 const newQuantity = cart[existingItemIndex].quantity + (product.quantity || 1);
-                
+
                 // Verificar si hay suficiente stock
                 if (newQuantity > maxStock) {
                     Swal.fire({
@@ -444,9 +447,14 @@ if (session_status() == PHP_SESSION_NONE) {
                     });
                     return;
                 }
-                
+
                 // Actualizar cantidad
                 cart[existingItemIndex].quantity = newQuantity;
+
+                // Si hay nuevas indicaciones, actualizarlas
+                if (product.indications) {
+                    cart[existingItemIndex].indications = product.indications;
+                }
             } else {
                 // Agregar nuevo producto al carrito
                 cart.push({
@@ -455,12 +463,13 @@ if (session_status() == PHP_SESSION_NONE) {
                     price: product.price,
                     image: product.image,
                     quantity: product.quantity || 1,
-                    maxStock: maxStock
+                    maxStock: maxStock,
+                    indications: product.indications || '' // Guardar las indicaciones
                 });
             }
-            
+
             saveCart();
-            
+
             // Mostrar notificación
             Swal.fire({
                 title: '¡Producto agregado!',
@@ -470,7 +479,7 @@ if (session_status() == PHP_SESSION_NONE) {
                 showConfirmButton: false
             });
         };
-        
+
         // Cargar carrito al iniciar
         loadCart();
     });

@@ -34,7 +34,8 @@ $venta = $result->fetch_assoc();
 
 // Obtener detalles de la venta
 $stmt = $db->prepare("SELECT dv.*, p.nombre_producto, 
-                     (SELECT imagen_path FROM imagenes_productos WHERE id_producto = dv.id_producto LIMIT 1) as imagen 
+                     (SELECT imagen_path FROM imagenes_productos WHERE id_producto = dv.id_producto LIMIT 1) as imagen,
+                     dv.indicaciones
                      FROM detalle_ventas dv 
                      JOIN productos p ON dv.id_producto = p.id_producto 
                      WHERE dv.id_venta = ?");
@@ -55,7 +56,14 @@ $html = '
             <h5>Datos de la Venta</h5>
             <p><strong>ID:</strong> ' . $venta['id_venta'] . '</p>
             <p><strong>Fecha:</strong> ' . $venta['fecha_formateada'] . '</p>
-            <p><strong>Estado:</strong> <span class="estado-' . strtolower($venta['estado']) . '">' . $venta['estado'] . '</span></p>
+            <p><strong>Estado:</strong> <span class="estado-' . strtolower($venta['estado']) . '">' . $venta['estado'] . '</span></p>';
+
+// Mostrar método de pago si existe
+if (!empty($venta['metodo_pago'])) {
+    $html .= '<p><strong>Método de Pago:</strong> ' . htmlspecialchars($venta['metodo_pago']) . '</p>';
+}
+
+$html .= '
         </div>
         <div class="col-md-6">
             <h5>Datos del Cliente</h5>
@@ -108,7 +116,11 @@ $html .= '
                     </thead>
                     <tbody>';
 
+// Calcular el total de los detalles para comparar con el total de la venta
+$totalDetalles = 0;
 foreach ($detalles as $detalle) {
+    $totalDetalles += $detalle['subtotal'];
+    
     $html .= '
         <tr>
             <td>';
@@ -120,7 +132,19 @@ foreach ($detalles as $detalle) {
     }
     
     $html .= '</td>
-            <td>' . htmlspecialchars($detalle['nombre_producto']) . '</td>
+            <td>' . htmlspecialchars($detalle['nombre_producto']);
+    
+    // Mostrar indicaciones si existen
+    if (!empty($detalle['indicaciones'])) {
+        $html .= '<div class="product-indications mt-2">
+                    <span class="badge bg-info text-dark">
+                        <i class="bi bi-info-circle"></i> Indicaciones
+                    </span>
+                    <p class="small text-muted mt-1 mb-0">' . htmlspecialchars($detalle['indicaciones']) . '</p>
+                  </div>';
+    }
+    
+    $html .= '</td>
             <td class="text-end">$' . number_format($detalle['precio_unitario'], 0, ',', '.') . '</td>
             <td class="text-center">' . $detalle['cantidad'] . '</td>
             <td class="text-end">$' . number_format($detalle['subtotal'], 0, ',', '.') . '</td>
@@ -129,7 +153,31 @@ foreach ($detalles as $detalle) {
 
 $html .= '
                     </tbody>
-                    <tfoot>
+                    <tfoot>';
+
+// Verificar si hay descuento (para transferencia bancaria)
+$mostrarDescuento = false;
+$descuento = 0;
+
+// Si el método de pago es transferencia y el total de detalles es mayor que el total de la venta
+if ($venta['metodo_pago'] == 'Transferencia Bancaria' && $totalDetalles > $venta['total_venta']) {
+    $mostrarDescuento = true;
+    $descuento = $totalDetalles - $venta['total_venta'];
+}
+
+if ($mostrarDescuento) {
+    $html .= '
+                        <tr>
+                            <td colspan="4" class="text-end"><strong>Subtotal:</strong></td>
+                            <td class="text-end">$' . number_format($totalDetalles, 0, ',', '.') . '</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-end text-success"><strong>Descuento (20% por Transferencia):</strong></td>
+                            <td class="text-end text-success">-$' . number_format($descuento, 0, ',', '.') . '</td>
+                        </tr>';
+}
+
+$html .= '
                         <tr>
                             <td colspan="4" class="text-end"><strong>Total:</strong></td>
                             <td class="text-end"><strong>$' . number_format($venta['total_venta'], 0, ',', '.') . '</strong></td>

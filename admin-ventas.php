@@ -94,7 +94,7 @@ include_once 'includes/db_connection.php';
     .dataTables_length {
         margin-bottom: 1rem;
     }
-    
+
     .dataTables_length select {
         padding: 0.375rem 2.25rem 0.375rem 0.75rem;
         font-size: 1rem;
@@ -111,11 +111,11 @@ include_once 'includes/db_connection.php';
         -moz-appearance: none;
         appearance: none;
     }
-    
+
     .dataTables_filter {
         margin-bottom: 1rem;
     }
-    
+
     .dataTables_filter input {
         padding: 0.375rem 0.75rem;
         font-size: 1rem;
@@ -127,17 +127,17 @@ include_once 'includes/db_connection.php';
         border-radius: 0.25rem;
         transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     }
-    
+
     .dataTables_info {
         padding-top: 0.85em;
         font-size: 0.9rem;
         color: #6c757d;
     }
-    
+
     .dataTables_paginate {
         padding-top: 0.5em;
     }
-    
+
     .dataTables_paginate .paginate_button {
         margin-left: 3px;
         border-radius: 0.25rem;
@@ -145,13 +145,13 @@ include_once 'includes/db_connection.php';
         background-color: #fff;
         border: 1px solid #dee2e6;
     }
-    
+
     .dataTables_paginate .paginate_button.current {
         color: #fff !important;
         background-color: #104D43 !important;
         border-color: #104D43 !important;
     }
-    
+
     .dataTables_paginate .paginate_button:hover {
         color: #fff !important;
         background-color: #156658 !important;
@@ -438,6 +438,58 @@ include_once 'includes/db_connection.php';
     .estado-option.selected {
         border: 2px solid #104D43;
     }
+
+    /* Estilos para las indicaciones de producto */
+    .product-indications {
+        background-color: #f8f9fa;
+        border-left: 3px solid #17a2b8;
+        padding: 8px 12px;
+        margin-top: 8px;
+        border-radius: 0 4px 4px 0;
+    }
+
+    .product-indications .badge {
+        background-color: #e9f5f9 !important;
+        color: #0c5460 !important;
+        font-weight: 500;
+    }
+
+    .product-indications p {
+        margin-bottom: 0;
+        font-size: 0.85rem;
+        color: #495057;
+    }
+
+    /* Estilos para el método de pago */
+    .metodo-pago-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-weight: 500;
+        background-color: #f8f9fa;
+        color: #495057;
+    }
+
+    .metodo-pago-badge i {
+        margin-right: 5px;
+        font-size: 1.1em;
+    }
+
+    .metodo-pago-transferencia {
+        background-color: #e3f2fd;
+        color: #0d47a1;
+    }
+
+    .metodo-pago-efectivo {
+        background-color: #e8f5e9;
+        color: #1b5e20;
+    }
+
+    .metodo-pago-mercadopago {
+        background-color: #ede7f6;
+        color: #4527a0;
+    }
 </style>
 
 <main class="main">
@@ -575,10 +627,17 @@ include_once 'includes/inc.footer.php';
                 },
                 responsive: true,
                 pageLength: 10, // Mostrar 10 registros por página por defecto
-                lengthMenu: [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Todos"]], // Opciones de registros por página
-                order: [[0, 'desc']], // Ordenar por ID (columna 0) de forma descendente
-                columnDefs: [
-                    { orderable: false, targets: [7] } // Desactivar ordenamiento en la columna de acciones
+                lengthMenu: [
+                    [5, 10, 25, 50, -1],
+                    [5, 10, 25, 50, "Todos"]
+                ], // Opciones de registros por página
+                order: [
+                    [0, 'desc']
+                ], // Ordenar por ID (columna 0) de forma descendente
+                columnDefs: [{
+                        orderable: false,
+                        targets: [7]
+                    } // Desactivar ordenamiento en la columna de acciones
                 ],
                 dom: '<"row"<"col-sm-6"l><"col-sm-6"f>>rtip' // Personalizar la disposición de los elementos
             });
@@ -727,7 +786,79 @@ include_once 'includes/inc.footer.php';
             });
         });
     });
+
+    // Función para ver detalles de venta
+    $(document).on('click', '.ver-detalle', function() {
+        const id_venta = $(this).data('id');
+
+        // Mostrar indicador de carga
+        Swal.fire({
+            title: 'Cargando detalles...',
+            text: 'Por favor espere',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Cargar detalles de la venta
+        $.ajax({
+            url: 'controllers/obtener_detalle_venta.php',
+            type: 'GET',
+            data: {
+                id: id_venta
+            },
+            success: function(response) {
+                try {
+                    // Intentar parsear la respuesta como JSON
+                    const data = JSON.parse(response);
+
+                    if (data.success) {
+                        // Actualizar el contenido del modal
+                        $('#detalleVentaBody').html(data.html);
+
+                        // Cerrar el indicador de carga
+                        Swal.close();
+
+                        // Mostrar el modal
+                        const detalleVentaModal = new bootstrap.Modal(document.getElementById('detalleVentaModal'));
+                        detalleVentaModal.show();
+
+                        // Resaltar las indicaciones si existen
+                        $('.product-indications').each(function() {
+                            $(this).effect('highlight', {}, 1500);
+                        });
+                    } else {
+                        // Mostrar mensaje de error
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Ocurrió un error al cargar los detalles de la venta'
+                        });
+                    }
+                } catch (e) {
+                    console.error("Error al parsear la respuesta:", e, "Respuesta:", response);
+                    // Mostrar mensaje de error
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Ocurrió un error al procesar la respuesta del servidor'
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX error:", status, error, "Respuesta:", xhr.responseText);
+                // Mostrar mensaje de error
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ocurrió un error al procesar la solicitud: ' + error
+                });
+            }
+        });
+    });
 </script>
 
 </body>
+
 </html>
